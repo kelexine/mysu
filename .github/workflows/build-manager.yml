@@ -80,21 +80,21 @@ jobs:
 
       - name: Repack APK with 64-Bit mysud Daemons
         run: |
-          python3 repack_apk.py --strip
+          python3 repack_apk.py repack --strip
 
       - name: Upload Manager APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MySU-Manager
           path: |
-            manager/app/build/outputs/apk/**/*.apk
+            dist/*.apk
 
       - name: Release to GitHub Releases
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            manager/app/build/outputs/apk/**/*.apk
+            dist/*.apk
           draft: false
           prerelease: false
           generate_release_notes: true
