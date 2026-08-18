@@ -5,6 +5,7 @@ import { resolve } from 'path'
 
 export default defineConfig( {
     title: 'MySU',
+    base: '/mysu/',
     locales: locales.locales,
     head: [
         ['script', {
