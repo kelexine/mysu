@@ -38,7 +38,7 @@
     <string name="send_log">Enviar log</string>
     <string name="module_uninstall_success">%s desinstalado</string>
     <string name="show_system_apps">Mostrar aplicativos do sistema</string>
-    <string name="home_click_to_learn_kernelsu">Aprenda a instalar o MySU e usar os módulos</string>
+    <string name="home_click_to_learn_mysu">Aprenda a instalar o MySU e usar os módulos</string>
     <string name="home_support_content">O MySU é, e sempre será, gratuito e de código aberto. No entanto, você pode nos mostrar que se importa fazendo uma doação.</string>
     <string name="about_source_code">Veja o código-fonte em %1$s<br/>
 Junte-se ao nosso canal %2$s</string>
@@ -52,7 +52,7 @@ Junte-se ao nosso canal %2$s</string>
     <string name="profile_namespace">Montar namespace</string>
     <string name="safe_mode">Modo de segurança</string>
     <string name="reboot_to_apply">Reinicie para entrar em vigor</string>
-    <string name="home_learn_kernelsu">Aprender MySU</string>
+    <string name="home_learn_mysu">Aprender MySU</string>
     <string name="module_magisk_conflict">Os módulos estão desativados porque estão em conflito com os do Magisk!</string>
     <string name="home_support_title">Apoie-nos</string>
     <string name="profile_groups">Grupos</string>
@@ -69,7 +69,7 @@ Junte-se ao nosso canal %2$s</string>
     <string name="module_start_downloading">Iniciar o download: %s</string>
     <string name="module_downloading">Baixando módulo: %s</string>
     <string name="failed_to_update_sepolicy">Falha ao atualizar as regras do SELinux para: %s</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
     <string name="restart_app">Reiniciar</string>
     <string name="launch_app">Lançar</string>
     <string name="force_stop_app">Forçar parada</string>

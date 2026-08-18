@@ -41,9 +41,9 @@
     <string name="safe_mode">セーフモード</string>
     <string name="reboot_to_apply">再起動すると有効化されます</string>
     <string name="module_magisk_conflict">モジュールが Magisk との競合により利用できません!</string>
-    <string name="home_learn_kernelsu">MySU について</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/ja_JP/guide/what-is-mysu.html</string>
-    <string name="home_click_to_learn_kernelsu">MySU のインストール方法やモジュールの使い方はこちら</string>
+    <string name="home_learn_mysu">MySU について</string>
+    <string name="home_learn_mysu_url">https://mysu.org/ja_JP/guide/what-is-mysu.html</string>
+    <string name="home_click_to_learn_mysu">MySU のインストール方法やモジュールの使い方はこちら</string>
     <string name="home_support_title">支援する</string>
     <string name="home_support_content">MySU はこれからもずっと無料でオープンソースです。寄付をして頂くことで、開発を支援していただけます。</string>
     <string name="about_source_code"><![CDATA[%1$s でソースコードを表示<br/>%2$s チャンネルに参加]]></string>

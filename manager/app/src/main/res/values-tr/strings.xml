@@ -41,9 +41,9 @@
     <string name="safe_mode">Güvenli mod</string>
     <string name="reboot_to_apply">Değişikliklerin uygulanması için cihazı yeniden başlat</string>
     <string name="module_magisk_conflict">Magisk ile çakışma nedeniyle modüller kullanılamıyor!</string>
-    <string name="home_learn_kernelsu">MySU\'yu öğrenin</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
-    <string name="home_click_to_learn_kernelsu">MySU\'nun nasıl kurulacağını ve modüllerin nasıl kullanılacağını öğrenin.</string>
+    <string name="home_learn_mysu">MySU\'yu öğrenin</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_click_to_learn_mysu">MySU\'nun nasıl kurulacağını ve modüllerin nasıl kullanılacağını öğrenin.</string>
     <string name="home_support_title">Bizi Destekleyin</string>
     <string name="home_support_content">MySU ücretsiz ve açık kaynaklı bir yazılımdır ve her zaman öyle kalacaktır. Ancak bağış yaparak bize destek olduğunuzu gösterebilirsiniz.</string>
     <string name="about_source_code"><![CDATA[%1$s adresinde kaynak kodunu görüntüleyin.<br/>%2$s kanalımıza katılın.]]></string>

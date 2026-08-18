@@ -41,9 +41,9 @@
     <string name="safe_mode">Tryb bezpieczny</string>
     <string name="reboot_to_apply">Uruchom ponownie, aby zastosować zmiany</string>
     <string name="module_magisk_conflict">Moduły są niedostępne z powodu konfliktu z Magiskiem!</string>
-    <string name="home_learn_kernelsu">Poznaj MySU</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
-    <string name="home_click_to_learn_kernelsu">Dowiedz się jak zainstalować MySU i jak korzystać z modułów.</string>
+    <string name="home_learn_mysu">Poznaj MySU</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_click_to_learn_mysu">Dowiedz się jak zainstalować MySU i jak korzystać z modułów.</string>
     <string name="home_support_title">Wesprzyj nas</string>
     <string name="home_support_content">MySU jest i zawsze będzie darmowy oraz otwarty. Niemniej jednak możesz nam pokazać, że Ci zależy, wysyłając darowiznę.</string>
     <string name="about_source_code"><![CDATA[Przejrzyj kod źródłowy na %1$s<br/>Dołącz do kanału %2$s]]></string>

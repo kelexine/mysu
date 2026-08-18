@@ -342,7 +342,7 @@ private fun WarningCard(
 
 @Composable
 private fun LearnMoreCard(onOpenUrl: (String) -> Unit) {
-    val url = stringResource(R.string.home_learn_kernelsu_url)
+    val url = stringResource(R.string.home_learn_mysu_url)
     TonalCard(onClick = { onOpenUrl(url) }) {
         Row(
             modifier = Modifier
@@ -351,10 +351,10 @@ private fun LearnMoreCard(onOpenUrl: (String) -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(text = stringResource(R.string.home_learn_kernelsu), style = MaterialTheme.typography.titleSmall)
+                Text(text = stringResource(R.string.home_learn_mysu), style = MaterialTheme.typography.titleSmall)
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = stringResource(R.string.home_click_to_learn_kernelsu),
+                    text = stringResource(R.string.home_click_to_learn_mysu),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -365,7 +365,7 @@ private fun LearnMoreCard(onOpenUrl: (String) -> Unit) {
 
 @Composable
 private fun DonateCard(onOpenUrl: (String) -> Unit) {
-    TonalCard(onClick = { onOpenUrl("https://patreon.com/weishu") }) {
+    TonalCard(onClick = { onOpenUrl("https://github.com/kelexine/MySU") }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

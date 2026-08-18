@@ -79,7 +79,7 @@ import dev.kelexine.mysu.ui.screen.sulog.SulogScreen
 import dev.kelexine.mysu.ui.screen.superuser.SuperUserPager
 import dev.kelexine.mysu.ui.screen.template.AppProfileTemplateScreen
 import dev.kelexine.mysu.ui.screen.templateeditor.TemplateEditorScreen
-import dev.kelexine.mysu.ui.theme.KernelSUTheme
+import dev.kelexine.mysu.ui.theme.MySUTheme
 import dev.kelexine.mysu.ui.theme.LocalColorMode
 import dev.kelexine.mysu.ui.theme.LocalEnableBlur
 import dev.kelexine.mysu.ui.theme.LocalEnableFloatingBottomBar
@@ -150,7 +150,7 @@ class MainActivity : ComponentActivity() {
                 LocalEnableNavigationBadge provides uiState.enableNavigationBadge,
                 LocalUiMode provides uiMode,
             ) {
-                KernelSUTheme(appSettings = appSettings, uiMode = uiMode) {
+                MySUTheme(appSettings = appSettings, uiMode = uiMode) {
                     IntentDispatcher(intentChannel = intentChannel)
                     val mainScreenEntry = @Composable {
                         MainScreen(

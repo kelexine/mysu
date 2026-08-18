@@ -42,9 +42,9 @@
     <string name="show_system_apps">Rādīt sistēmas lietotnes</string>
     <string name="send_log">Sūtīt žurnālus</string>
     <string name="reboot_to_apply">Restartējiet, lai stātos spēkā</string>
-    <string name="home_learn_kernelsu">Uzzināt par MySU</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
-    <string name="home_click_to_learn_kernelsu">Uzzināt, kā instalēt MySU un izmantot moduļus</string>
+    <string name="home_learn_mysu">Uzzināt par MySU</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_click_to_learn_mysu">Uzzināt, kā instalēt MySU un izmantot moduļus</string>
     <string name="home_support_title">Atbalsti mūs</string>
     <string name="about_source_code">Skatiet avota kodu vietnē %1$s<br/> Pievienojies mūsu %2$s kanālam</string>
     <string name="profile_default">Noklusējums</string>

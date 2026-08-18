@@ -103,7 +103,7 @@ pub fn init() -> Result<()> {
     // This relies on the fact that we have /proc mounted
     unlimit_kmsg();
 
-    if mysuinit::has_kernelsu() {
+    if mysuinit::has_mysu() {
         log::info!("MySU may be already loaded in kernel, skip!");
     } else {
         log::info!("Loading mysu.ko..");

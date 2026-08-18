@@ -658,7 +658,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             patcher.replace_kernel(Box::new(Cursor::new(kernel_data)), false);
         }
 
-        let kernelsu_ko: Box<dyn AsRef<[u8]>> = if no_install {
+        let mysu_ko: Box<dyn AsRef<[u8]>> = if no_install {
             Box::new(Vec::<u8>::new())
         } else if let Some(kmod_path) = kmod {
             Box::new(map_file(&kmod_path)?)
@@ -666,14 +666,14 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             #[cfg(target_os = "android")]
             {
                 println!("- KMI: {kmi}");
-                let name = format!("{kmi}_kernelsu.ko");
+                let name = format!("{kmi}_mysu.ko");
                 assets::get_asset(&name).with_context(|| format!("Failed to load {name}"))?
             }
             #[cfg(not(target_os = "android"))]
             {
                 println!("- KMI: {kmi}");
                 println!("- Arch: {arch}");
-                let name = format!("{arch}/{kmi}_kernelsu.ko");
+                let name = format!("{arch}/{kmi}_mysu.ko");
                 assets::get_asset(&name).with_context(|| format!("Failed to load {name}"))?
             }
         };
@@ -708,17 +708,17 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             );
 
             println!("- Adding MySU LKM");
-            let is_kernelsu_patched = cpio.exists("mysu.ko");
+            let is_mysu_patched = cpio.exists("mysu.ko");
 
-            if !is_kernelsu_patched && cpio.exists("init") {
+            if !is_mysu_patched && cpio.exists("init") {
                 cpio.mv("init", "init.real")?;
             }
 
             cpio.add("init", CpioEntry::regular(0o755, mysu_init))?;
-            cpio.add("mysu.ko", CpioEntry::regular(0o755, kernelsu_ko))?;
+            cpio.add("mysu.ko", CpioEntry::regular(0o755, mysu_ko))?;
 
             #[cfg(target_os = "android")]
-            if (backup || (!is_kernelsu_patched && flash))
+            if (backup || (!is_mysu_patched && flash))
                 && let Err(e) = do_backup(&mut cpio, &boot_image_file)
             {
                 println!("- Backup stock image failed: {e:?}");
@@ -827,7 +827,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             let output_dir = out.unwrap_or(std::env::current_dir()?);
             let name = out_name.unwrap_or_else(|| {
                 let now = chrono::Utc::now();
-                format!("kernelsu_patched_{}.img", now.format("%Y%m%d_%H%M%S"))
+                format!("mysu_patched_{}.img", now.format("%Y%m%d_%H%M%S"))
             });
             let output_image = output_dir.join(name);
             std::fs::write(&output_image, &new_boot_bytes).context("write out new boot failed")?;
@@ -993,7 +993,7 @@ pub fn restore(args: BootRestoreArgs) -> Result<()> {
         let output_dir = out.unwrap_or(std::env::current_dir()?);
         let name = out_name.unwrap_or_else(|| {
             let now = chrono::Utc::now();
-            format!("kernelsu_restore_{}.img", now.format("%Y%m%d_%H%M%S"))
+            format!("mysu_restore_{}.img", now.format("%Y%m%d_%H%M%S"))
         });
         let output_image = output_dir.join(name);
         std::fs::write(&output_image, &new_boot_bytes).context("copy out new boot failed")?;

@@ -61,7 +61,7 @@ import dev.kelexine.mysu.ui.component.material.expressiveTopAppBarColors
 import dev.kelexine.mysu.ui.component.uninstalldialog.UninstallDialog
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2023/1/1.
  */
 @Composable

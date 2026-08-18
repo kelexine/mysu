@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="reboot_to_apply">ಪರಿಣಾಮ ಬೀರಲು ರೀಬೂಟ್ ಮಾಡಿ</string>
-    <string name="home_click_to_learn_kernelsu">MySU ಅನ್ನು ಹೇಗೆ ಸ್ಥಾಪಿಸಬೇಕು ಮತ್ತು ಮಾಡ್ಯೂಲ್‌ಗಳನ್ನು ಬಳಸುವುದು ಹೇಗೆ ಎಂದು ತಿಳಿಯಿರಿ</string>
+    <string name="home_click_to_learn_mysu">MySU ಅನ್ನು ಹೇಗೆ ಸ್ಥಾಪಿಸಬೇಕು ಮತ್ತು ಮಾಡ್ಯೂಲ್‌ಗಳನ್ನು ಬಳಸುವುದು ಹೇಗೆ ಎಂದು ತಿಳಿಯಿರಿ</string>
     <string name="selinux_status_unknown">ತಿಳಿಯದ</string>
     <string name="show_system_apps">ಸಿಸ್ಟಮ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ತೋರಿಸಿ</string>
     <string name="module_uninstall_success">%s ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</string>
@@ -48,7 +48,7 @@
     <string name="profile_custom">ಕಸ್ಟಮ್</string>
     <string name="profile_template">ಟೆಂಪ್ಲೇಟ್</string>
     <string name="module_downloading">ಮಾಡ್ಯೂಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ: %s</string>
-    <string name="home_learn_kernelsu">MySU ಕಲಿಯಿರಿ</string>
+    <string name="home_learn_mysu">MySU ಕಲಿಯಿರಿ</string>
     <string name="module_uninstall_confirm">%s ಮಾಡ್ಯೂಲ್ ಅನ್ನು ಅಸ್ಥಾಪಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ\?</string>
     <string name="module_uninstall_failed">ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ: %s</string>
     <string name="superuser">ಸೂಪರ್ಯೂಸರ್</string>
@@ -57,7 +57,7 @@
     <string name="module_empty">ಮಾಡ್ಯೂಲ್ ಅನ್ನು ಸ್ಥಾಪಿಸಲಾಗಿಲ್ಲ</string>
     <string name="home_kernel">ಕರ್ನಲ್</string>
     <string name="failed_to_update_app_profile">%s ಗಾಗಿ ಅಪ್ಲಿಕೇಶನ್ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
     <string name="about_source_code">%1$s ನಲ್ಲಿ ಮೂಲ ಕೋಡ್ ಅನ್ನು ವೀಕ್ಷಿಸಿ<br/>ನಮ್ಮ %2$s ಚಾನಲ್‌ಗೆ ಸೇರಿ</string>
     <string name="home_manager_version">ಮ್ಯಾನೇಜರ್ ವರ್ಷನ್</string>
     <string name="new_version_available">ಹೊಸ ಆವೃತ್ತಿ: %s ಲಭ್ಯವಿದೆ, ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ</string>

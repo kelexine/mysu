@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "KernelSU_website",
+      "name": "MySU_website",
       "devDependencies": {
         "vitepress": "^1.6.4",
         "vue": "^3.5.41",

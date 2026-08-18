@@ -60,7 +60,7 @@ pub const VERSION_NAME: &str = env!("VERSION_NAME");
 #[cfg(target_os = "android")]
 pub const FULL_VERSION: &str = const_format::formatcp!(
     "{VERSION_NAME} (uapi: {})",
-    crate::mysu_uapi::KERNEL_SU_UAPI_VERSION
+    crate::mysu_uapi::MYSU_UAPI_VERSION
 );
 
 #[cfg(target_os = "android")]

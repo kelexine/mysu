@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="reboot_to_apply">प्रभाव में होने के लिए रीबूट करें</string>
-    <string name="home_click_to_learn_kernelsu">जानें कि MySU कैसे स्थापित करें और मॉड्यूल का उपयोग कैसे करें</string>
+    <string name="home_click_to_learn_mysu">जानें कि MySU कैसे स्थापित करें और मॉड्यूल का उपयोग कैसे करें</string>
     <string name="selinux_status_unknown">अज्ञात</string>
     <string name="show_system_apps">सिस्टम एप्प दिखाए</string>
     <string name="module_uninstall_success">%s अनइंस्टॉल सफल हुआ</string>
@@ -57,7 +57,7 @@
     <string name="profile_template">टेम्पलेट</string>
     <string name="module_downloading">%s मॉड्यूल डाउनलोड हो रहा है</string>
     <string name="module_update">अपडेट</string>
-    <string name="home_learn_kernelsu">MySU सीखें</string>
+    <string name="home_learn_mysu">MySU सीखें</string>
     <string name="module_uninstall_confirm">क्या आप सच में मॉड्यूल %s को अनइंस्टॉल करना चाहते हैं\?</string>
     <string name="module_uninstall_failed">%s अनइंस्टल करने में असफल</string>
     <string name="superuser">सुपरयूजर</string>
@@ -69,7 +69,7 @@
     <string name="home_kernel">कर्नल</string>
     <string name="home_not_installed">इंस्टाल नहीं हुआ</string>
     <string name="failed_to_update_app_profile">%s के लिए ऐप प्रोफ़ाइल अपडेट करने में विफल</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
     <string name="failed_to_update_sepolicy">%s के लिए SELinux नियमों को अपटेड करने में विफल</string>
     <string name="reboot_bootloader">बुटलोडर में रिबूट करें</string>
     <string name="about_source_code">%1$s पर स्रोत कोड देखें<br/>

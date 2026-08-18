@@ -15,8 +15,8 @@
     <string name="module_author">Autor</string>
     <string name="about">Über MySU</string>
     <string name="module_magisk_conflict">Module sind aufgrund eines Konfliktes mit Magisk nicht verfügbar!</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
-    <string name="home_click_to_learn_kernelsu">Erfahre, wie MySU installiert wird und wie Module verwendet werden.</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_click_to_learn_mysu">Erfahre, wie MySU installiert wird und wie Module verwendet werden.</string>
     <string name="home_support_title">Unterstütze uns</string>
     <string name="home_support_content">MySU ist und wird immer frei und quelloffen sein. Du kannst uns jedoch deine Unterstützung zeigen, indem du eine Spende tätigst.</string>
     <string name="profile_selinux_context">SELinux-Kontext</string>
@@ -55,7 +55,7 @@
     <string name="module_version">Version</string>
     <string name="show_system_apps">System-Apps anzeigen</string>
     <string name="send_log">Protokoll senden</string>
-    <string name="home_learn_kernelsu">MySU verstehen</string>
+    <string name="home_learn_mysu">MySU verstehen</string>
     <string name="safe_mode">Sicherer Modus</string>
     <string name="reboot_to_apply">Neustarten, damit Änderungen wirksam werden</string>
     <string name="about_source_code"><![CDATA[Quellcode einsehen unter %1$s<br/>Unserem %2$s-Kanal beitreten]]></string>

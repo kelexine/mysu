@@ -8,7 +8,6 @@
 
 // 2: allowlist v4 root profile flags
 static const __u32 MYSU_UAPI_VERSION = 2;
-static const __u32 KERNEL_SU_UAPI_VERSION = 2;
 
 /* Magic numbers for reboot hook to install fd */
 static const __u32 MYSU_INSTALL_MAGIC1 = 0xDEADBEEF;
@@ -29,14 +28,14 @@ static const __u32 MYSU_GET_INFO_FLAG_PR_BUILD = (1U << 3);
 
 
 struct mysu_get_info_cmd {
-    __u32 version; /* Output: MYSU_VERSION / KERNEL_SU_VERSION */
+    __u32 version; /* Output: MYSU_VERSION */
     __u32 flags; /* Output: MYSU_GET_INFO_FLAG_* bits */
     __u32 features; /* Output: max feature ID supported */
     __u32 uapi_version; /* Output: MYSU_UAPI_VERSION */
 };
 
 struct mysu_get_info_legacy_cmd {
-    __u32 version; /* Output: MYSU_VERSION / KERNEL_SU_VERSION */
+    __u32 version; /* Output: MYSU_VERSION */
     __u32 flags; /* Output: MYSU_GET_INFO_FLAG_* bits */
     __u32 features; /* Output: max feature ID supported */
 };

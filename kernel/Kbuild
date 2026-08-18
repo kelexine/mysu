@@ -83,7 +83,7 @@ obj-$(CONFIG_MYSU) += mysu.o
 MDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 # Workaround bazel
-# https://github.com/tiann/MySU/pull/316#issuecomment-1479043219
+# https://github.com/kelexine/MySU/pull/316#issuecomment-1479043219
 GIT := $(shell PATH="$$PATH":/usr/bin:/usr/local/bin which git)
 ifneq ($(GIT),)
 # Check if this is a git repository

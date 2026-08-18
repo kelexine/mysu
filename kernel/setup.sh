@@ -37,9 +37,9 @@ perform_cleanup() {
 }
 
 # Sets up or update MySU environment
-setup_kernelsu() {
+setup_mysu() {
     echo "[+] Setting up MySU..."
-    test -d "$GKI_ROOT/MySU" || git clone https://github.com/tiann/MySU && echo "[+] Repository cloned."
+    test -d "$GKI_ROOT/MySU" || git clone https://github.com/kelexine/MySU && echo "[+] Repository cloned."
     cd "$GKI_ROOT/MySU"
     git stash && echo "[-] Stashed current changes."
     if [ "$(git status | grep -Po 'v\d+(\.\d+)*' | head -n1)" ]; then
@@ -63,7 +63,7 @@ setup_kernelsu() {
 # Process command-line arguments
 if [ "$#" -eq 0 ]; then
     initialize_variables
-    setup_kernelsu
+    setup_mysu
 elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     display_usage
 elif [ "$1" = "--cleanup" ]; then
@@ -71,5 +71,5 @@ elif [ "$1" = "--cleanup" ]; then
     perform_cleanup
 else
     initialize_variables
-    setup_kernelsu "$@"
+    setup_mysu "$@"
 fi

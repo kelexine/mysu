@@ -8,7 +8,7 @@ import dev.kelexine.mysu.ui.util.module.LatestVersionInfo
 import okhttp3.Request
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2023/6/22.
  */
 suspend fun download(
@@ -38,7 +38,7 @@ suspend fun download(
 
 fun checkNewVersion(): LatestVersionInfo {
     if (!isNetworkAvailable(mysuApp)) return LatestVersionInfo()
-    val url = "https://api.github.com/repos/tiann/MySU/releases/latest"
+    val url = "https://api.github.com/repos/kelexine/MySU/releases/latest"
     // default null value if failed
     val defaultValue = LatestVersionInfo()
     runCatching {

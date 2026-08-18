@@ -1,5 +1,5 @@
 //
-// Created by weishu on 2022/12/9.
+// Created by kelexine on 2022/12/9.
 //
 
 #include <sys/prctl.h>
@@ -93,7 +93,7 @@ uint32_t get_kernel_uapi_version() {
 }
 
 uint32_t get_manager_uapi_version() {
-    return KERNEL_SU_UAPI_VERSION;
+    return MYSU_UAPI_VERSION;
 }
 
 uint32_t get_version() {

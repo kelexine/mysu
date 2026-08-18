@@ -96,7 +96,7 @@ import dev.kelexine.mysu.ui.component.material.TopBarBackButton
 import dev.kelexine.mysu.ui.component.material.expressiveTopAppBarColors
 import dev.kelexine.mysu.ui.theme.ColorMode
 import dev.kelexine.mysu.ui.theme.keyColorOptions
-import dev.kelexine.mysu.ui.theme.rememberKernelSUColorScheme
+import dev.kelexine.mysu.ui.theme.rememberMySUColorScheme
 
 @Composable
 fun ColorPaletteScreenMaterial(
@@ -363,7 +363,7 @@ private fun ThemePreviewCard(
     val screenRatio = screenWidth / screenHeight
     val useRail = useNavigationRail(enableFloatingBottomBar = false)
 
-    val colorScheme = rememberKernelSUColorScheme(
+    val colorScheme = rememberMySUColorScheme(
         seedColor = if (keyColor == 0) Color.Unspecified else Color(keyColor),
         isDark = isDark,
         isAmoled = isAmoled,
@@ -488,7 +488,7 @@ private fun ColorButtonMaterial(
     onClick: () -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
-    val colorScheme = rememberKernelSUColorScheme(
+    val colorScheme = rememberMySUColorScheme(
         seedColor = color,
         isDark = isDark,
         isAmoled = isAmoled,

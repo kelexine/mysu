@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="reboot_to_apply">הפעל מחדש כדי להכניס לתוקף</string>
-    <string name="home_click_to_learn_kernelsu">למד כיצד להתקין את MySU ולהשתמש במודולים</string>
+    <string name="home_click_to_learn_mysu">למד כיצד להתקין את MySU ולהשתמש במודולים</string>
     <string name="selinux_status_unknown">לא ידוע</string>
     <string name="show_system_apps">הצג אפליקציות מערכת</string>
     <string name="module_uninstall_success">%s הוסר</string>
@@ -57,7 +57,7 @@
     <string name="profile_template">תבנית</string>
     <string name="module_downloading">מוריד מודל: %s</string>
     <string name="module_update">עדכון</string>
-    <string name="home_learn_kernelsu">למד אודות MySU</string>
+    <string name="home_learn_mysu">למד אודות MySU</string>
     <string name="module_uninstall_confirm">האם אתה בטוח שברצונך להסיר את התקנת המודל %s\?</string>
     <string name="module_uninstall_failed">הסרת התקנת %s נכשלה:</string>
     <string name="superuser">משתמש על</string>
@@ -69,7 +69,7 @@
     <string name="home_kernel">Kernel</string>
     <string name="home_not_installed">לא מותקן</string>
     <string name="failed_to_update_app_profile">נכשל עדכון פרופיל האפליקציה עבור %s</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
     <string name="failed_to_update_sepolicy">נכשל עדכון כללי SELinux עבור: %s</string>
     <string name="reboot_bootloader">הפעלה מחדש לבוטלאודר</string>
     <string name="about_source_code">ראה את קוד המקור ב%1$s<br/>הצטרף אלינו %2$s בערוץ</string>

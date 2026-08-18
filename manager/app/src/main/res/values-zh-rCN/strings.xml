@@ -64,9 +64,9 @@
     <string name="safe_mode_module_disabled">处于安全模式下，禁止安装模块</string>
     <string name="reboot_to_apply">重启生效</string>
     <string name="module_magisk_conflict">因与 Magisk 有冲突，所有模块不可用！</string>
-    <string name="home_learn_kernelsu">了解 MySU</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/zh_CN/guide/what-is-mysu.html</string>
-    <string name="home_click_to_learn_kernelsu">了解如何安装 MySU 以及如何开发模块</string>
+    <string name="home_learn_mysu">了解 MySU</string>
+    <string name="home_learn_mysu_url">https://mysu.org/zh_CN/guide/what-is-mysu.html</string>
+    <string name="home_click_to_learn_mysu">了解如何安装 MySU 以及如何开发模块</string>
     <string name="home_support_title">支持开发</string>
     <string name="home_support_content">MySU 将保持免费开源，向开发者捐赠以表示支持</string>
     <string name="home_gki_warning">自 v3.0.0 起 GKI 工作模式将仅用于测试环境，我们不建议用于日常使用，也不再提供镜像文件</string>

@@ -42,7 +42,7 @@ static void reset_avc_cache()
     selinux_xfrm_notify_policyload();
 }
 
-void apply_kernelsu_rules()
+void apply_mysu_rules()
 {
     struct selinux_policy *pol, *old_pol = selinux_state.policy;
     struct policydb *db;
@@ -83,77 +83,77 @@ void apply_kernelsu_rules()
 
     db = &pol->policydb;
 
-    mysu_type(db, KERNEL_SU_DOMAIN, "domain");
-    mysu_permissive(db, KERNEL_SU_DOMAIN);
-    mysu_typeattribute(db, KERNEL_SU_DOMAIN, "mlstrustedsubject");
-    mysu_typeattribute(db, KERNEL_SU_DOMAIN, "netdomain");
-    mysu_typeattribute(db, KERNEL_SU_DOMAIN, "bluetoothdomain");
+    mysu_type(db, MYSU_DOMAIN, "domain");
+    mysu_permissive(db, MYSU_DOMAIN);
+    mysu_typeattribute(db, MYSU_DOMAIN, "mlstrustedsubject");
+    mysu_typeattribute(db, MYSU_DOMAIN, "netdomain");
+    mysu_typeattribute(db, MYSU_DOMAIN, "bluetoothdomain");
 
     // Create unconstrained file type
-    mysu_type(db, KERNEL_SU_FILE, "file_type");
-    mysu_typeattribute(db, KERNEL_SU_FILE, "mlstrustedobject");
-    mysu_allow(db, "domain", KERNEL_SU_FILE, ALL, ALL);
+    mysu_type(db, MYSU_FILE, "file_type");
+    mysu_typeattribute(db, MYSU_FILE, "mlstrustedobject");
+    mysu_allow(db, "domain", MYSU_FILE, ALL, ALL);
 
     // allow all!
-    mysu_allow(db, KERNEL_SU_DOMAIN, ALL, ALL, ALL);
+    mysu_allow(db, MYSU_DOMAIN, ALL, ALL, ALL);
 
     // allow us do any ioctl
     if (db->policyvers >= POLICYDB_VERSION_XPERMS_IOCTL) {
-        mysu_allowxperm(db, KERNEL_SU_DOMAIN, ALL, "blk_file", ALL);
-        mysu_allowxperm(db, KERNEL_SU_DOMAIN, ALL, "fifo_file", ALL);
-        mysu_allowxperm(db, KERNEL_SU_DOMAIN, ALL, "chr_file", ALL);
-        mysu_allowxperm(db, KERNEL_SU_DOMAIN, ALL, "file", ALL);
+        mysu_allowxperm(db, MYSU_DOMAIN, ALL, "blk_file", ALL);
+        mysu_allowxperm(db, MYSU_DOMAIN, ALL, "fifo_file", ALL);
+        mysu_allowxperm(db, MYSU_DOMAIN, ALL, "chr_file", ALL);
+        mysu_allowxperm(db, MYSU_DOMAIN, ALL, "file", ALL);
     }
 
     // our mysud triggered by init
-    mysu_allow(db, "init", KERNEL_SU_DOMAIN, ALL, ALL);
+    mysu_allow(db, "init", MYSU_DOMAIN, ALL, ALL);
 
     // copied from Magisk rules
     // suRights
-    mysu_allow(db, "servicemanager", KERNEL_SU_DOMAIN, "dir", "search");
-    mysu_allow(db, "servicemanager", KERNEL_SU_DOMAIN, "dir", "read");
-    mysu_allow(db, "servicemanager", KERNEL_SU_DOMAIN, "file", "open");
-    mysu_allow(db, "servicemanager", KERNEL_SU_DOMAIN, "file", "read");
-    mysu_allow(db, "servicemanager", KERNEL_SU_DOMAIN, "process", "getattr");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "process", "sigchld");
+    mysu_allow(db, "servicemanager", MYSU_DOMAIN, "dir", "search");
+    mysu_allow(db, "servicemanager", MYSU_DOMAIN, "dir", "read");
+    mysu_allow(db, "servicemanager", MYSU_DOMAIN, "file", "open");
+    mysu_allow(db, "servicemanager", MYSU_DOMAIN, "file", "read");
+    mysu_allow(db, "servicemanager", MYSU_DOMAIN, "process", "getattr");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "process", "sigchld");
 
     // allowLog
-    mysu_allow(db, "logd", KERNEL_SU_DOMAIN, "dir", "search");
-    mysu_allow(db, "logd", KERNEL_SU_DOMAIN, "file", "read");
-    mysu_allow(db, "logd", KERNEL_SU_DOMAIN, "file", "open");
-    mysu_allow(db, "logd", KERNEL_SU_DOMAIN, "file", "getattr");
+    mysu_allow(db, "logd", MYSU_DOMAIN, "dir", "search");
+    mysu_allow(db, "logd", MYSU_DOMAIN, "file", "read");
+    mysu_allow(db, "logd", MYSU_DOMAIN, "file", "open");
+    mysu_allow(db, "logd", MYSU_DOMAIN, "file", "getattr");
 
     // dumpsys, send fd
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "fd", "use");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "fifo_file", "write");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "fifo_file", "read");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "fifo_file", "open");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "fifo_file", "getattr");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "unix_stream_socket", "read");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "unix_stream_socket", "write");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "unix_stream_socket", "connectto");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "unix_stream_socket", "getopt");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "unix_stream_socket", "getattr");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "fd", "use");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "fifo_file", "write");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "fifo_file", "read");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "fifo_file", "open");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "fifo_file", "getattr");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "unix_stream_socket", "read");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "unix_stream_socket", "write");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "unix_stream_socket", "connectto");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "unix_stream_socket", "getopt");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "unix_stream_socket", "getattr");
 
     // use memfd created by su domain
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "memfd_file", "execute");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "memfd_file", "getattr");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "memfd_file", "map");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "memfd_file", "read");
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "memfd_file", "write");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "memfd_file", "execute");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "memfd_file", "getattr");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "memfd_file", "map");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "memfd_file", "read");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "memfd_file", "write");
 
     // bootctl
-    mysu_allow(db, "hwservicemanager", KERNEL_SU_DOMAIN, "dir", "search");
-    mysu_allow(db, "hwservicemanager", KERNEL_SU_DOMAIN, "file", "read");
-    mysu_allow(db, "hwservicemanager", KERNEL_SU_DOMAIN, "file", "open");
-    mysu_allow(db, "hwservicemanager", KERNEL_SU_DOMAIN, "process", "getattr");
+    mysu_allow(db, "hwservicemanager", MYSU_DOMAIN, "dir", "search");
+    mysu_allow(db, "hwservicemanager", MYSU_DOMAIN, "file", "read");
+    mysu_allow(db, "hwservicemanager", MYSU_DOMAIN, "file", "open");
+    mysu_allow(db, "hwservicemanager", MYSU_DOMAIN, "process", "getattr");
 
     // Allow all binder transactions
-    mysu_allow(db, "domain", KERNEL_SU_DOMAIN, "binder", ALL);
+    mysu_allow(db, "domain", MYSU_DOMAIN, "binder", ALL);
 
     // Allow system server kill su process
-    mysu_allow(db, "system_server", KERNEL_SU_DOMAIN, "process", "getpgid");
-    mysu_allow(db, "system_server", KERNEL_SU_DOMAIN, "process", "sigkill");
+    mysu_allow(db, "system_server", MYSU_DOMAIN, "process", "getpgid");
+    mysu_allow(db, "system_server", MYSU_DOMAIN, "process", "sigkill");
 
     rcu_assign_pointer(selinux_state.policy, pol);
     synchronize_rcu();

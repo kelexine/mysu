@@ -2,7 +2,7 @@
 
 ## Check if your device is supported
 
-Download MySU manager from [GitHub Releases](https://github.com/tiann/MySU/releases) and install it on your device:
+Download MySU manager from [GitHub Releases](https://github.com/kelexine/MySU/releases) and install it on your device:
 
 - If the app shows `Unsupported`, it means that **you should compile the kernel yourself**, MySU won't and never provide a boot.img file for you to flash.
 - If the app shows `Not installed`, then your device is officially supported by MySU.
@@ -57,7 +57,7 @@ If you find that your kernel version is `android12-5.10.101`, but your Android s
 
 ## Introduction
 
-Since version [0.9.0](https://github.com/tiann/MySU/releases/tag/v0.9.0), MySU supports two running modes on GKI devices:
+Since version [0.9.0](https://github.com/kelexine/MySU/releases/tag/v0.9.0), MySU supports two running modes on GKI devices:
 
 1. `LKM`: Load the **Loadable Kernel Module** (LKM) into the device kernel without replacing the original kernel.
 2. `GKI`: Replace the original kernel of the device with the **Generic Kernel Image** (GKI) provided by MySU.
@@ -115,7 +115,7 @@ Since 3.2.6, if you are installing MySU for the first time without root, after p
 
 If you don't want to use the manager, you can also use the command line to install LKM. The `mysud` tool provided by MySU can help you quickly patch the official firmware and then flash it.
 
-This tool supports macOS, Linux, and Windows. You can download the corresponding version from [GitHub Release](https://github.com/tiann/MySU/releases).
+This tool supports macOS, Linux, and Windows. You can download the corresponding version from [GitHub Release](https://github.com/kelexine/MySU/releases).
 
 Usage: `mysud boot-patch` you can check the command line help for specific options.
 
@@ -166,7 +166,7 @@ If your device's `boot.img` uses a commonly used compression format, you can use
 
 MySU provides a generic boot.img for GKI devices, and you should flash the boot.img to the device's boot partition.
 
-You can download boot.img from [GitHub Release](https://github.com/tiann/MySU/releases). Please note that you should use the correct version of boot.img. If you don't know which file to download, carefully read the description of [KMI](#kmi) and [Security patch level](#security-patch-level) in this document.
+You can download boot.img from [GitHub Release](https://github.com/kelexine/MySU/releases). Please note that you should use the correct version of boot.img. If you don't know which file to download, carefully read the description of [KMI](#kmi) and [Security patch level](#security-patch-level) in this document.
 
 Normally, there are three boot files in different formats for the same KMI and security patch level. They're identical except for the kernel compression format. Please check the kernel compression format of your original boot.img. You should use the correct format, such as `lz4`, `gz`. If you use an incorrect compression format, you may encounter bootloop after flashing boot.img.
 
@@ -267,7 +267,7 @@ Prerequisite: Your device must have a custom Recovery, such as TWRP. If there is
 
 Steps:
 
-1. On [GitHub Releases](https://github.com/tiann/MySU/releases), download the ZIP package starting with `AnyKernel3` that matches your device's version. For example, if the device's kernel version is `android12-5.10.66`, then you should download the `AnyKernel3-android12-5.10.66_yyyy-MM.zip` file (where `yyyy` is the year and `MM` is the month).
+1. On [GitHub Releases](https://github.com/kelexine/MySU/releases), download the ZIP package starting with `AnyKernel3` that matches your device's version. For example, if the device's kernel version is `android12-5.10.66`, then you should download the `AnyKernel3-android12-5.10.66_yyyy-MM.zip` file (where `yyyy` is the year and `MM` is the month).
 2. Reboot the device into TWRP.
 3. Use ADB to place AnyKernel3-*.zip into the device's `/sdcard` location and choose to install it in the TWRP GUI, or you can directly run `adb sideload AnyKernel-*.zip` to install.
 

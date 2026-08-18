@@ -24,7 +24,7 @@ data class TemplateInfo(
     val gid: Int = Natives.ROOT_GID,
     val groups: List<Int> = mutableListOf(),
     val capabilities: List<Int> = mutableListOf(),
-    val context: String = Natives.KERNEL_SU_DOMAIN,
+    val context: String = Natives.MYSU_DOMAIN,
     val rules: List<String> = mutableListOf(),
     val flags: List<Int> = mutableListOf(
         Natives.Profile.RootProfileFlag.NO_NEW_PRIVS.ordinal // default no new privs for new template
@@ -39,7 +39,7 @@ data class TemplateInfo(
                 val capabilitiesJsonArray = templateJson.optJSONArray("capabilities")
                 val flagsJsonArray = templateJson.optJSONArray("flags")
                 val context = templateJson.optString("context").takeIf { it.isNotEmpty() }
-                    ?: Natives.KERNEL_SU_DOMAIN
+                    ?: Natives.MYSU_DOMAIN
                 val namespace = templateJson.optString("namespace").takeIf { it.isNotEmpty() }
                     ?: Natives.Profile.Namespace.INHERITED.name
 

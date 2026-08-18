@@ -1,10 +1,10 @@
 {
-  "name": "KernelSU_website",
+  "name": "MySU_website",
   "version": "1.0.0",
   "description": "MySU official website: https://mysu.org",
   "main": "index.js",
   "repository": "https://mysu.org",
-  "author": "weishu",
+  "author": "kelexine",
   "license": "MIT",
   "devDependencies": {
     "vitepress": "^1.6.4",

@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2023/1/1.
  */
 private const val TAG = "MySuCli"

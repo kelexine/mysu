@@ -40,7 +40,7 @@ You can also make the page full screen or display a toast.
 
 [API documentation](https://www.npmjs.com/package/mysu)
 
-If you find that the existing API doesn't meet your needs or is inconvenient to use, you're welcome to give us suggestions [here](https://github.com/tiann/MySU/issues)!
+If you find that the existing API doesn't meet your needs or is inconvenient to use, you're welcome to give us suggestions [here](https://github.com/kelexine/MySU/issues)!
 
 ## Some tips
 

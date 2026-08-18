@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import dev.kelexine.mysu.ui.webui.MonetColorsProvider
 
 @Composable
-fun MaterialKernelSUTheme(
+fun MaterialMySUTheme(
     appSettings: AppSettings,
     content: @Composable () -> Unit
 ) {
@@ -22,7 +22,7 @@ fun MaterialKernelSUTheme(
     val amoledMode = appSettings.colorMode.isAmoled
     val dynamicColor = appSettings.keyColor == 0
 
-    val colorScheme = rememberKernelSUColorScheme(
+    val colorScheme = rememberMySUColorScheme(
         seedColor = if (dynamicColor) Color.Unspecified else Color(appSettings.keyColor),
         isDark = darkTheme,
         isAmoled = amoledMode,

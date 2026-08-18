@@ -92,7 +92,7 @@ pub fn is_lkm() -> bool {
 }
 
 pub const fn uapi_version() -> u32 {
-    mysu_uapi::KERNEL_SU_UAPI_VERSION
+    mysu_uapi::MYSU_UAPI_VERSION
 }
 
 pub fn runtime_mode() -> &'static str {

@@ -2,7 +2,7 @@ package dev.kelexine.mysu.profile
 
 /**
  * https://cs.android.com/android/platform/superproject/main/+/main:system/core/libcutils/include/private/android_filesystem_config.h
- * @author weishu
+ * @author kelexine
  * @date 2023/6/3.
  */
 enum class Groups(val gid: Int, val display: String, val desc: String) {

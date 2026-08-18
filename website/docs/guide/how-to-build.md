@@ -60,15 +60,15 @@ If you can successfully build the kernel, adding support for MySU will be relati
 ::: code-group
 
 ```sh[Latest tag (stable)]
-curl -LSs "https://raw.githubusercontent.com/tiann/MySU/main/kernel/setup.sh" | bash -
+curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -
 ```
 
 ```sh[main branch (dev)]
-curl -LSs "https://raw.githubusercontent.com/tiann/MySU/main/kernel/setup.sh" | bash -s main
+curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -s main
 ```
 
 ```sh[Select tag (such as v0.5.2)]
-curl -LSs "https://raw.githubusercontent.com/tiann/MySU/main/kernel/setup.sh" | bash -s v0.5.2
+curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -s v0.5.2
 ```
 
 :::

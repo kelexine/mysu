@@ -58,12 +58,12 @@ __attribute__((no_stack_protector)) void __init mysu_setup_stack_chk_guard()
     __stack_chk_guard = canary;
 }
 
-__attribute__((naked)) int __init kernelsu_init_early(void)
+__attribute__((naked)) int __init mysu_init_early(void)
 {
     asm("mov x19, x30;\n"
         "bl mysu_setup_stack_chk_guard;\n"
         "mov x30, x19;\n"
-        "b kernelsu_init;\n");
+        "b mysu_init;\n");
 }
 #define NEED_OWN_STACKPROTECTOR 1
 #else
@@ -83,7 +83,7 @@ module_param(allow_shell, bool, 0);
 bool mysu_no_custom_rc = false;
 module_param_named(norc, mysu_no_custom_rc, bool, 0);
 
-int __init kernelsu_init(void)
+int __init mysu_init(void)
 {
 #if defined(__x86_64__) && !defined(CONFIG_MYSU_X86_PATCH_SYSCALL_DISPATCHER)
     // If the kernel has the hardening patch, X86_FEATURE_INDIRECT_SAFE must be set
@@ -140,7 +140,7 @@ int __init kernelsu_init(void)
     if (mysu_late_loaded) {
         pr_info("late load mode, skipping kprobe hooks\n");
 
-        apply_kernelsu_rules();
+        apply_mysu_rules();
         cache_sid();
         setup_mysu_cred();
 
@@ -186,7 +186,7 @@ int __init kernelsu_init(void)
     return 0;
 }
 
-void __exit kernelsu_exit(void)
+void __exit mysu_exit(void)
 {
     // Phase 1: Stop all hooks first to prevent new callbacks
     mysu_syscall_hook_manager_exit();
@@ -216,11 +216,11 @@ void __exit kernelsu_exit(void)
 }
 
 #if NEED_OWN_STACKPROTECTOR
-module_init(kernelsu_init_early);
+module_init(mysu_init_early);
 #else
-module_init(kernelsu_init);
+module_init(mysu_init);
 #endif
-module_exit(kernelsu_exit);
+module_exit(mysu_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("kelexine");

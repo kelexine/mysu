@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 import dev.kelexine.mysu.Natives.Profile.RootProfileFlag
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2022/12/8.
  */
 object Natives {
@@ -25,7 +25,7 @@ object Natives {
     // 32513: add uapi version
     const val MINIMAL_SUPPORTED_KERNEL = 32513
 
-    const val KERNEL_SU_DOMAIN = "u:r:mysu:s0"
+    const val MYSU_DOMAIN = "u:r:mysu:s0"
 
     const val ROOT_UID = 0
     const val ROOT_GID = 0
@@ -151,7 +151,7 @@ object Natives {
         val gid: Int = ROOT_GID,
         val groups: List<Int> = mutableListOf(),
         val capabilities: List<Int> = mutableListOf(),
-        val context: String = KERNEL_SU_DOMAIN,
+        val context: String = MYSU_DOMAIN,
         val namespace: Int = Namespace.INHERITED.ordinal,
 
         val nonRootUseDefault: Boolean = true,

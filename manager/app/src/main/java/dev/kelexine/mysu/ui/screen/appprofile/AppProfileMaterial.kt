@@ -76,7 +76,7 @@ import dev.kelexine.mysu.ui.util.ownerNameForUid
 import dev.kelexine.mysu.ui.viewmodel.SuperUserViewModel
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2023/5/16.
  */
 @Composable

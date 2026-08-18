@@ -50,7 +50,7 @@ import dev.kelexine.mysu.ui.component.material.expressiveTopAppBarColors
 import dev.kelexine.mysu.ui.util.LkmSelection
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2024/3/12.
  */
 @Composable

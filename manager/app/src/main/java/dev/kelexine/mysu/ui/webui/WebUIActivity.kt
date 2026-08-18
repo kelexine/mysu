@@ -28,7 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import dev.kelexine.mysu.data.repository.SettingsRepositoryImpl
 import dev.kelexine.mysu.ui.LocalUiMode
 import dev.kelexine.mysu.ui.UiMode
-import dev.kelexine.mysu.ui.theme.KernelSUTheme
+import dev.kelexine.mysu.ui.theme.MySUTheme
 import dev.kelexine.mysu.ui.theme.ThemeController
 import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
 
@@ -65,7 +65,7 @@ class WebUIActivity : ComponentActivity() {
             }
 
             CompositionLocalProvider(LocalUiMode provides uiMode) {
-                KernelSUTheme(appSettings = appSettings, uiMode = uiMode) {
+                MySUTheme(appSettings = appSettings, uiMode = uiMode) {
                     MainContent(activity = this, onFinish = { finish() })
                 }
             }

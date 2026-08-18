@@ -41,7 +41,7 @@ pub fn run(package_name: &String, kmi: Option<String>, allow_shell: bool) -> Res
     dump_process_info("late-load start");
 
     // 1. Check if MySU is already loaded
-    if mysuinit::has_kernelsu() {
+    if mysuinit::has_mysu() {
         info!("MySU already loaded, skip loading ko");
     } else {
         // 2. Detect current KMI version
@@ -52,7 +52,7 @@ pub fn run(package_name: &String, kmi: Option<String>, allow_shell: bool) -> Res
         info!("Detected KMI: {kmi}");
 
         // 3. Get mysu.ko from embedded assets
-        let ko_name = format!("{kmi}_kernelsu.ko");
+        let ko_name = format!("{kmi}_mysu.ko");
         let ko_data = assets::get_asset_data(&ko_name)
             .with_context(|| format!("Failed to get {ko_name} from assets"))?;
 

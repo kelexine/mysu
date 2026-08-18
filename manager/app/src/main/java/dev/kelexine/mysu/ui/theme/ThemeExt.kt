@@ -47,7 +47,7 @@ fun ColorScheme.voidThemedBackground(isDark: Boolean, amoled: Boolean): ColorSch
 }
 
 @Composable
-fun rememberKernelSUColorScheme(
+fun rememberMySUColorScheme(
     seedColor: Color,
     isDark: Boolean,
     isAmoled: Boolean,

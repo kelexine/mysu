@@ -57,7 +57,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.utils.scrollEndHaptic
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2023/1/1.
  */
 

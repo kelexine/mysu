@@ -409,11 +409,11 @@ private fun StatusCard(
 private fun LearnMoreCard(
     onOpenUrl: (String) -> Unit,
 ) {
-    val url = stringResource(R.string.home_learn_kernelsu_url)
+    val url = stringResource(R.string.home_learn_mysu_url)
     Card(modifier = Modifier.fillMaxWidth()) {
         BasicComponent(
-            title = stringResource(R.string.home_learn_kernelsu),
-            summary = stringResource(R.string.home_click_to_learn_kernelsu),
+            title = stringResource(R.string.home_learn_mysu),
+            summary = stringResource(R.string.home_click_to_learn_mysu),
             endActions = {
                 Icon(
                     imageVector = MiuixIcons.Link,
@@ -439,7 +439,7 @@ private fun DonateCard(onOpenUrl: (String) -> Unit) {
                     contentDescription = null
                 )
             },
-            onClick = { onOpenUrl("https://patreon.com/weishu") },
+            onClick = { onOpenUrl("https://github.com/kelexine/MySU") },
             insideMargin = PaddingValues(18.dp)
         )
     }

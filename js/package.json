@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tiann/MySU.git"
+    "url": "git+https://github.com/kelexine/MySU.git"
   },
   "keywords": [
     "su",
@@ -17,10 +17,10 @@
     "module",
     "webui"
   ],
-  "author": "weishu",
+  "author": "kelexine",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/tiann/MySU/issues"
+    "url": "https://github.com/kelexine/MySU/issues"
   },
-  "homepage": "https://github.com/tiann/MySU#readme"
+  "homepage": "https://github.com/kelexine/MySU#readme"
 }

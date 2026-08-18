@@ -68,7 +68,7 @@ import dev.kelexine.mysu.ui.component.material.expressiveTopAppBarColors
 import dev.kelexine.mysu.ui.component.statustag.StatusTag
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2023/10/20.
  */
 

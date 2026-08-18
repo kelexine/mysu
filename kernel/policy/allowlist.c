@@ -30,7 +30,7 @@
 #define FILE_FORMAT_VERSION 4 // u32
 
 #define MYSU_APP_PROFILE_PRESERVE_UID 9999 // NOBODY_UID
-#define MYSU_DEFAULT_SELINUX_DOMAIN "u:r:" KERNEL_SU_DOMAIN ":s0"
+#define MYSU_DEFAULT_SELINUX_DOMAIN "u:r:" MYSU_DOMAIN ":s0"
 
 static DEFINE_MUTEX(allowlist_mutex);
 
@@ -69,7 +69,7 @@ struct perm_data {
 static DEFINE_HASHTABLE(allow_list, ALLOW_LIST_BITS);
 static u16 allow_list_count = 0;
 
-#define KERNEL_SU_ALLOWLIST "/data/adb/mysu/.allowlist"
+#define MYSU_ALLOWLIST "/data/adb/mysu/.allowlist"
 
 void mysu_persistent_allow_list(void);
 
@@ -422,7 +422,7 @@ static void do_persistent_allow_list(struct callback_head *_cb)
     int i;
 
     const struct cred *saved = override_creds(mysu_cred);
-    struct file *fp = filp_open(KERNEL_SU_ALLOWLIST, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    struct file *fp = filp_open(MYSU_ALLOWLIST, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (IS_ERR(fp)) {
         pr_err("save_allow_list create file failed: %ld\n", PTR_ERR(fp));
         goto out;
@@ -523,7 +523,7 @@ void mysu_load_allow_list()
     size_t app_profile_size;
 
     // load allowlist now!
-    fp = filp_open(KERNEL_SU_ALLOWLIST, O_RDONLY, 0);
+    fp = filp_open(MYSU_ALLOWLIST, O_RDONLY, 0);
     if (IS_ERR(fp)) {
         pr_err("load_allow_list open file failed: %ld\n", PTR_ERR(fp));
         return;

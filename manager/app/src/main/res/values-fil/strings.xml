@@ -31,8 +31,8 @@
     <string name="send_log">Ipadala ang mga log</string>
     <string name="reboot_to_apply">I-reboot para umepekto</string>
     <string name="module_magisk_conflict">Hindi magagamit ang mga module dahil sa isang salungatan sa Magisk!</string>
-    <string name="home_learn_kernelsu">Alamin ang MySU</string>
-    <string name="home_click_to_learn_kernelsu">Matuto kung paano i-install ang MySU at gumamit ng mga module</string>
+    <string name="home_learn_mysu">Alamin ang MySU</string>
+    <string name="home_click_to_learn_mysu">Matuto kung paano i-install ang MySU at gumamit ng mga module</string>
     <string name="home_support_title">Suportahan Kami</string>
     <string name="home_support_content">Ang MySU ay, at palaging magiging, libre, at open source. Gayunpaman, maaari mong ipakita sa amin na nagmamalasakit ka sa pamamagitan ng pagbibigay ng donasyon.</string>
     <string name="about_source_code"><![CDATA[Tignan ang source code sa %1$s<br/>Sumali sa aming %2$s channel]]></string>
@@ -71,7 +71,7 @@
     <string name="module_sort_enabled_first">Pinagana muna</string>
     <string name="confirm">Kumpirmahin</string>
     <string name="safe_mode">Safe mode</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
     <string name="profile_default">Default</string>
     <string name="profile_template">Template</string>
     <string name="profile_custom">Pasadya</string>

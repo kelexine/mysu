@@ -63,7 +63,7 @@ void setup_selinux(const char *domain, struct cred *cred)
 
 void setup_mysu_cred(void)
 {
-    if (transive_to_domain(KERNEL_SU_CONTEXT, mysu_cred, false)) {
+    if (transive_to_domain(MYSU_CONTEXT, mysu_cred, false)) {
         pr_err("setup mysu cred failed.\n");
     }
 }
@@ -118,7 +118,7 @@ void cache_sid(void)
 {
     int err;
 
-    err = security_secctx_to_secid(KERNEL_SU_CONTEXT, strlen(KERNEL_SU_CONTEXT), &cached_su_sid);
+    err = security_secctx_to_secid(MYSU_CONTEXT, strlen(MYSU_CONTEXT), &cached_su_sid);
     if (err) {
         pr_warn("Failed to cache kernel su domain SID: %d\n", err);
         cached_su_sid = 0;
@@ -187,7 +187,7 @@ static bool is_sid_match(const struct cred *cred, u32 cached_sid, const char *fa
 
 bool is_task_mysu_domain(const struct cred *cred)
 {
-    return is_sid_match(cred, cached_su_sid, KERNEL_SU_CONTEXT);
+    return is_sid_match(cred, cached_su_sid, MYSU_CONTEXT);
 }
 
 bool is_mysu_domain(void)
@@ -213,7 +213,7 @@ void escape_to_root_for_adb_root(void)
         return;
     }
 
-    if (transive_to_domain(KERNEL_SU_CONTEXT, cred, true)) {
+    if (transive_to_domain(MYSU_CONTEXT, cred, true)) {
         pr_err("transive domain failed.\n");
         abort_creds(cred);
         return;

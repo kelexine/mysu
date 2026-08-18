@@ -389,7 +389,7 @@ pub fn load_module(data: &[u8], params: &CStr) -> Result<()> {
     }
 }
 
-fn has_kernelsu_legacy() -> bool {
+fn has_mysu_legacy() -> bool {
     use syscalls::{Sysno, syscall};
     let mut version = 0;
     const CMD_GET_VERSION: i32 = 2;
@@ -407,7 +407,7 @@ fn has_kernelsu_legacy() -> bool {
     version != 0
 }
 
-fn has_kernelsu_v2() -> bool {
+fn has_mysu_v2() -> bool {
     use syscalls::{Sysno, syscall};
     const MYSU_INSTALL_MAGIC1: u32 = 0xDEADBEEF;
     const MYSU_INSTALL_MAGIC2: u32 = 0xCAFEBABE;
@@ -480,6 +480,6 @@ fn has_kernelsu_v2() -> bool {
     version != 0
 }
 
-pub fn has_kernelsu() -> bool {
-    has_kernelsu_v2() || has_kernelsu_legacy()
+pub fn has_mysu() -> bool {
+    has_mysu_v2() || has_mysu_legacy()
 }

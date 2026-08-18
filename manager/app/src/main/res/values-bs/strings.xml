@@ -39,11 +39,11 @@
     <string name="safe_mode">Sigurnosni mod</string>
     <string name="reboot_to_apply">Ponovo pokrenite da bi proradilo</string>
     <string name="module_magisk_conflict">"Moduli su nedostupni  jer su u sukobu sa Magisk-om!"</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
-    <string name="home_click_to_learn_kernelsu">Naučite kako da instalirate MySU i da koristite module</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_click_to_learn_mysu">Naučite kako da instalirate MySU i da koristite module</string>
     <string name="home_support_title">Podržite Nas</string>
     <string name="send_log">Pošaljite Izvještaj</string>
-    <string name="home_learn_kernelsu">Naučite MySU</string>
+    <string name="home_learn_mysu">Naučite MySU</string>
     <string name="about_source_code">Pogledajte izvornu kodu na %1$s<br/>Pridružite nam se na %2$s kanalu</string>
     <string name="profile_selinux_domain">Domena</string>
     <string name="profile_selinux_rules">Pravila</string>

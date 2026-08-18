@@ -3,7 +3,7 @@ package dev.kelexine.mysu
 import android.system.Os
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2022/12/10.
  */
 

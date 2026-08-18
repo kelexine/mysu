@@ -41,9 +41,9 @@
     <string name="safe_mode">Безпечний режим</string>
     <string name="reboot_to_apply">Перезавантажте, щоб застосувати</string>
     <string name="module_magisk_conflict">Модулі недоступні через конфлікт з Magisk!</string>
-    <string name="home_learn_kernelsu">Дізнайтеся про MySU</string>
-    <string name="home_learn_kernelsu_url">https://mysu.org/guide/what-is-mysu.html</string>
-    <string name="home_click_to_learn_kernelsu">Дізнайтеся, як інсталювати MySU і використовувати модулі.</string>
+    <string name="home_learn_mysu">Дізнайтеся про MySU</string>
+    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_click_to_learn_mysu">Дізнайтеся, як інсталювати MySU і використовувати модулі.</string>
     <string name="home_support_title">Підтримати нас</string>
     <string name="home_support_content">MySU є і завжди буде безкоштовним програмним забезпеченням з відкритим вихідним кодом. Однак ви можете показати нам, що вам небайдужа наша допомога, зробивши пожертву.</string>
     <string name="about_source_code"><![CDATA[Переглянути вихідний код на %1$s<br/>Приєднуйтесь до нашого каналу %2$s]]></string>

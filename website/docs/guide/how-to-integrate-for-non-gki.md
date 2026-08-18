@@ -23,11 +23,11 @@ MySU uses kprobe for its kernel hooks. If kprobe runs reliably on your kernel, w
 First, add MySU to your kernel source tree:
 
 ```sh
-curl -LSs "https://raw.githubusercontent.com/tiann/MySU/main/kernel/setup.sh" | bash -s v0.9.5
+curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -s v0.9.5
 ```
 
 ::: info
-[MySU 1.0 and later versions no longer support non-GKI kernels](https://github.com/tiann/MySU/issues/1705). The last supported version is `v0.9.5`, so make sure to use the correct version.
+[MySU 1.0 and later versions no longer support non-GKI kernels](https://github.com/kelexine/MySU/issues/1705). The last supported version is `v0.9.5`, so make sure to use the correct version.
 :::
 
 Then, you should check if kprobe is enabled in your kernel config. If it isn't, add these configs to it:
@@ -59,7 +59,7 @@ If kprobe doesn't work on your kernel—either because of an upstream bug or bec
 First, add MySU to your kernel source tree:
 
 ```sh
-curl -LSs "https://raw.githubusercontent.com/tiann/MySU/main/kernel/setup.sh" | bash -s v0.9.5
+curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -s v0.9.5
 ```
 
 Keep in mind that, on some devices, your defconfig may be located at `arch/arm64/configs` or in other cases, it may be at `arch/arm64/configs/vendor/your_defconfig`. Regardless of the defconfig you're using, make sure to enable `CONFIG_MYSU` with `y` to enable or `n` to disable it. For example, if you choose to enable it, your defconfig should contain the following string:

@@ -74,7 +74,7 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 import top.yukonga.miuix.kmp.utils.scrollEndHaptic
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2024/3/12.
  */
 @Composable

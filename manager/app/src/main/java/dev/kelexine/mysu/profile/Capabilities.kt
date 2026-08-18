@@ -1,7 +1,7 @@
 package dev.kelexine.mysu.profile
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2023/6/3.
  */
 enum class Capabilities(val cap: Int, val display: String, val desc: String) {

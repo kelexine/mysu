@@ -11,7 +11,7 @@ import dev.kelexine.mysu.IMySuInterface
 import rikka.parcelablelist.ParcelableListSlice
 
 /**
- * @author weishu
+ * @author kelexine
  * @date 2023/4/18.
  */
 
