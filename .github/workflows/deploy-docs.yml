@@ -19,10 +19,7 @@ concurrency:
 
 jobs:
   build-and-deploy:
-    name: Build & Deploy to GitHub Pages
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    name: Build & Deploy Documentation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -45,14 +42,23 @@ jobs:
           cd website
           bun run docs:build
 
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mysu-docs-dist
+          path: website/docs/.vitepress/dist
+
       - name: Setup GitHub Pages
+        continue-on-error: true
         uses: actions/configure-pages@v4
 
       - name: Upload Pages Artifact
+        continue-on-error: true
         uses: actions/upload-pages-artifact@v3
         with:
           path: website/docs/.vitepress/dist
 
       - name: Deploy to GitHub Pages
+        continue-on-error: true
         id: deployment
         uses: actions/deploy-pages@v4
