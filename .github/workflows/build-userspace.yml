@@ -85,8 +85,8 @@ jobs:
 
       - name: Build mysud Daemon & mysuinit
         run: |
-          cargo ndk --target ${{ matrix.target }} build --release -p mysud
-          cargo ndk --target ${{ matrix.target }} build --release -p mysuinit
+          cargo ndk --platform 26 --target ${{ matrix.target }} build --release -p mysud
+          cargo ndk --platform 26 --target ${{ matrix.target }} build --release -p mysuinit
 
       - name: Upload Compiled Binaries
         uses: actions/upload-artifact@v4
