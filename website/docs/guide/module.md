@@ -416,7 +416,7 @@ load_all_props_action
 *execute module scripts service.sh
 *set props for resetprop without -p option
   **(Zygisk) hook zygote (start zygiskd)
-  **(Zygisk) mount zygis_mysu/module.prop
+  **(Zygisk) mount zygisk_mysu/module.prop
 start system apps (autostart)
 ...
 boot complete (broadcast ACTION_BOOT_COMPLETED event)

@@ -383,7 +383,7 @@ This sets `dev=MYSU` for all overlay mounts, enabling proper identification.
 
 When developing metamodules:
 
-1. **Always set source to "MYSU"** for mount operations - kernel umount and zygis_mysu umount need this to umount correctly
+1. **Always set source to "MYSU"** for mount operations - kernel umount hooks require this to identify and unmount modules correctly
 2. **Handle errors gracefully** - boot processes are time-sensitive
 3. **Respect standard flags** - support `skip_mount` and `disable`
 4. **Log operations** - use `echo` or logging for debugging
