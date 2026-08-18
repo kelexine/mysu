@@ -26,7 +26,6 @@ import dev.kelexine.mysu.ui.util.getFileName
 import dev.kelexine.mysu.ui.webui.WebUIActivity
 
 private const val SCHEME_MYSU = "mysu"
-    const val SCHEME_MYSU = "mysu"
 private const val HOST_ACTION = "action"
 private const val HOST_WEBUI = "webui"
 private const val PARAM_ID = "id"

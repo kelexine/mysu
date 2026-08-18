@@ -29,7 +29,6 @@ object Shortcut {
 
     private const val TAG = "ModuleShortcut"
     const val SCHEME_MYSU = "mysu"
-    const val SCHEME_MYSU = "mysu"
     const val HOST_ACTION = "action"
     const val HOST_WEBUI = "webui"
 
