@@ -63,8 +63,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build Manager APK
+        id: build_apk
         env:
-          KEYSTORE_FILE: ${{ github.workspace }}/../.config/mysu/mysu.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || secrets.MYSU_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS || secrets.MYSU_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || secrets.MYSU_KEY_PASSWORD }}
@@ -74,13 +74,42 @@ jobs:
           if [ -n "$KEYSTORE_PASSWORD" ] && [ -f "$HOME/.config/mysu/mysu.keystore" ]; then
             export KEYSTORE_FILE="$HOME/.config/mysu/mysu.keystore"
             ./gradlew assembleRelease
+            echo "build_type=release" >> "$GITHUB_OUTPUT"
           else
             ./gradlew assembleDebug
+            echo "build_type=debug" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Repack APK with 64-Bit mysud Daemons
+        env:
+          BUILD_TYPE: ${{ steps.build_apk.outputs.build_type }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || secrets.MYSU_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || secrets.MYSU_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || secrets.MYSU_KEY_PASSWORD }}
         run: |
-          python3 repack_apk.py repack --strip
+          if [ "$BUILD_TYPE" = "release" ]; then
+            python3 repack_apk.py repack \
+              --strip \
+              -b release \
+              -t release \
+              -a arm64-v8a -a x86_64 \
+              -K "$HOME/.config/mysu/mysu.keystore" \
+              -A "$KEY_ALIAS" \
+              -P "$KEYSTORE_PASSWORD" \
+              -S "$KEY_PASSWORD"
+          else
+            # Fall back to standard Android debug keystore
+            DEBUG_KS="$HOME/.android/debug.keystore"
+            python3 repack_apk.py repack \
+              --strip \
+              -b debug \
+              -t release \
+              -a arm64-v8a -a x86_64 \
+              -K "$DEBUG_KS" \
+              -A "androiddebugkey" \
+              -P "android" \
+              -S "android"
+          fi
 
       - name: Upload Manager APK Artifact
         uses: actions/upload-artifact@v4
