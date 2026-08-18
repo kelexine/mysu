@@ -54,7 +54,7 @@ jobs:
         run: cargo test --workspace
 
   build-binaries:
-    name: Cross-Compile Daemons (${{ matrix.target }})
+    name: Compile Daemons (${{ matrix.target }})
     needs: check-and-test
     runs-on: ubuntu-latest
     strategy:
@@ -69,19 +69,25 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Android SDK & NDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'ndk;29.0.14206865 platforms;android-36 build-tools;36.0.0'
+
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
-      - name: Install Cross Tool
-        run: cargo install cross --git https://github.com/cross-rs/cross
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
 
-      - name: Build mysud Daemon
-        run: cross build --target ${{ matrix.target }} --release -p mysud
-
-      - name: Build mysuinit
-        run: cross build --target ${{ matrix.target }} --release -p mysuinit
+      - name: Build mysud Daemon & mysuinit
+        run: |
+          export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/29.0.14206865"
+          export ANDROID_NDK_ROOT="$ANDROID_NDK_HOME"
+          cargo ndk --target ${{ matrix.target }} build --release -p mysud
+          cargo ndk --target ${{ matrix.target }} build --release -p mysuinit
 
       - name: Upload Compiled Binaries
         uses: actions/upload-artifact@v4
