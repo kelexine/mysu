@@ -30,11 +30,5 @@ struct mysu_sulog_event {
 } __packed;
 
 /* Compatibility aliases */
-#define MYSU_SULOG_EVENT_VERSION MYSU_SULOG_EVENT_VERSION
-#define mysu_sulog_event_type mysu_sulog_event_type
-#define MYSU_SULOG_EVENT_ROOT_EXECVE MYSU_SULOG_EVENT_ROOT_EXECVE
-#define MYSU_SULOG_EVENT_SUCOMPAT MYSU_SULOG_EVENT_SUCOMPAT
-#define MYSU_SULOG_EVENT_IOCTL_GRANT_ROOT MYSU_SULOG_EVENT_IOCTL_GRANT_ROOT
-#define mysu_sulog_event mysu_sulog_event
 
 #endif

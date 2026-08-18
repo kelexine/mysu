@@ -1,6 +1,6 @@
-#ifndef __MYSU_H_MYSU
-#define __MYSU_H_MYSU
+#ifndef __MYSU_H
+#define __MYSU_H
 
-#include "mysu.h"
+#include "uapi/mysu.h"
 
 #endif

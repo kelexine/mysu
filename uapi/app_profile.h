@@ -12,10 +12,6 @@
 #define FLAG_MYSU_NO_NEW_PRIVS (1ULL << 0)
 
 /* Compatibility aliases */
-#define MYSU_APP_PROFILE_VER MYSU_APP_PROFILE_VER
-#define MYSU_MAX_PACKAGE_NAME MYSU_MAX_PACKAGE_NAME
-#define MYSU_MAX_GROUPS MYSU_MAX_GROUPS
-#define MYSU_SELINUX_DOMAIN MYSU_SELINUX_DOMAIN
 
 struct root_profile {
     __s32 uid;

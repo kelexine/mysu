@@ -233,8 +233,5 @@ fn main() {
     println!("cargo:rustc-env=VERSION_CODE={code}");
     println!("cargo:rustc-env=VERSION_NAME={name}");
 
-    let target_os = env::var("CARGO_CFG_TARGET_OS").expect("CARGO_CFG_TARGET_OS not set");
-    if target_os == "android" {
-        configure_bindgen();
-    }
+    configure_bindgen();
 }

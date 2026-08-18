@@ -8,7 +8,6 @@ use extattr::{Flags as XattrFlags, lsetxattr};
 
 pub const SYSTEM_CON: &str = "u:object_r:system_file:s0";
 pub const MYSU_CON: &str = "u:object_r:mysu_file:s0";
-pub const MYSU_CON: &str = MYSU_CON;
 pub const UNLABEL_CON: &str = "u:object_r:unlabeled:s0";
 
 const SELINUX_XATTR: &str = "security.selinux";
