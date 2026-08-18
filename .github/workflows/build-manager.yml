@@ -41,14 +41,14 @@ jobs:
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-linux-android, x86_64-linux-android, armv7-linux-androideabi, i686-linux-android
+          targets: aarch64-linux-android, x86_64-linux-android
 
       - name: Install cargo-ndk
         run: cargo install cargo-ndk
 
-      - name: Build Native mysud Daemons (Multi-Arch)
+      - name: Build Native mysud Daemons (64-Bit)
         run: |
-          cargo ndk --platform 26 --target aarch64-linux-android --target x86_64-linux-android --target armv7-linux-androideabi --target i686-linux-android build --release -p mysud
+          cargo ndk --platform 26 --target aarch64-linux-android --target x86_64-linux-android build --release -p mysud
 
       - name: Setup Keystore Environment
         if: env.KEYSTORE_BASE64 != ''
@@ -78,7 +78,7 @@ jobs:
             ./gradlew assembleDebug
           fi
 
-      - name: Repack APK with Multi-Arch mysud Daemons
+      - name: Repack APK with 64-Bit mysud Daemons
         run: |
           python3 repack_apk.py --strip
 
