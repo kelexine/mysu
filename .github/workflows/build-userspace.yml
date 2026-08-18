@@ -69,10 +69,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Android SDK & NDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'ndk;29.0.14206865 platforms;android-36 build-tools;36.0.0'
+      - name: Setup Android NDK
+        run: |
+          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;29.0.14206865"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/29.0.14206865" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/29.0.14206865" >> $GITHUB_ENV
 
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -84,8 +85,6 @@ jobs:
 
       - name: Build mysud Daemon & mysuinit
         run: |
-          export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/29.0.14206865"
-          export ANDROID_NDK_ROOT="$ANDROID_NDK_HOME"
           cargo ndk --target ${{ matrix.target }} build --release -p mysud
           cargo ndk --target ${{ matrix.target }} build --release -p mysuinit
 

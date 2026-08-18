@@ -24,7 +24,7 @@ jobs:
 
       - name: Free Disk Space
         run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" || true
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost || true
 
       - name: Setup Java Toolchain (JDK 21)
         uses: actions/setup-java@v4
@@ -32,10 +32,11 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Setup Android SDK & NDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'ndk;29.0.14206865 platforms;android-36 build-tools;36.0.0'
+      - name: Setup Android NDK
+        run: |
+          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;29.0.14206865"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/29.0.14206865" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/29.0.14206865" >> $GITHUB_ENV
 
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -47,8 +48,6 @@ jobs:
 
       - name: Build Native mysud Daemons (Multi-Arch)
         run: |
-          export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/29.0.14206865"
-          export ANDROID_NDK_ROOT="$ANDROID_NDK_HOME"
           cargo ndk --target aarch64-linux-android --target x86_64-linux-android --target armv7-linux-androideabi --target i686-linux-android build --release -p mysud
 
       - name: Setup Keystore Environment
