@@ -1,0 +1,19 @@
+{
+  "name": "KernelSU_website",
+  "version": "1.0.0",
+  "description": "MySU official website: https://mysu.org",
+  "main": "index.js",
+  "repository": "https://mysu.org",
+  "author": "weishu",
+  "license": "MIT",
+  "devDependencies": {
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.41"
+  },
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "type": "module"
+}

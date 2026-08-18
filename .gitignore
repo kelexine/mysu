@@ -1,0 +1,16 @@
+.idea
+.vscode
+CLAUDE.md
+AGENTS.md
+.DS_Store
+/target
+.cargo/config.toml
+__pycache__
+/dist
+/repack-config.json
+/userspace/mysud/.lkm_image_bootstrap.o
+node_modules/
+website/node_modules/
+website/docs/.vitepress/dist/
+website/docs/.vitepress/cache/
+

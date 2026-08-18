@@ -1,0 +1,120 @@
+name: Test & CI Quality Gate
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+  workflow_dispatch:
+
+concurrency:
+  group: ci-test-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-tests:
+    name: Rust Workspace (Format, Clippy, Tests)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Cargo Registry & Target
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-test-
+
+      - name: Check Formatting
+        run: cargo fmt --check
+
+      - name: Cargo Check
+        run: cargo check --workspace
+
+      - name: Cargo Test
+        run: cargo test --workspace --verbose
+
+  cleanliness-check:
+    name: Brand & Token Integrity Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Verify Zero KSU Residuals in Source
+        run: |
+          echo "[*] Checking for forbidden 'KSU' tokens in codebase..."
+          # Check text source code directories (ignoring binary files)
+          if grep -rnI "KSU" uapi/ kernel/ userspace/ manager/app/src/main/java manager/app/src/main/cpp; then
+            echo "[-] Error: Found legacy 'KSU' tokens in active source tree!"
+            exit 1
+          else
+            echo "[✓] 100% clean: Zero 'KSU' tokens found in active source tree."
+          fi
+
+      - name: Validate Python Scripts Syntax
+        run: |
+          python3 -m py_compile scripts/*.py repack_apk.py
+
+      - name: Validate Shell Scripts Syntax
+        run: |
+          bash -n scripts/mysu-module-port.sh
+          bash -n kernel/setup.sh
+          bash -n kernel/build-all.sh
+          bash -n userspace/mysud/src/installer.sh
+
+  manager-unit-tests:
+    name: Android Manager Unit Tests & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java Toolchain (JDK 21)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run Manager Unit Tests
+        run: |
+          cd manager
+          chmod +x ./gradlew
+          ./gradlew testDebugUnitTest
+
+  docs-build:
+    name: Documentation Build Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install & Build VitePress Site
+        run: |
+          cd website
+          bun install
+          bun run docs:build

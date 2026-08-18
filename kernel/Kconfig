@@ -1,0 +1,46 @@
+menu "MySU"
+
+config MYSU
+	tristate "MySU function support"
+	depends on KPROBES && EXT4_FS
+	default y
+	help
+	  Enable kernel-level root privileges on Android System.
+	  Requires CONFIG_KPROBES for kernel hooking support.
+	  Requires CONFIG_EXT4_FS for `ext4_unregister_sysfs`.
+	  To compile as a module, choose M here: the
+	  module will be called mysu.
+
+config MYSU_DEBUG
+	bool "MySU debug mode"
+	depends on MYSU
+	default n
+	help
+	  Enable MySU debug mode.
+
+config MYSU_DISABLE_MANAGER
+	bool "Disable MySU manager integration"
+	depends on MYSU
+	default n
+	help
+	  Disable manager APK detection and manager-specific handling.
+	  Root will be used in place of manager-only functionality.
+
+config MYSU_DISABLE_POLICY
+	bool "Disable MySU policy profiles"
+	depends on MYSU
+	default n
+	help
+	  Disable per-app root/non-root profile customization.
+	  Escalation will always use the default full root profile, and
+	  non-root handling will follow the global umount policy only.
+
+config MYSU_X86_PATCH_SYSCALL_DISPATCHER
+	bool "Dynamically patch x64's hardened syscall dispatcher to support syscall hooks"
+	depends on MYSU && X86_64
+	default n
+	help
+	  Dynamically patch x64's hardened syscall dispatcher to support syscall hooks. This is a
+	  replacement for a kernel source code patch, and is useful for x86_64 LKM mode.
+
+endmenu

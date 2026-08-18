@@ -1,0 +1,96 @@
+name: Build MySU Manager
+
+on:
+  push:
+    branches: [main, dev]
+    tags: ['v*']
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-manager-apk:
+    name: Build & Package Manager APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java Toolchain (JDK 21)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, x86_64-linux-android, armv7-linux-androideabi, i686-linux-android
+
+      - name: Install Cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Build Native mysud Daemons
+        run: |
+          cross build --target aarch64-linux-android --release -p mysud
+          cross build --target x86_64-linux-android --release -p mysud
+          cross build --target armv7-linux-androideabi --release -p mysud
+          cross build --target i686-linux-android --release -p mysud
+
+      - name: Setup Keystore Environment
+        if: env.KEYSTORE_BASE64 != ''
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 || secrets.MYSU_KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p "$HOME/.config/mysu"
+          echo "$KEYSTORE_BASE64" | base64 -d > "$HOME/.config/mysu/mysu.keystore"
+          chmod 600 "$HOME/.config/mysu/mysu.keystore"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build Manager APK
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/../.config/mysu/mysu.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || secrets.MYSU_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || secrets.MYSU_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || secrets.MYSU_KEY_PASSWORD }}
+        run: |
+          cd manager
+          chmod +x ./gradlew
+          if [ -n "$KEYSTORE_PASSWORD" ] && [ -f "$HOME/.config/mysu/mysu.keystore" ]; then
+            export KEYSTORE_FILE="$HOME/.config/mysu/mysu.keystore"
+            ./gradlew assembleRelease
+          else
+            ./gradlew assembleDebug
+          fi
+
+      - name: Repack APK with Multi-Arch mysud Daemons
+        run: |
+          python3 repack_apk.py --strip
+
+      - name: Upload Manager APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MySU-Manager
+          path: |
+            manager/app/build/outputs/apk/**/*.apk
+
+      - name: Release to GitHub Releases
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            manager/app/build/outputs/apk/**/*.apk
+          draft: false
+          prerelease: false
+          generate_release_notes: true

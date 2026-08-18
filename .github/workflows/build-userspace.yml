@@ -1,0 +1,92 @@
+name: Build Userspace Daemon & Tools
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'userspace/**'
+      - 'uapi/**'
+      - 'Cargo.*'
+      - '.github/workflows/build-userspace.yml'
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - 'userspace/**'
+      - 'uapi/**'
+      - 'Cargo.*'
+      - '.github/workflows/build-userspace.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-and-test:
+    name: Check, Format & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cargo Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-check-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-check-
+
+      - name: Verify Formatting
+        run: cargo fmt --check
+
+      - name: Run Workspace Unit Tests
+        run: cargo test --workspace
+
+  build-binaries:
+    name: Cross-Compile Daemons (${{ matrix.target }})
+    needs: check-and-test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - aarch64-linux-android
+          - x86_64-linux-android
+          - armv7-linux-androideabi
+          - i686-linux-android
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install Cross Tool
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Build mysud Daemon
+        run: cross build --target ${{ matrix.target }} --release -p mysud
+
+      - name: Build mysuinit
+        run: cross build --target ${{ matrix.target }} --release -p mysuinit
+
+      - name: Upload Compiled Binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: mysu-${{ matrix.target }}
+          path: |
+            target/${{ matrix.target }}/release/mysud
+            target/${{ matrix.target }}/release/mysuinit

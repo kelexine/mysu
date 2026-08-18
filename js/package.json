@@ -1,0 +1,26 @@
+{
+  "name": "mysu",
+  "version": "3.0.2",
+  "description": "Library for MySU's module WebUI",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tiann/MySU.git"
+  },
+  "keywords": [
+    "su",
+    "mysu",
+    "module",
+    "webui"
+  ],
+  "author": "weishu",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/tiann/MySU/issues"
+  },
+  "homepage": "https://github.com/tiann/MySU#readme"
+}
