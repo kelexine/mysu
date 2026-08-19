@@ -1,10 +1,5 @@
 # Integrate for non-GKI devices
 
-::: warning
-This document is for archival reference only and is no longer maintained.
-Since MySU v1.0, we have dropped official support for non-GKI devices.
-:::
-
 MySU can be integrated into non-GKI kernels and was backported to 4.14 and earlier versions.
 
 Due to the fragmentation of non-GKI kernels, we don't have a universal way to build them; therefore, we cannot provide a non-GKI boot.img. However, you can build the kernel with MySU integrated on your own.
@@ -23,12 +18,8 @@ MySU uses kprobe for its kernel hooks. If kprobe runs reliably on your kernel, w
 First, add MySU to your kernel source tree:
 
 ```sh
-curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -s v0.9.5
+curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -
 ```
-
-::: info
-[MySU 1.0 and later versions no longer support non-GKI kernels](https://github.com/kelexine/MySU/issues/1705). The last supported version is `v0.9.5`, so make sure to use the correct version.
-:::
 
 Then, you should check if kprobe is enabled in your kernel config. If it isn't, add these configs to it:
 
@@ -59,7 +50,7 @@ If kprobe doesn't work on your kernel—either because of an upstream bug or bec
 First, add MySU to your kernel source tree:
 
 ```sh
-curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -s v0.9.5
+curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -
 ```
 
 Keep in mind that, on some devices, your defconfig may be located at `arch/arm64/configs` or in other cases, it may be at `arch/arm64/configs/vendor/your_defconfig`. Regardless of the defconfig you're using, make sure to enable `CONFIG_MYSU` with `y` to enable or `n` to disable it. For example, if you choose to enable it, your defconfig should contain the following string:
