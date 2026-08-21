@@ -1,0 +1,61 @@
+changelog:
+  categories:
+    - title: '🚀 Features & Enhancements'
+      labels:
+        - 'feature'
+        - 'enhancement'
+      prefixes:
+        - 'feat:'
+        - 'feat('
+    - title: '⚡ Kernel & Low-Level Architecture'
+      labels:
+        - 'kernel'
+      prefixes:
+        - 'kernel:'
+        - 'kernel('
+        - 'arch:'
+        - 'arch('
+        - 'sec:'
+        - 'sec('
+    - title: '🎨 UI/UX & Theming'
+      labels:
+        - 'ui'
+        - 'style'
+      prefixes:
+        - 'ui:'
+        - 'ui('
+        - 'style:'
+        - 'style('
+    - title: '🐛 Bug Fixes'
+      labels:
+        - 'bug'
+        - 'fix'
+      prefixes:
+        - 'fix:'
+        - 'fix('
+    - title: '📚 Documentation'
+      labels:
+        - 'documentation'
+      prefixes:
+        - 'docs:'
+        - 'docs('
+    - title: '🧰 Maintenance & CI/CD'
+      labels:
+        - 'chore'
+        - 'ci'
+        - 'build'
+      prefixes:
+        - 'chore:'
+        - 'chore('
+        - 'ci:'
+        - 'ci('
+        - 'build:'
+        - 'build('
+        - 'perf:'
+        - 'perf('
+  exclude:
+    labels:
+      - 'ignore'
+    prefixes:
+      - 'wip:'
+      - 'wip('

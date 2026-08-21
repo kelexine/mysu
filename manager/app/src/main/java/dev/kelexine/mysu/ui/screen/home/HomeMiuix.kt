@@ -47,6 +47,7 @@ import dev.kelexine.mysu.KernelVersion
 import dev.kelexine.mysu.Natives
 import dev.kelexine.mysu.R
 import dev.kelexine.mysu.ui.component.WarningLevel
+import dev.kelexine.mysu.ui.component.dialog.AppUpdateDialog
 import dev.kelexine.mysu.ui.component.dialog.rememberConfirmDialog
 import dev.kelexine.mysu.ui.component.miuix.WarningCard
 import dev.kelexine.mysu.ui.component.rebootlistpopup.RebootListPopupMiuix
@@ -55,6 +56,10 @@ import dev.kelexine.mysu.ui.theme.isInDarkTheme
 import dev.kelexine.mysu.ui.util.BlurredBar
 import dev.kelexine.mysu.ui.util.module.LatestVersionInfo
 import dev.kelexine.mysu.ui.util.rememberBlurBackdrop
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
@@ -188,9 +193,7 @@ private fun UpdateCard(
     actions: HomeActions,
 ) {
     val newVersion = state.latestVersionInfo
-    val title = stringResource(id = R.string.module_changelog)
-    val updateText = stringResource(id = R.string.module_update)
-    val updateDialog = rememberConfirmDialog(onConfirm = { actions.onOpenUrl(newVersion.downloadUrl) })
+    var showUpdateDialog by remember { mutableStateOf(false) }
 
     AnimatedVisibility(
         visible = state.hasUpdate,
@@ -201,17 +204,14 @@ private fun UpdateCard(
             message = stringResource(id = R.string.new_version_available, newVersion.versionCode),
             level = WarningLevel.Notice,
             onClick = {
-                if (newVersion.changelog.isEmpty()) {
-                    actions.onOpenUrl(newVersion.downloadUrl)
-                } else {
-                    updateDialog.showConfirm(
-                        title = title,
-                        content = newVersion.changelog,
-                        markdown = true,
-                        confirm = updateText
-                    )
-                }
+                showUpdateDialog = true
             }
+        )
+
+        AppUpdateDialog(
+            show = showUpdateDialog,
+            versionInfo = newVersion,
+            onDismiss = { showUpdateDialog = false }
         )
     }
 }
