@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] - 2026-08-21
+
+### Added
+- **Unified Master Release Pipeline**: Orchestrated `build-manager`, `build-userspace`, and `build-lkm` in `.github/workflows/release.yml` to produce consolidated GitHub release assets.
+- **Kernel LKM Matrix Compilation**: Added `ddk-lkm.yml` and `build-lkm.yml` matrix builds supporting Android GKI versions `android12-5.10` through `android16-6.12` across `aarch64` and `x86_64`.
+- **Automated Conventional Changelog**: Configured `.github/release.yml` with semantic commit classification rules.
+
+### Changed
+- **Reusable Workflow Triggers**: Added `workflow_call:` triggers to `build-manager.yml` and `build-userspace.yml`.
+- **Standardized Artifact Pipeline**: Aligned artifact names for Manager APKs, LKM kernel modules, `mysud`, and `mysuinit` binaries.
+- **Kernel Build Flag Alignment**: Updated DDK LKM compiler flags to `CONFIG_MYSU=m`, `MYSU_EXPECTED_SIZE2`, `MYSU_EXPECTED_HASH2`, and `CONFIG_MYSU_X86_PATCH_SYSCALL_DISPATCHER=y`.
+
+---
+
 ## [1.0.2] - 2026-08-21
 
 ### Added
@@ -19,7 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Live Download Progress Bar**: Real-time linear progress indicator with percentage display during background APK download.
 - **Public Downloads Destination**: Update APKs are saved directly to the device `Downloads/` directory (`/sdcard/Download/MySU_<versionCode>.apk`).
 - **Automatic Package Installation**: Direct APK install dispatch via [`ApkInstaller.kt`](file:///home/kelexine/dev/mysu/manager/app/src/main/java/dev/kelexine/mysu/ui/util/ApkInstaller.kt), `FileProvider`, and `REQUEST_INSTALL_PACKAGES` permission check.
-- **Automated GitHub Release Categorization**: Added `.github/release.yml` with Conventional Commit classification rules.
+
+---
+
+## [1.0.1] - 2026-08-21
 
 ### Added
 - **True AMOLED Black Palette**: Pure pitch black (`#000000`) background and surfaces with elevated container contrast (`#070707`, `#0C0C0C`, `#141414`) for battery efficiency.

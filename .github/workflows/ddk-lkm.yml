@@ -1,0 +1,153 @@
+name: Build MySU Kernel Module
+
+on:
+  workflow_call:
+    inputs:
+      kmi:
+        description: 'KMI version'
+        required: true
+        type: string
+      ddk_release:
+        description: 'DDK release version'
+        required: false
+        default: '20260313'
+        type: string
+      expected_size2:
+        description: 'Second expected signature size (for PR builds)'
+        required: false
+        default: ''
+        type: string
+      expected_hash2:
+        description: 'Second expected signature hash (for PR builds)'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  build-mysu-ko:
+    name: Build mysu.ko for ${{ inputs.kmi }}
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/ylarod/ddk-min:${{ inputs.kmi }}-${{ inputs.ddk_release }}
+      options: --privileged
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v7
+
+    - name: Build mysu.ko
+      env:
+        EXPECTED_SIZE2: ${{ inputs.expected_size2 }}
+        EXPECTED_HASH2: ${{ inputs.expected_hash2 }}
+      run: |
+        git config --global --add safe.directory /__w/MySU/MySU
+
+        cd kernel
+
+        echo "=== Building mysu.ko for KMI: ${{ inputs.kmi }} ==="
+
+        EXTRA_ARGS=""
+        if [ -n "$EXPECTED_SIZE2" ] && [ -z "$EXPECTED_HASH2" ]; then
+          echo "ERROR: expected_hash2 must be provided when expected_size2 is set."
+          exit 1
+        fi
+        if [ -z "$EXPECTED_SIZE2" ] && [ -n "$EXPECTED_HASH2" ]; then
+          echo "ERROR: expected_size2 must be provided when expected_hash2 is set."
+          exit 1
+        fi
+        if [ -n "$EXPECTED_SIZE2" ]; then
+          EXTRA_ARGS="MYSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 MYSU_EXPECTED_HASH2=$EXPECTED_HASH2"
+        fi
+        CONFIG_MYSU=m CC=clang make $EXTRA_ARGS
+        
+        echo "=== Build completed ==="
+
+        # Create output directory in GitHub workspace
+        OUT_DIR=/github/workspace/out/aarch64
+        mkdir -p $OUT_DIR
+
+        # Copy with KMI-specific naming
+        OUTPUT_NAME="${{ inputs.kmi }}_mysu.ko"
+        cp mysu.ko "$OUT_DIR/$OUTPUT_NAME"
+        
+        echo "Copied to: $OUT_DIR/$OUTPUT_NAME"
+        ls -la "$OUT_DIR/$OUTPUT_NAME"
+        echo "Size: $(du -h "$OUT_DIR/$OUTPUT_NAME" | cut -f1)"
+        llvm-strip -d "$OUT_DIR/$OUTPUT_NAME"
+        echo "Size after stripping: $(du -h "$OUT_DIR/$OUTPUT_NAME" | cut -f1)"
+
+    - name: Upload mysu.ko artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ inputs.kmi }}-aarch64-lkm
+        path: /github/workspace/out/aarch64/${{ inputs.kmi }}_mysu.ko
+
+    - name: Build mysu.ko for x64
+      env:
+        EXPECTED_SIZE2: ${{ inputs.expected_size2 }}
+        EXPECTED_HASH2: ${{ inputs.expected_hash2 }}
+      run: |
+        cd kernel
+        make clean
+
+        echo "=== Preparing KDIR for x64 ==="
+
+        mkdir -p /opt/ddk/kdir-x64
+        unset ARCH
+        unset CROSS_COMPILE
+        export ARCH=x86_64
+        kmi=${{ inputs.kmi }}
+        pushd /opt/ddk/src/$kmi
+        export KDIR=/opt/ddk/kdir-x64/$kmi
+        make O=$KDIR gki_defconfig
+        scripts/config --file $KDIR/.config -d LTO_CLANG -e LTO_NONE -d LTO_CLANG_THIN -d LTO_CLANG_FULL -d THINLTO
+        if [ "$kmi" == "android16-6.12" ]; then
+            scripts/config --file $KDIR/.config -e CONFIG_CFI_ICALL_NORMALIZE_INTEGERS
+        fi
+        make O=$KDIR modules_prepare
+        popd
+        
+        SELINUX_PATH=security/selinux
+        mkdir -p $KDIR/$SELINUX_PATH
+        cp /opt/ddk/kdir/$kmi/$SELINUX_PATH/*.h $KDIR/$SELINUX_PATH
+
+        echo "=== Building x64 mysu.ko for KMI: ${{ inputs.kmi }} ==="
+
+        EXTRA_ARGS=""
+        if [ -n "$EXPECTED_SIZE2" ] && [ -z "$EXPECTED_HASH2" ]; then
+          echo "ERROR: expected_hash2 must be provided when expected_size2 is set."
+          exit 1
+        fi
+        if [ -z "$EXPECTED_SIZE2" ] && [ -n "$EXPECTED_HASH2" ]; then
+          echo "ERROR: expected_size2 must be provided when expected_hash2 is set."
+          exit 1
+        fi
+        if [ -n "$EXPECTED_SIZE2" ]; then
+          EXTRA_ARGS="MYSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 MYSU_EXPECTED_HASH2=$EXPECTED_HASH2"
+        fi
+        
+        MDIR=$(realpath .)
+
+        make -C $KDIR M=$MDIR compile_commands.json modules CONFIG_MYSU=m CONFIG_MYSU_X86_PATCH_SYSCALL_DISPATCHER=y $EXTRA_ARGS
+        
+        echo "=== Build completed ==="
+
+        # Create output directory in GitHub workspace
+        OUT_DIR=/github/workspace/out/x86_64
+        mkdir -p $OUT_DIR
+
+        # Copy with KMI-specific naming
+        OUTPUT_NAME="${{ inputs.kmi }}_mysu.ko"
+        cp mysu.ko "$OUT_DIR/$OUTPUT_NAME"
+        
+        echo "Copied to: $OUT_DIR/$OUTPUT_NAME"
+        ls -la "$OUT_DIR/$OUTPUT_NAME"
+        echo "Size: $(du -h "$OUT_DIR/$OUTPUT_NAME" | cut -f1)"
+        llvm-strip -d "$OUT_DIR/$OUTPUT_NAME"
+        echo "Size after stripping: $(du -h "$OUT_DIR/$OUTPUT_NAME" | cut -f1)"
+        
+    - name: Upload x64 mysu.ko artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ inputs.kmi }}-x86_64-lkm
+        path: /github/workspace/out/x86_64/${{ inputs.kmi }}_mysu.ko

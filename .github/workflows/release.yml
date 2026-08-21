@@ -1,0 +1,66 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-manager:
+    uses: ./.github/workflows/build-manager.yml
+    secrets: inherit
+
+  build-userspace:
+    uses: ./.github/workflows/build-userspace.yml
+
+  build-lkm:
+    uses: ./.github/workflows/build-lkm.yml
+
+  release:
+    needs:
+      - build-manager
+      - build-userspace
+      - build-lkm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+
+      - name: Organize Binaries
+        run: |
+          mkdir -p mysud mysuinit
+          for dir in ./mysud-*; do
+              if [ -d "$dir" ]; then
+                 echo "----- Processing $dir -----"
+                 mysud_platform_name=$(basename "$dir")
+                 find "$dir" -type f -name "mysud" | while read -r mysud_file; do
+                   if [ -f "$mysud_file" ]; then
+                     mv "$mysud_file" "mysud/$mysud_platform_name"
+                   fi
+                 done
+              fi
+          done
+          for dir in ./mysuinit-*; do
+              if [ -d "$dir" ]; then
+                 echo "----- Processing $dir -----"
+                 mysuinit_platform_name=$(basename "$dir")
+                 find "$dir" -type f -name "mysuinit" | while read -r mysuinit_file; do
+                   if [ -f "$mysuinit_file" ]; then
+                     mv "$mysuinit_file" "mysuinit/$mysuinit_platform_name"
+                   fi
+                 done
+              fi
+          done
+
+      - name: Display structure of downloaded files
+        run: ls -R
+
+      - name: release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            manager/*.apk
+            android*-lkm/*_mysu.ko
+            mysud/mysud-*
+            mysuinit/mysuinit-*
+          generate_release_notes: true
