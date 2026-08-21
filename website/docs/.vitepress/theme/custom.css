@@ -5,14 +5,14 @@
   --vp-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   --vp-font-family-mono: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
 
-  /* Brand Colors - Electric Void Blue & Teal */
-  --vp-c-brand-1: #4e80ee;
-  --vp-c-brand-2: #3b82f6;
-  --vp-c-brand-3: #60a5fa;
-  --vp-c-brand-soft: rgba(78, 128, 238, 0.14);
+  /* Brand Colors - Electric Violet & Indigo */
+  --vp-c-brand-1: #7c3aed;
+  --vp-c-brand-2: #6d28d9;
+  --vp-c-brand-3: #8b5cf6;
+  --vp-c-brand-soft: rgba(124, 58, 237, 0.12);
 
-  --vp-c-accent: #2dd4bf;
-  --vp-c-accent-soft: rgba(45, 212, 191, 0.15);
+  --vp-c-accent: #06b6d4;
+  --vp-c-accent-soft: rgba(6, 182, 212, 0.12);
 
   /* Light Theme (Clean Minimal Slate) */
   --vp-c-bg: #f8fafc;
@@ -29,14 +29,22 @@
   --vp-c-gutter: #f1f5f9;
 }
 
-/* Dark Theme - TheVoid Midnight Cosmic Theme */
+/* Dark Theme - TheVoid Obsidian & Cosmic Violet Theme */
 .dark {
-  --vp-c-bg: #0a0c13;
-  --vp-c-bg-alt: #10121a;
-  --vp-c-bg-elv: #151822;
-  --vp-c-bg-soft: #1b1e2b;
+  --vp-c-bg: #08090e;
+  --vp-c-bg-alt: #0e1017;
+  --vp-c-bg-elv: #131622;
+  --vp-c-bg-soft: #1a1d2c;
 
-  --vp-c-text-1: #f1f5f9;
+  --vp-c-brand-1: #8b5cf6;
+  --vp-c-brand-2: #7c3aed;
+  --vp-c-brand-3: #a78bfa;
+  --vp-c-brand-soft: rgba(139, 92, 246, 0.14);
+
+  --vp-c-accent: #22d3ee;
+  --vp-c-accent-soft: rgba(34, 211, 238, 0.12);
+
+  --vp-c-text-1: #f8fafc;
   --vp-c-text-2: #94a3b8;
   --vp-c-text-3: #64748b;
 
@@ -44,11 +52,11 @@
   --vp-c-divider: rgba(255, 255, 255, 0.06);
   --vp-c-gutter: rgba(255, 255, 255, 0.03);
 
-  --vp-code-block-bg: #0f1118;
-  --vp-code-bg: rgba(78, 128, 238, 0.1);
-  --vp-code-color: #93c5fd;
+  --vp-code-block-bg: #0c0d14;
+  --vp-code-bg: rgba(139, 92, 246, 0.1);
+  --vp-code-color: #c4b5fd;
 
-  --vp-nav-bg-color: rgba(10, 12, 19, 0.85);
+  --vp-nav-bg-color: rgba(8, 9, 14, 0.82);
 }
 
 /* Base Adjustments */
@@ -58,6 +66,26 @@ html {
 
 body {
   letter-spacing: -0.01em;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--vp-c-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vp-c-bg-soft);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vp-c-brand-1);
 }
 
 /* Nav Bar Glassmorphism */
@@ -67,17 +95,56 @@ body {
   border-bottom: 1px solid var(--vp-c-border);
 }
 
-/* Hero Section Styling */
+/* Hero Section Ambient Backdrop */
+.VPHero {
+  position: relative;
+  overflow: visible !important;
+}
+
+.dark .VPHero::before {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 650px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.16) 0%, rgba(99, 102, 241, 0.08) 45%, transparent 70%);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.VPHero .container {
+  position: relative;
+  z-index: 1;
+}
+
+.VPHero .image-container {
+  position: relative;
+}
+
+.dark .VPHero .image-container img {
+  filter: drop-shadow(0 0 35px rgba(139, 92, 246, 0.3));
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.dark .VPHero .image-container:hover img {
+  transform: scale(1.03);
+  filter: drop-shadow(0 0 45px rgba(139, 92, 246, 0.45));
+}
+
+/* Hero Typography */
 .VPHero .name {
-  background: linear-gradient(135deg, #ffffff 0%, #4e80ee 60%, #2dd4bf 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #7c3aed 65%, #06b6d4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
 }
 
 .dark .VPHero .name {
-  background: linear-gradient(135deg, #ffffff 10%, #60a5fa 65%, #2dd4bf 100%);
+  background: linear-gradient(135deg, #ffffff 15%, #a78bfa 60%, #22d3ee 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -91,26 +158,30 @@ body {
 .VPHero .tagline {
   color: var(--vp-c-text-2);
   font-size: 1.15rem;
-  line-height: 1.6;
+  line-height: 1.65;
+  max-width: 600px;
 }
 
-/* Button & Action Pills */
+/* Action Buttons */
 .VPButton.brand {
-  background-color: var(--vp-c-brand-1);
-  border-color: var(--vp-c-brand-1);
+  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #ffffff;
   font-weight: 600;
   border-radius: 9999px;
   padding: 0 24px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 14px rgba(78, 128, 238, 0.25);
+  box-shadow: 0 4px 18px rgba(124, 58, 237, 0.32);
+}
+
+.dark .VPButton.brand {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
 }
 
 .VPButton.brand:hover {
-  background-color: var(--vp-c-brand-2);
-  border-color: var(--vp-c-brand-2);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(78, 128, 238, 0.4);
+  box-shadow: 0 6px 26px rgba(139, 92, 246, 0.5);
 }
 
 .VPButton.alt {
@@ -125,37 +196,55 @@ body {
 
 .VPButton.alt:hover {
   background-color: var(--vp-c-bg-soft);
-  border-color: var(--vp-c-brand-1);
+  border-color: rgba(139, 92, 246, 0.4);
   transform: translateY(-2px);
 }
 
-/* Feature Cards (Material 3 TheVoid Cards) */
+/* Feature Cards */
 .VPFeature {
   background: var(--vp-c-bg-elv) !important;
   border: 1px solid var(--vp-c-border) !important;
   border-radius: 18px !important;
-  padding: 24px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  padding: 26px !important;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative;
   overflow: hidden;
 }
 
+.dark .VPFeature {
+  background: linear-gradient(180deg, rgba(19, 22, 34, 0.95) 0%, rgba(14, 16, 23, 0.9) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
 .VPFeature:hover {
-  border-color: rgba(78, 128, 238, 0.35) !important;
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6) !important;
+  transform: translateY(-3px);
+  border-color: rgba(139, 92, 246, 0.4) !important;
+  box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.65), 0 0 20px -5px rgba(139, 92, 246, 0.15) !important;
+}
+
+.VPFeature .icon {
+  background-color: var(--vp-c-brand-soft) !important;
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .VPFeature .title {
   font-weight: 700 !important;
   font-size: 1.15rem !important;
   color: var(--vp-c-text-1) !important;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
+  margin-bottom: 8px;
 }
 
 .VPFeature .details {
   color: var(--vp-c-text-2) !important;
-  line-height: 1.6 !important;
+  line-height: 1.65 !important;
   font-size: 0.95rem !important;
 }
 
@@ -170,17 +259,54 @@ body {
   font-weight: 600;
 }
 
+/* Content Area Adjustments */
+.vp-doc {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.vp-doc h1 {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--vp-c-text-1);
+}
+
+.vp-doc h2 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-top-color: var(--vp-c-divider);
+  padding-top: 1.5rem;
+}
+
+.vp-doc h3 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
 /* Code Blocks */
 div[class*='language-'] {
   border-radius: 14px !important;
   border: 1px solid var(--vp-c-border) !important;
   background-color: var(--vp-code-block-bg) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
-/* Custom Alert / Callout Boxes */
+/* Inline Code */
+:not(pre) > code {
+  font-size: 0.88em !important;
+  padding: 3px 6px !important;
+  border-radius: 6px !important;
+  background-color: var(--vp-code-bg) !important;
+  color: var(--vp-code-color) !important;
+  border: 1px solid rgba(139, 92, 246, 0.15) !important;
+}
+
+/* Custom Callout Alert Boxes */
 .custom-block {
   border-radius: 14px !important;
   border-left-width: 4px !important;
+  padding: 18px 22px !important;
+  margin: 20px 0 !important;
 }
 
 .custom-block.tip {
@@ -193,8 +319,100 @@ div[class*='language-'] {
   background-color: var(--vp-c-accent-soft) !important;
 }
 
+.custom-block.warning {
+  border-color: #f59e0b !important;
+  background-color: rgba(245, 158, 11, 0.1) !important;
+}
+
+.custom-block.danger {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Table Styling */
+.vp-doc table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 24px 0;
+  width: 100%;
+}
+
+.vp-doc th {
+  background-color: var(--vp-c-bg-alt);
+  color: var(--vp-c-text-1);
+  font-weight: 600;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--vp-c-border);
+}
+
+.vp-doc td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--vp-c-border);
+}
+
+.vp-doc tr:last-child td {
+  border-bottom: none;
+}
+
+.vp-doc tr:nth-child(2n) {
+  background-color: rgba(255, 255, 255, 0.015);
+}
+
+/* Homepage Custom Terminal Showcase */
+.showcase-container {
+  margin: 48px auto;
+  max-width: 860px;
+  background: var(--vp-c-bg-elv);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+}
+
+.showcase-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 18px;
+  background: var(--vp-c-bg-alt);
+  border-bottom: 1px solid var(--vp-c-border);
+}
+
+.showcase-dots {
+  display: flex;
+  gap: 7px;
+}
+
+.showcase-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.dot-red { background-color: #ef4444; }
+.dot-yellow { background-color: #f59e0b; }
+.dot-green { background-color: #10b981; }
+
+.showcase-title {
+  margin-left: 14px;
+  font-size: 0.85rem;
+  font-family: var(--vp-font-family-mono);
+  color: var(--vp-c-text-3);
+  font-weight: 500;
+}
+
+.showcase-body {
+  padding: 24px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
 /* Footer */
 .VPFooter {
   background-color: var(--vp-c-bg-alt) !important;
   border-top: 1px solid var(--vp-c-border) !important;
+  padding: 32px 24px !important;
 }

@@ -42,24 +42,39 @@ function nav() {
 function sidebarGuide() {
   return [
     {
-        text: 'Guide',
-        items: [
-          { text: 'What is MySU?', link: '/guide/what-is-mysu' },
-          { text: 'Difference with Magisk', link: '/guide/difference-with-magisk' },
-          { text: 'Installation', link: '/guide/installation' },
-          { text: 'How to build', link: '/guide/how-to-build' },
-          { text: 'Intergrate for non-GKI devices', link: '/guide/how-to-integrate-for-non-gki'},
-          { text: 'Unofficially supported devices', link: '/guide/unofficially-support-devices.md' },
-          { text: 'Module guide', link: '/guide/module.md' },
-          { text: 'Metamodule', link: '/guide/metamodule.md' },
-          { text: 'Module WebUI', link: '/guide/module-webui.md' },
-          { text: 'Module Configuration', link: '/guide/module-config.md' },
-          { text: 'App Profile', link: '/guide/app-profile.md' },
-          { text: 'Rescue from bootloop', link: '/guide/rescue-from-bootloop.md' },
-          { text: 'x86_64 support', link: '/guide/x86_64-support' },
-          { text: 'FAQ', link: '/guide/faq' },
-          { text: 'Hidden features', link: '/guide/hidden-features' },
-        ]
+      text: 'Overview',
+      items: [
+        { text: 'What is MySU?', link: '/guide/what-is-mysu' },
+        { text: 'Difference with Magisk', link: '/guide/difference-with-magisk' },
+        { text: 'App Profile & Sandboxing', link: '/guide/app-profile' },
+      ]
+    },
+    {
+      text: 'Installation & Kernel Integration',
+      items: [
+        { text: 'Installation', link: '/guide/installation' },
+        { text: 'How to Build', link: '/guide/how-to-build' },
+        { text: 'Integrate for non-GKI Devices', link: '/guide/how-to-integrate-for-non-gki' },
+        { text: 'x86_64 Support', link: '/guide/x86_64-support' },
+        { text: 'Unofficially Supported Devices', link: '/guide/unofficially-support-devices' },
+      ]
+    },
+    {
+      text: 'Module Development',
+      items: [
+        { text: 'Module Guide', link: '/guide/module' },
+        { text: 'Metamodule Architecture', link: '/guide/metamodule' },
+        { text: 'Module WebUI', link: '/guide/module-webui' },
+        { text: 'Module Configuration', link: '/guide/module-config' },
+      ]
+    },
+    {
+      text: 'Troubleshooting & Reference',
+      items: [
+        { text: 'Rescue from Bootloop', link: '/guide/rescue-from-bootloop' },
+        { text: 'Hidden Features & CLI', link: '/guide/hidden-features' },
+        { text: 'FAQ', link: '/guide/faq' },
+      ]
     }
   ]
 }

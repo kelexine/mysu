@@ -1,39 +1,41 @@
 # Integrate for non-GKI devices
 
-MySU can be integrated into non-GKI kernels and was backported to 4.14 and earlier versions.
+MySU can be integrated into non-GKI custom kernels and has been validated across 4.14.x, 4.19.x, and 5.4.x trees (such as `TheVoid-Kernel`).
 
-Due to the fragmentation of non-GKI kernels, we don't have a universal way to build them; therefore, we cannot provide a non-GKI boot.img. However, you can build the kernel with MySU integrated on your own.
+Due to the device-specific nature of non-GKI Android kernels, universal prebuilt boot images cannot be provided. However, integrating MySU into your device's kernel source tree is straightforward.
 
-First, you should be able to build a bootable kernel from kernel source code. If the kernel isn't open source, then it is difficult to run MySU for your device.
+---
 
-If you're able to build a bootable kernel, there are two ways to integrate MySU into the kernel source code:
+## Integration Methods
 
-1. Automatically with `kprobe`
-2. Manually
+Depending on your kernel configuration and architecture, choose one of two methods:
+1. **Automatic Integration via Kprobes / Tracepoints** (Recommended)
+2. **Manual Kernel Source Patching** (For legacy trees with broken or disabled kprobes)
 
-## Integrate with kprobe
+---
 
-MySU uses kprobe for its kernel hooks. If kprobe runs reliably on your kernel, we recommend integrating MySU this way.
+## Method 1: Integrate with Kprobes / Tracepoints
 
-First, add MySU to your kernel source tree:
+If your kernel supports Kprobes and Syscall Tracepoints, MySU automatically hooks system calls at runtime.
+
+### 1. Add MySU to Kernel Source
+In your kernel source root directory:
 
 ```sh
-curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -
+curl -LSs "https://raw.githubusercontent.com/kelexine/mysu/main/kernel/setup.sh" | bash -
 ```
 
-Then, you should check if kprobe is enabled in your kernel config. If it isn't, add these configs to it:
+### 2. Enable Kernel Configuration Flags
+Ensure the following options are enabled in your device's `defconfig`:
 
 ```txt
+CONFIG_MYSU=y
 CONFIG_KPROBES=y
 CONFIG_HAVE_KPROBES=y
 CONFIG_KPROBE_EVENTS=y
 ```
 
-Now, when you re-build your kernel, MySU should work correctly.
-
-If you find that KPROBES is still not enabled, you can try enabling `CONFIG_MODULES`. If that doesn't solve the issue, use `make menuconfig` to search for other KPROBES dependencies.
-
-However, if you encounter a bootloop after integrating MySU, this may indicate that the **kprobe is broken in your kernel**, which means that you should fix the kprobe bug or use another way.
+If `CONFIG_KPROBES` cannot be selected directly, ensure `CONFIG_MODULES=y` is set. Rebuild your kernel image, and MySU will initialize automatically upon boot.
 
 ::: tip HOW TO CHECK IF KPROBE IS BROKEN？
 Comment out `mysu_sucompat_init()` and `mysu_mysud_init()` in `MySU/kernel/mysu.c`. If the device boots normally, kprobe may be broken.
@@ -50,7 +52,7 @@ If kprobe doesn't work on your kernel—either because of an upstream bug or bec
 First, add MySU to your kernel source tree:
 
 ```sh
-curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -
+curl -LSs "https://raw.githubusercontent.com/kelexine/mysu/main/kernel/setup.sh" | bash -
 ```
 
 Keep in mind that, on some devices, your defconfig may be located at `arch/arm64/configs` or in other cases, it may be at `arch/arm64/configs/vendor/your_defconfig`. Regardless of the defconfig you're using, make sure to enable `CONFIG_MYSU` with `y` to enable or `n` to disable it. For example, if you choose to enable it, your defconfig should contain the following string:

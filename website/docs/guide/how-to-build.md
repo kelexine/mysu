@@ -1,76 +1,111 @@
-# How to build
+# How to Build
 
-::: warning
-This document is for archival reference only and is no longer maintained.
-Since MySU v3.0, we have dropped official support for GKI image mode for faster iteration and build speed. It is recommended to use `Ylarod/ddk` to build LKM.
-:::
+This guide provides instructions for building all components of MySU:
+1. **Kernel Driver** (`kernel/`) — In-tree kernel driver or standalone Loadable Kernel Module (`mysu.ko`).
+2. **Userspace Daemons** (`userspace/mysud` & `mysuinit`) — Rust multi-call binary and early-init injector.
+3. **Android Manager** (`manager/`) — Jetpack Compose management APK (`dev.kelexine.mysu`).
+4. **Repacking & Signing** (`repack_apk.py`) — Embedding native binaries into the APK and performing APK v2 signing.
 
-First, you should read the official Android documentation for building kernels:
+---
 
-1. [Build kernels](https://source.android.com/docs/setup/build/building-kernels)
-2. [GKI release builds](https://source.android.com/docs/core/architecture/kernel/gki-release-builds)
+## 1. Building the Kernel Driver
 
-::: warning
-This page is for GKI devices; if you use an older kernel, please refer to [Integrate for non-GKI devices](how-to-integrate-for-non-gki).
-:::
+### In-Tree Kernel Integration
+To build MySU directly into your kernel source tree:
 
-## Build kernel
+```bash
+# In your kernel source tree root:
+curl -LSs "https://raw.githubusercontent.com/kelexine/mysu/main/kernel/setup.sh" | bash -
 
-### Sync the kernel source code
-
-```sh
-repo init -u https://android.googlesource.com/kernel/manifest
-mv <kernel_manifest.xml> .repo/manifests
-repo init -m manifest.xml
-repo sync
+# Verify configuration in defconfig or menuconfig:
+# CONFIG_MYSU=y
 ```
 
-The `<kernel_manifest.xml>` file is a manifest that uniquely identifies a build, allowing you to make it reproducible. To do this, you should download the manifest file from [GKI release builds](https://source.android.com/docs/core/architecture/kernel/gki-release-builds).
+Then build your kernel image as usual using your toolchain (Clang/LLVM, GCC, or Bazel/Kleaf for Android 13+ GKI).
 
-### Build
+### Standalone LKM (`mysu.ko`)
+To build MySU as an out-of-tree loadable module:
 
-Please check the [Building kernels](https://source.android.com/docs/setup/build/building-kernels) first.
-
-For example, to build an `aarch64` kernel image:
-
-```sh
-LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh
+```bash
+cd kernel
+# Set KDIR to your configured kernel build tree / headers
+make -C $KDIR M=$(pwd) modules
 ```
 
-Don't forget to add the `LTO=thin` flag; otherwise, the build may fail if your computer has less than 24 GB of memory.
+---
 
-Starting from Android 13, the kernel is built by `bazel`:
+## 2. Building Userspace Daemons (`mysud` & `mysuinit`)
 
-```sh
-tools/bazel build --config=fast //common:kernel_aarch64_dist
+### Prerequisites
+- **Rust Toolchain**: Rust 1.85+ (Edition 2024 support)
+- **Cross**: `cargo install cross --git https://github.com/cross-rs/cross`
+- **Android NDK**: NDK r25c+ (configured in `ANDROID_NDK_HOME`)
+- **Just**: `cargo install just`
+
+### Build with Just
+Use the root `justfile` for automated compilation:
+
+```bash
+# Build mysud release binary for aarch64-linux-android:
+just build_mysud
+
+# Lint with clippy and check formatting:
+just clippy
 ```
 
-::: info
-For some Android 14 kernels, to make Wi-Fi/Bluetooth work, it might be necessary to remove all GKI protected exports:
+Alternatively, build directly using `cargo` or `cross`:
 
-```sh
-rm common/android/abi_gki_protected_exports_*
-```
-:::
-
-## Build kernel with MySU
-
-If you can successfully build the kernel, adding support for MySU will be relatively easy. In the root of kernel source directory, run any of the options listed below:
-
-::: code-group
-
-```sh[Latest tag (stable)]
-curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -
+```bash
+cross build --target aarch64-linux-android --release --package mysud
+cross build --target aarch64-linux-android --release --package mysuinit
 ```
 
-```sh[main branch (dev)]
-curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -s main
+The resulting binaries will be placed in `target/aarch64-linux-android/release/`.
+
+---
+
+## 3. Building the Android Manager App
+
+### Prerequisites
+- **Java Development Kit**: OpenJDK 17 or 21
+- **Android SDK**: Build-Tools 35.0.0+, Platform SDK 35
+- **CMake**: 3.18.1+ (for JNI native library compilation)
+
+### Build Debug APK with Just
+The `just build_manager` target builds `mysud`, copies the binary as `libmysud.so` to the JNI libs directory, and triggers the Gradle build:
+
+```bash
+just build_manager
 ```
 
-```sh[Select tag (such as v0.5.2)]
-curl -LSs "https://raw.githubusercontent.com/kelexine/MySU/main/kernel/setup.sh" | bash -s v0.5.2
+### Build via Gradle Directly
+```bash
+cd manager
+./gradlew assembleDebug
+# Output: manager/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-:::
+---
 
-Then, rebuild the kernel and you will get a kernel image with MySU!
+## 4. Packaging and Repacking (`repack_apk.py`)
+
+MySU includes a comprehensive Python script to automate cross-compiling `mysud`, stripping symbols with NDK `llvm-strip`, injecting libraries, and signing the final APK with custom keystores:
+
+```bash
+# Example invocation using config file:
+python3 repack_apk.py --config repack-config.example.json
+
+# Custom command line arguments:
+python3 repack_apk.py \
+    --app-build-type release \
+    --mysud-build-type release \
+    --arch arm64-v8a,x86_64 \
+    --strip \
+    --keystore-path /path/to/keystore.jks \
+    --key-alias mykey
+```
+
+### Synchronizing Kernel Signature Hash
+The kernel verifies the Manager APK via embedded APK v2 signature checks. If you use a custom release keystore:
+1. Run `python3 repack_apk.py` or `mysud debug get-sign <signed_manager.apk>` to compute the size and SHA-256 hash.
+2. Ensure `EXPECTED_SIZE` and `EXPECTED_HASH` in `kernel/manager/apk_sign.h` match your signature.
