@@ -6,7 +6,9 @@
     <string name="home_working">Working</string>
     <string name="home_working_version">Version: %s</string>
     <string name="home_unsupported">Unsupported</string>
-    <string name="home_unsupported_reason">MySU only supports GKI kernels now, but you can patch the image for GKI devices.</string>
+    <string name="home_unsupported_reason">MySU driver is not active. For non-GKI or custom kernels (e.g. 4.19.x), integrate MySU into your kernel source tree.</string>
+    <string name="home_non_gki_hint">Non-GKI Guide</string>
+    <string name="home_non_gki_hint_url">https://kelexine.github.io/mysu/guide/how-to-integrate-for-non-gki.html</string>
     <string name="home_version_mismatch">Manager version (%1$d) and MySU driver version (%2$d) mismatch.</string>
     <string name="home_device_model">Device model</string>
     <string name="home_kernel">Kernel version</string>
@@ -84,10 +86,11 @@
     <string name="reboot_to_apply">Reboot to take effect</string>
     <string name="module_magisk_conflict">Modules are unavailable due to a conflict with Magisk!</string>
     <string name="home_learn_mysu">Learn MySU</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">Learn how to install MySU and use modules.</string>
-    <string name="home_support_title">Support Us</string>
-    <string name="home_support_content">MySU is, and always will be, free, and open source. However, you can show us that you care by making a donation.</string>
+    <string name="home_support_title">Support Developer (@kelexine)</string>
+    <string name="home_support_content">Show your appreciation and support MySU development via Buy Me a Coffee (@kelexine).</string>
+    <string name="home_support_url">https://buymeacoffee.com/kelexine</string>
     <string name="home_gki_warning">Starting from v3.0.0, the GKI work mode will be used only in testing environments. We do not recommend it for daily use, and image files will no longer be provided.</string>
     <string name="about_source_code"><![CDATA[View source code at %1$s<br/>Join our %2$s channel]]></string>
     <string name="profile" translatable="false">App Profile</string>

@@ -60,7 +60,7 @@
     <string name="show_system_apps">Hiển thị các ứng dụng hệ thống</string>
     <string name="safe_mode">Chế độ An toàn</string>
     <string name="reboot_to_apply">Khởi động lại để có hiệu lực</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="profile_selinux_domain">Tên miền</string>
     <string name="profile_selinux_rules">Quy tắc</string>
     <string name="launch_app">Khởi chạy</string>

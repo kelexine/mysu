@@ -15,7 +15,7 @@
     <string name="module_author">Autor</string>
     <string name="about">Über MySU</string>
     <string name="module_magisk_conflict">Module sind aufgrund eines Konfliktes mit Magisk nicht verfügbar!</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">Erfahre, wie MySU installiert wird und wie Module verwendet werden.</string>
     <string name="home_support_title">Unterstütze uns</string>
     <string name="home_support_content">MySU ist und wird immer frei und quelloffen sein. Du kannst uns jedoch deine Unterstützung zeigen, indem du eine Spende tätigst.</string>

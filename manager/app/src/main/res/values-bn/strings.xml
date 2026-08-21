@@ -42,7 +42,7 @@
     <string name="reboot_to_apply">রিবুট এপ্লাই</string>
     <string name="module_magisk_conflict">মডিউলগুলি অক্ষম কারণ তারা ম্যাজিস্কের সাথে বিরোধিতা করে!</string>
     <string name="home_learn_mysu">MySU শিখুন</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">কিভাবে MySU ইনস্টল করতে হয় এবং মডিউল ব্যবহার করতে হয় তা শিখুন।</string>
     <string name="home_support_title">সাপোর্ট টাইটেল</string>
     <string name="home_support_content">MySU ফ্রি ও ওপেন সোর্স, এবং সবসময় এমনই থাকবে। তবে, আপনি অনুদান দিয়ে আপনার কৃতজ্ঞতা প্রদর্শন করতে পারেন।</string>

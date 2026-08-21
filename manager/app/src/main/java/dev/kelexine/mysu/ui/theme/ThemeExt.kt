@@ -12,10 +12,10 @@ import com.materialkolor.PaletteStyle
 import com.materialkolor.dynamiccolor.ColorSpec
 import com.materialkolor.rememberDynamicColorScheme
 
-val VoidDarkBackground = Color(0xFF090A0F)
-val VoidDarkSurface = Color(0xFF10121A)
-val VoidDarkSurfaceContainer = Color(0xFF151822)
-val VoidDarkSurfaceContainerHigh = Color(0xFF1B1E2B)
+val VoidDarkBackground = Color(0xFF08090E)
+val VoidDarkSurface = Color(0xFF0E1017)
+val VoidDarkSurfaceContainer = Color(0xFF131622)
+val VoidDarkSurfaceContainerHigh = Color(0xFF1A1D2C)
 val VoidDarkSurfaceContainerHighest = Color(0xFF222636)
 
 fun ColorScheme.voidThemedBackground(isDark: Boolean, amoled: Boolean): ColorScheme {
@@ -25,10 +25,12 @@ fun ColorScheme.voidThemedBackground(isDark: Boolean, amoled: Boolean): ColorSch
             surface = Color.Black,
             surfaceDim = Color.Black,
             surfaceContainerLowest = Color.Black,
-            surfaceContainerLow = Color.Black,
-            surfaceContainer = Color.Black,
-            surfaceContainerHigh = Color.Black,
-            surfaceContainerHighest = Color.Black,
+            surfaceContainerLow = Color(0xFF070707),
+            surfaceContainer = Color(0xFF0C0C0C),
+            surfaceContainerHigh = Color(0xFF141414),
+            surfaceContainerHighest = Color(0xFF1C1C1C),
+            outline = Color(0xFF282828),
+            outlineVariant = Color(0xFF1A1A1A),
         )
     } else if (isDark) {
         copy(

@@ -15,7 +15,7 @@
 
 **MySU** is engineered for custom kernel environments, focusing on older 4.19.x kernel versions as well as modern GKI 2.0+ across `arm64` and `x86_64`. It provides fine-grained root access control, dynamic in-memory SELinux live-patching, and an isolated userspace environment without relying on filesystem symlinks.
 
-For the full interactive documentation and guides, visit the [official website](https://mysu.org) or run the local documentation server:
+For the full interactive documentation and guides, visit the [official documentation](https://kelexine.github.io/mysu/) or run the local documentation server:
 
 ```bash
 cd website
@@ -39,23 +39,23 @@ bun run docs:dev
 ## Documentation Sitemap
 
 - **Getting Started**:
-  - [What is MySU?](https://mysu.org/guide/what-is-mysu)
-  - [Difference with Magisk](https://mysu.org/guide/difference-with-magisk)
-  - [App Profile & Sandboxing](https://mysu.org/guide/app-profile)
+  - [What is MySU?](https://kelexine.github.io/mysu/guide/what-is-mysu.html)
+  - [Difference with Magisk](https://kelexine.github.io/mysu/guide/difference-with-magisk.html)
+  - [App Profile & Sandboxing](https://kelexine.github.io/mysu/guide/app-profile.html)
 - **Installation & Integration**:
-  - [Installation Guide](https://mysu.org/guide/installation)
-  - [How to Build](https://mysu.org/guide/how-to-build)
-  - [Integrate for non-GKI Devices](https://mysu.org/guide/how-to-integrate-for-non-gki)
-  - [x86_64 Architecture Support](https://mysu.org/guide/x86_64-support)
+  - [Installation Guide](https://kelexine.github.io/mysu/guide/installation.html)
+  - [How to Build](https://kelexine.github.io/mysu/guide/how-to-build.html)
+  - [Integrate for non-GKI Devices](https://kelexine.github.io/mysu/guide/how-to-integrate-for-non-gki.html)
+  - [x86_64 Architecture Support](https://kelexine.github.io/mysu/guide/x86_64-support.html)
 - **Module Development**:
-  - [Module Development Guide](https://mysu.org/guide/module)
-  - [Metamodule Architecture](https://mysu.org/guide/metamodule)
-  - [Module WebUI](https://mysu.org/guide/module-webui)
-  - [Module Configuration](https://mysu.org/guide/module-config)
+  - [Module Development Guide](https://kelexine.github.io/mysu/guide/module.html)
+  - [Metamodule Architecture](https://kelexine.github.io/mysu/guide/metamodule.html)
+  - [Module WebUI](https://kelexine.github.io/mysu/guide/module-webui.html)
+  - [Module Configuration](https://kelexine.github.io/mysu/guide/module-config.html)
 - **Reference & Troubleshooting**:
-  - [Rescue from Bootloop](https://mysu.org/guide/rescue-from-bootloop)
-  - [Hidden Features & Advanced CLI](https://mysu.org/guide/hidden-features)
-  - [Frequently Asked Questions](https://mysu.org/guide/faq)
+  - [Rescue from Bootloop](https://kelexine.github.io/mysu/guide/rescue-from-bootloop.html)
+  - [Hidden Features & Advanced CLI](https://kelexine.github.io/mysu/guide/hidden-features.html)
+  - [Frequently Asked Questions](https://kelexine.github.io/mysu/guide/faq.html)
 
 ---
 

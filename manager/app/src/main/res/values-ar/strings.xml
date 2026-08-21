@@ -42,7 +42,7 @@
     <string name="reboot_to_apply">إعادة التشغيل لتطبيق التغييرات</string>
     <string name="module_magisk_conflict">الوحدات غير متاحة بسبب تعارضها مع Magisk!</string>
     <string name="home_learn_mysu">تعلم MySU</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">تعرف على كيفية تثبيت MySU واستخدام الإضافات</string>
     <string name="home_support_title">إدعمنا</string>
     <string name="home_support_content">MySU سيظل دائماً مجانياً ومفتوح المصدر. مع ذلك، يمكنك متى ما استطعت أن تظهر لنا أنك تهتم بالتبرع.</string>

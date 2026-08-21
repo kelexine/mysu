@@ -25,7 +25,7 @@
     <string name="module_author">Avtor</string>
     <string name="send_log">Prijavite dnevnik</string>
     <string name="home_learn_mysu">Naučite se MySU</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">Naučite se, kako namestiti MySU in uporabiti module</string>
     <string name="about_source_code">Glej odprto kodo na %1$s<br/>Pridružite se našem %2$s kanalu</string>
     <string name="profile_default">Privzeto</string>

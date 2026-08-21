@@ -27,7 +27,7 @@ Csatlakozzon a %2$s csatornánkhoz</string>
     <string name="profile_name">Profil neve</string>
     <string name="profile_namespace">Névtér csatlakoztatása</string>
     <string name="profile_namespace_inherited">Örökölt</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="profile_namespace_individual">Különálló</string>
     <string name="profile_groups">Csoportok</string>
     <string name="profile_capabilities">Jogosultságok</string>

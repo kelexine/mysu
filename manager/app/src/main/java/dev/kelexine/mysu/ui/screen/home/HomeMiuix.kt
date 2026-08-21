@@ -381,7 +381,7 @@ private fun StatusCard(
                 Card(
                     onClick = {
                         if (!state.isLateLoadMode) {
-                            actions.onInstallClick()
+                            actions.onOpenUrl("https://kelexine.github.io/mysu/guide/how-to-integrate-for-non-gki.html")
                         }
                     },
                     showIndication = !state.isLateLoadMode,
@@ -428,6 +428,7 @@ private fun LearnMoreCard(
 
 @Composable
 private fun DonateCard(onOpenUrl: (String) -> Unit) {
+    val url = stringResource(R.string.home_support_url)
     Card(modifier = Modifier.fillMaxWidth()) {
         BasicComponent(
             title = stringResource(R.string.home_support_title),
@@ -439,7 +440,7 @@ private fun DonateCard(onOpenUrl: (String) -> Unit) {
                     contentDescription = null
                 )
             },
-            onClick = { onOpenUrl("https://github.com/kelexine/MySU") },
+            onClick = { onOpenUrl(url) },
             insideMargin = PaddingValues(18.dp)
         )
     }

@@ -39,7 +39,7 @@
     <string name="safe_mode">Sigurnosni mod</string>
     <string name="reboot_to_apply">Ponovo pokrenite da bi proradilo</string>
     <string name="module_magisk_conflict">"Moduli su nedostupni  jer su u sukobu sa Magisk-om!"</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">Naučite kako da instalirate MySU i da koristite module</string>
     <string name="home_support_title">Podržite Nas</string>
     <string name="send_log">Pošaljite Izvještaj</string>

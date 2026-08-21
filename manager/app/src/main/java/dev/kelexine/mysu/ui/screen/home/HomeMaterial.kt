@@ -256,7 +256,13 @@ private fun StatusCard(
             shape = MaterialTheme.shapes.large,
             onClick = {
                 if (!state.isLateLoadMode) {
-                    actions.onInstallClick()
+                    if (notInstalled) {
+                        actions.onInstallClick()
+                    } else if (!mysuActive) {
+                        actions.onOpenUrl("https://kelexine.github.io/mysu/guide/how-to-integrate-for-non-gki.html")
+                    } else {
+                        actions.onInstallClick()
+                    }
                 }
             }
         ) {
@@ -301,6 +307,14 @@ private fun StatusCard(
                                 label = stringResource(id = R.string.jailbreak_mode),
                                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
                                 backgroundColor = MaterialTheme.colorScheme.errorContainer
+                            )
+                        }
+                        if (!mysuActive && !state.kernelVersion.isGKI()) {
+                            Spacer(Modifier.width(8.dp))
+                            StatusTag(
+                                label = stringResource(id = R.string.home_non_gki_hint),
+                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                backgroundColor = MaterialTheme.colorScheme.tertiaryContainer
                             )
                         }
                     }
@@ -365,7 +379,8 @@ private fun LearnMoreCard(onOpenUrl: (String) -> Unit) {
 
 @Composable
 private fun DonateCard(onOpenUrl: (String) -> Unit) {
-    TonalCard(onClick = { onOpenUrl("https://github.com/kelexine/MySU") }) {
+    val url = stringResource(R.string.home_support_url)
+    TonalCard(onClick = { onOpenUrl(url) }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

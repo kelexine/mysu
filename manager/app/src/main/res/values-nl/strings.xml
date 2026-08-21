@@ -42,7 +42,7 @@
     <string name="reboot_to_apply">Herstart om effect te hebben</string>
     <string name="module_magisk_conflict">Modules zijn niet beschikbaar vanwege een conflict met Magisk!</string>
     <string name="home_learn_mysu">Leer MySU</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">Leer hoe MySU te installeren en modules te gebruiken.</string>
     <string name="home_support_title">Ondersteun ons</string>
     <string name="home_support_content">MySU is en blijft gratis en open source. U kunt ons echter laten zien dat u ons steunt door een donatie te doen.</string>

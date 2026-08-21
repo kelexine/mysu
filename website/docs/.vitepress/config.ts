@@ -15,7 +15,7 @@ export default defineConfig( {
         }],
     ],
     sitemap: {
-        hostname: 'https://mysu.org'
+        hostname: 'https://kelexine.github.io/mysu'
     },
     buildEnd: async (config: SiteConfig) => {
         const templateDir = resolve(config.outDir, 'templates');

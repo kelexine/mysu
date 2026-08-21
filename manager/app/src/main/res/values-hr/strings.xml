@@ -43,7 +43,7 @@
     <string name="module_author">Autor</string>
     <string name="module_magisk_conflict">Module su isključene jer je u sukobu sa Magisk-om!</string>
     <string name="home_learn_mysu">Naučite MySU</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">Naučite kako da instalirate MySU i da koristite module.</string>
     <string name="home_support_title">Podržite Nas</string>
     <string name="home_support_content">MySU je i uvijek će biti besplatan i otvorenog koda. Međutim, možete nam pokazati da vam je stalo donacijom.</string>

@@ -42,7 +42,7 @@
     <string name="reboot_to_apply">راه‌اندازی مجدد برای تاثیرگذاری</string>
     <string name="module_magisk_conflict">مازول به دلیل تعارض با مجیسک غیرفعال شده اند\'s!</string>
     <string name="home_learn_mysu">یادگیری MySU</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">یاد بگیرید چگونه از MySU و ماژول ها استفاده کنید</string>
     <string name="home_support_title">از ما حمایت کنید</string>
     <string name="home_support_content">MySU رایگان است و همیشه خواهد بود و منبع باز است. با این حال، می توانید با اهدای کمک مالی به ما نشان دهید که برایتان مهم است.</string>

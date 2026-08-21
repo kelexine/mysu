@@ -42,7 +42,7 @@
     <string name="reboot_to_apply">Reinicie para entrar em vigor</string>
     <string name="module_magisk_conflict">Os módulos estão indisponíveis devido a um conflito com Magisk!</string>
     <string name="home_learn_mysu">Saiba mais sobre o MySU</string>
-    <string name="home_learn_mysu_url">https://mysu.org/pt_BR/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/pt_BR/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">Saiba como instalar o MySU e usar os módulos</string>
     <string name="home_support_title">Apoie-nos</string>
     <string name="home_support_content">MySU sempre foi e sempre será, gratuito e de código aberto. No entanto, você pode nos ajudar enviando uma pequena doação.</string>

@@ -47,7 +47,7 @@
     <string name="reboot_to_apply">Рестартирай за да приеме ефект</string>
     <string name="module_magisk_conflict">Модулите не са налични поради конфликт с Magisk!</string>
     <string name="home_learn_mysu">Научи MySU</string>
-    <string name="home_learn_mysu_url">https://mysu.org/guide/what-is-mysu.html</string>
+    <string name="home_learn_mysu_url">https://kelexine.github.io/mysu/guide/what-is-mysu.html</string>
     <string name="home_click_to_learn_mysu">Научи как да изтеглите MySU и да използвате модули.</string>
     <string name="home_support_title">Помогнете Ни</string>
     <string name="home_support_content">MySU си е, и винаги ще е безплатен, и с отворен код. Обаче, можете да ни покажете че се интересувате като ни направите дарение.</string>
