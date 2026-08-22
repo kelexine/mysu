@@ -5,6 +5,10 @@ on:
       - "v*"
   workflow_dispatch:
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build-manager:
     uses: ./.github/workflows/build-manager.yml
