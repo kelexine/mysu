@@ -12,6 +12,8 @@
 #define FIRST_ISOLATED_UID 99000
 #define LAST_ISOLATED_UID 99999
 
+extern bool allow_shell;
+
 void mysu_allowlist_init(void);
 
 void mysu_allowlist_exit(void);

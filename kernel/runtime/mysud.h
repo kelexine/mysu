@@ -6,6 +6,8 @@
 struct pt_regs;
 struct user_arg_ptr;
 
+extern bool mysu_no_custom_rc;
+
 void mysu_mysud_init(void);
 void mysu_mysud_exit(void);
 
