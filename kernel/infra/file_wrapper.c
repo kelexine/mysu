@@ -92,7 +92,7 @@ static int mysu_wrapper_iopoll(struct kiocb *kiocb, struct io_comp_batch *icb, u
     kiocb->ki_filp = orig;
     return orig->f_op->iopoll(kiocb, icb, v);
 }
-#else
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
 static int mysu_wrapper_iopoll(struct kiocb *kiocb, bool spin)
 {
     struct mysu_file_wrapper *data = kiocb->ki_filp->private_data;
@@ -302,6 +302,7 @@ static ssize_t mysu_wrapper_copy_file_range(struct file *file_in, loff_t pos_in,
     return orig->f_op->copy_file_range(file_in, pos_in, orig, pos_out, len, flags);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)
 // no REMAP_FILE_DEDUP: use file_in
 // https://cs.android.com/android/kernel/superproject/+/common-android-mainline:common/fs/read_write.c;l=1598-1599;drc=398da7defe218d3e51b0f3bdff75147e28125b60
 // https://cs.android.com/android/kernel/superproject/+/common-android-mainline:common/fs/remap_range.c;l=403-404;drc=398da7defe218d3e51b0f3bdff75147e28125b60
@@ -320,6 +321,7 @@ static loff_t mysu_wrapper_remap_file_range(struct file *file_in, loff_t pos_in,
         return orig->f_op->remap_file_range(orig, pos_in, file_out, pos_out, len, remap_flags);
     }
 }
+#endif
 
 static int mysu_wrapper_fadvise(struct file *fp, loff_t off1, loff_t off2, int flags)
 {
@@ -360,7 +362,9 @@ static struct mysu_file_wrapper *mysu_create_file_wrapper(struct file *fp)
     p->ops.write = fp->f_op->write ? mysu_wrapper_write : NULL;
     p->ops.read_iter = fp->f_op->read_iter ? mysu_wrapper_read_iter : NULL;
     p->ops.write_iter = fp->f_op->write_iter ? mysu_wrapper_write_iter : NULL;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
     p->ops.iopoll = fp->f_op->iopoll ? mysu_wrapper_iopoll : NULL;
+#endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0)
     p->ops.iterate = fp->f_op->iterate ? mysu_wrapper_iterate : NULL;
 #endif
@@ -391,7 +395,9 @@ static struct mysu_file_wrapper *mysu_create_file_wrapper(struct file *fp)
     p->ops.fallocate = fp->f_op->fallocate ? mysu_wrapper_fallocate : NULL;
     p->ops.show_fdinfo = fp->f_op->show_fdinfo ? mysu_wrapper_show_fdinfo : NULL;
     p->ops.copy_file_range = fp->f_op->copy_file_range ? mysu_wrapper_copy_file_range : NULL;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)
     p->ops.remap_file_range = fp->f_op->remap_file_range ? mysu_wrapper_remap_file_range : NULL;
+#endif
     p->ops.fadvise = fp->f_op->fadvise ? mysu_wrapper_fadvise : NULL;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 0)
@@ -448,11 +454,13 @@ static struct inode *mysu_anon_inode_make_secure_inode(const char *name, const s
     if (IS_ERR(inode))
         return inode;
     inode->i_flags &= ~S_PRIVATE;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0)
     error = security_inode_init_security_anon(inode, &qname, context_inode);
     if (error) {
         iput(inode);
         return ERR_PTR(error);
     }
+#endif
     return inode;
 }
 
@@ -523,7 +531,11 @@ int mysu_install_file_wrapper(int fd)
     struct inode *wrapper_inode = file_inode(wrapper_file);
     // libc's stdio relies on the fstat() result of the fd to determine its buffer type.
     wrapper_inode->i_mode = file_inode(orig_file)->i_mode;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0)
     struct inode_security_struct *wrapper_sec = selinux_inode(wrapper_inode);
+#else
+    struct inode_security_struct *wrapper_sec = (struct inode_security_struct *)wrapper_inode->i_security;
+#endif
     // Use mysu_file_sid to bypass SELinux check.
     // When we call `su` from terminal app, this is useful.
     if (wrapper_sec) {

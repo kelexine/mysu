@@ -4,6 +4,14 @@
 #include <linux/types.h>
 #include <linux/version.h>
 #include <linux/cred.h>
+#include "objsec.h"
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 7, 0)
+static inline struct task_security_struct *selinux_cred(const struct cred *cred)
+{
+    return cred ? (struct task_security_struct *)cred->security : NULL;
+}
+#endif
 
 #define MYSU_DOMAIN "mysu"
 #define MYSU_FILE "mysu_file"

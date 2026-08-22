@@ -13,7 +13,11 @@
 #include <linux/syscalls.h>
 #include <linux/task_work.h>
 #include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
 #include <uapi/linux/mount.h>
+#else
+#include <linux/mount.h>
+#endif
 
 #include "arch.h"
 #include "klog.h" // IWYU pragma: keep
@@ -21,8 +25,13 @@
 #include "infra/su_mount_ns.h"
 #include "util.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
 extern int path_mount(const char *dev_name, struct path *path, const char *type_page, unsigned long flags,
                       void *data_page);
+#else
+extern long do_mount(const char *dev_name, const char __user *dir_name,
+                     const char *type_page, unsigned long flags, void *data_page);
+#endif
 
 #if defined(__aarch64__)
 extern long __arm64_sys_setns(const struct pt_regs *regs);
@@ -148,7 +157,14 @@ static void mysu_mnt_ns_individual(void)
     // make root mount private
     struct path root_path;
     get_fs_root(current->fs, &root_path);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
     int pm_ret = path_mount(NULL, &root_path, NULL, MS_PRIVATE | MS_REC, NULL);
+#else
+    mm_segment_t old_fs = get_fs();
+    set_fs(KERNEL_DS);
+    int pm_ret = do_mount(NULL, (const char __user *)"/", NULL, MS_PRIVATE | MS_REC, NULL);
+    set_fs(old_fs);
+#endif
     path_put(&root_path);
 
     if (pm_ret < 0) {

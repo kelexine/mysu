@@ -3,14 +3,17 @@
 
 #include <linux/types.h>
 
+#include <linux/version.h>
 #include "ss/policydb.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
 struct selinux_policy;
 extern struct selinux_policy *backup_sepolicy;
 
 struct selinux_policy *mysu_dup_sepolicy(struct selinux_policy *old_pol);
 
 void mysu_destroy_sepolicy(struct selinux_policy *orig);
+#endif
 
 // Operation on types
 bool mysu_type(struct policydb *db, const char *name, const char *attr);

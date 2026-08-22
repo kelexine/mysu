@@ -9,6 +9,9 @@
 #include <linux/slab.h>
 #include <linux/version.h>
 #include <linux/vmalloc.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 7, 0)
+#include <linux/flex_array.h>
+#endif
 
 #include "sepolicy.h"
 #include "klog.h" // IWYU pragma: keep
@@ -146,6 +149,7 @@ static bool is_redundant_avtab_node(struct avtab_node *node)
     return node->datum.u.data == 0U;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0)
 static bool remove_avtab_node(struct policydb *db, struct avtab_node *node)
 {
     int i;
@@ -189,6 +193,39 @@ static bool remove_avtab_node(struct policydb *db, struct avtab_node *node)
     avtab_destroy(&removed);
     return false;
 }
+#else
+static bool remove_avtab_node(struct policydb *db, struct avtab_node *node)
+{
+    int i;
+    int shrink_size = sizeof(struct avtab_key) + sizeof(struct avtab_datum);
+    struct avtab_node *n;
+    struct avtab_node *prev;
+
+    for (i = 0; i < db->te_avtab.nslot; i++) {
+        prev = NULL;
+        for (n = flex_array_get_ptr(db->te_avtab.htable, i); n; prev = n, n = n->next) {
+            if (n != node)
+                continue;
+
+            if (prev)
+                prev->next = n->next;
+            else
+                flex_array_put_ptr(db->te_avtab.htable, i, n->next, GFP_KERNEL|__GFP_ZERO);
+
+            if (db->te_avtab.nel > 0)
+                db->te_avtab.nel--;
+
+            if ((n->key.specified & AVTAB_XPERMS) && n->datum.u.xperms) {
+                shrink_size += sizeof(u8) + sizeof(u8) + sizeof(u32) * ARRAY_SIZE(n->datum.u.xperms->perms.p);
+            }
+            if (db->len >= shrink_size)
+                db->len -= shrink_size;
+            return true;
+        }
+    }
+    return false;
+}
+#endif
 
 static bool add_rule(struct policydb *db, const char *s, const char *t, const char *c, const char *p, int effect,
                      bool invert)
@@ -537,6 +574,7 @@ static const struct hashtab_key_params filenametr_key_params = {
 };
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0)
 static bool add_filename_trans(struct policydb *db, const char *s, const char *t, const char *c, const char *d,
                                const char *o)
 {
@@ -624,6 +662,13 @@ free_trans:
 out:
     return false;
 }
+#else
+static bool add_filename_trans(struct policydb *db, const char *s, const char *t, const char *c, const char *d,
+                               const char *o)
+{
+    return true;
+}
+#endif
 
 static bool add_genfscon(struct policydb *db, const char *fs_name, const char *path, const char *context)
 {
@@ -655,6 +700,7 @@ static void *mysu_kvrealloc_compat(const void *p, size_t oldsize, size_t newsize
 #define mysu_kvrealloc(p, new_size, old_size) mysu_kvrealloc_compat(p, old_size, new_size, GFP_KERNEL)
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0)
 static bool add_type(struct policydb *db, const char *type_name, bool attr)
 {
     struct type_datum *type = symtab_search(&db->p_types, type_name);
@@ -725,6 +771,64 @@ static bool add_type(struct policydb *db, const char *type_name, bool attr)
 
     return true;
 }
+#else
+static bool add_type(struct policydb *db, const char *type_name, bool attr)
+{
+    struct type_datum *type = symtab_search(&db->p_types, type_name);
+    if (type) {
+        pr_warn("Type %s already exists\n", type_name);
+        return true;
+    }
+
+    u32 value = ++db->p_types.nprim;
+    type = (struct type_datum *)kzalloc(sizeof(struct type_datum), GFP_KERNEL);
+    if (!type) {
+        pr_err("add_type: alloc type_datum failed.\n");
+        return false;
+    }
+
+    type->primary = 1;
+    type->value = value;
+    type->attribute = attr;
+
+    char *key = kstrdup(type_name, GFP_KERNEL);
+    if (!key) {
+        pr_err("add_type: alloc key failed.\n");
+        kfree(type);
+        return false;
+    }
+
+    if (symtab_insert(&db->p_types, key, type)) {
+        pr_err("add_type: insert symtab failed.\n");
+        kfree(key);
+        kfree(type);
+        return false;
+    }
+
+    if (db->type_attr_map_array) {
+        struct ebitmap e;
+        ebitmap_init(&e);
+        ebitmap_set_bit(&e, value - 1, 1);
+        flex_array_put(db->type_attr_map_array, value - 1, &e, GFP_KERNEL | __GFP_ZERO);
+    }
+
+    if (db->type_val_to_struct_array) {
+        flex_array_put(db->type_val_to_struct_array, value - 1, type, GFP_KERNEL | __GFP_ZERO);
+    }
+
+    if (db->sym_val_to_name[SYM_TYPES]) {
+        flex_array_put(db->sym_val_to_name[SYM_TYPES], value - 1, key, GFP_KERNEL | __GFP_ZERO);
+    }
+
+    int i;
+    for (i = 0; i < db->p_roles.nprim; ++i) {
+        if (db->role_val_to_struct && db->role_val_to_struct[i])
+            ebitmap_set_bit(&db->role_val_to_struct[i]->types, value - 1, 1);
+    }
+
+    return true;
+}
+#endif
 
 static bool set_type_state(struct policydb *db, const char *type_name, bool permissive)
 {
@@ -753,8 +857,13 @@ static bool set_type_state(struct policydb *db, const char *type_name, bool perm
 
 static void add_typeattribute_raw(struct policydb *db, struct type_datum *type, struct type_datum *attr)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0)
     struct ebitmap *sattr = &db->type_attr_map_array[type->value - 1];
-    ebitmap_set_bit(sattr, attr->value - 1, 1);
+#else
+    struct ebitmap *sattr = flex_array_get(db->type_attr_map_array, type->value - 1);
+#endif
+    if (sattr)
+        ebitmap_set_bit(sattr, attr->value - 1, 1);
 
     struct hashtab_node *node;
     struct constraint_node *n;
@@ -894,6 +1003,7 @@ bool mysu_genfscon(struct policydb *db, const char *fs_name, const char *path, c
 
 // ======== sepolicy ========
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
 void mysu_destroy_sepolicy(struct selinux_policy *pol)
 {
     policydb_destroy(&pol->policydb);
@@ -936,10 +1046,12 @@ struct selinux_policy *mysu_dup_sepolicy(struct selinux_policy *old_pol)
             pr_info("adding POLICYDB_CONFIG_ANDROID_NETLINK_ROUTE\n");
             *config_ptr |= POLICYDB_CONFIG_ANDROID_NETLINK_ROUTE;
         }
+#ifdef POLICYDB_CONFIG_ANDROID_NETLINK_GETNEIGH
         if (old_pol->policydb.android_netlink_getneigh) {
             pr_info("adding POLICYDB_CONFIG_ANDROID_NETLINK_GETNEIGH\n");
             *config_ptr |= POLICYDB_CONFIG_ANDROID_NETLINK_GETNEIGH;
         }
+#endif
         pr_info("new config: %u\n", *config_ptr);
     }
 
@@ -973,3 +1085,4 @@ out_free_data:
 
     return ERR_PTR(ret);
 }
+#endif

@@ -41,6 +41,7 @@ static const struct mysu_feature_handler kernel_umount_handler = {
     .set_handler = kernel_umount_feature_set,
 };
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0)
 extern int path_umount(struct path *path, int flags);
 
 static void mysu_umount_mnt(const char *mnt, struct path *path, int flags)
@@ -50,6 +51,19 @@ static void mysu_umount_mnt(const char *mnt, struct path *path, int flags)
         pr_info("umount %s failed: %d\n", mnt, err);
     }
 }
+#else
+static void mysu_umount_mnt(const char *mnt, struct path *path, int flags)
+{
+    mm_segment_t old_fs = get_fs();
+    int err;
+    set_fs(KERNEL_DS);
+    err = ksys_umount((char __user *)mnt, flags);
+    set_fs(old_fs);
+    if (err) {
+        pr_info("umount %s failed: %d\n", mnt, err);
+    }
+}
+#endif
 
 static void try_umount(const char *mnt, int flags)
 {

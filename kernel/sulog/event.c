@@ -2,14 +2,18 @@
 #include <linux/compat.h>
 #include <linux/cred.h>
 #include <linux/gfp.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
 #include <linux/minmax.h>
+#else
+#include <linux/kernel.h>
+#endif
 #include <linux/overflow.h>
 #include <linux/sched/signal.h>
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/uaccess.h>
 
-#include <linux/version.h>
 #if defined(__x86_64__) && LINUX_VERSION_CODE < KERNEL_VERSION(6, 2, 0)
 #include <linux/mm.h>
 #endif
@@ -18,6 +22,7 @@
 #include "infra/event_queue.h"
 #include "klog.h" // IWYU pragma: keep
 #include "sulog/event.h"
+#include "util.h"
 
 #define MYSU_SULOG_MAX_QUEUED 256U
 #define MYSU_SULOG_MAX_PAYLOAD_LEN 2048U

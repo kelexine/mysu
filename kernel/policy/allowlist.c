@@ -24,6 +24,7 @@
 #include "policy/allowlist.h"
 #include "manager/manager_identity.h"
 #include "infra/su_mount_ns.h"
+#include "util.h"
 
 #define FILE_MAGIC 0x7f4d5355 // ' MSU', u32
 #define LEGACY_FILE_MAGIC 0x7f4b5355 // ' MYSU', u32

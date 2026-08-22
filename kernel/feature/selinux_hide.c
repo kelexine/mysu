@@ -29,6 +29,14 @@
 #include "policy/feature.h"
 #include "hook/lsm_hook.h"
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 7, 0)
+#define selinux_status_lock (selinux_state.ss->status_lock)
+#define selinux_status_page (selinux_state.ss->status_page)
+#else
+#define selinux_status_lock (selinux_state.status_lock)
+#define selinux_status_page (selinux_state.status_page)
+#endif
+
 static DEFINE_MUTEX(selinux_hide_mutex);
 static bool mysu_selinux_hide_enabled __read_mostly = false;
 static bool mysu_selinux_hide_running __read_mostly = false;
@@ -247,15 +255,15 @@ static struct page *fake_status = NULL;
 
 static void initialize_fake_status()
 {
-    mutex_lock(&selinux_state.status_lock);
+    mutex_lock(&selinux_status_lock);
     if (fake_status)
         goto out;
-    if (!selinux_state.status_page) {
+    if (!selinux_status_page) {
         pr_warn("initialize_fake_status: status_page not exist\n");
         goto out;
     }
 
-    struct selinux_kernel_status *status = page_address(selinux_state.status_page);
+    struct selinux_kernel_status *status = page_address(selinux_status_page);
     if (!status->enforcing && !mysu_late_loaded) {
         pr_warn("initialize_fake_status: skip not enforcing\n");
         goto out;
@@ -282,7 +290,7 @@ static void initialize_fake_status()
             new_status->policyload, new_status->enforcing);
 
 out:
-    mutex_unlock(&selinux_state.status_lock);
+    mutex_unlock(&selinux_status_lock);
 }
 
 typedef int (*sel_open_handle_status_fn)(struct inode *inode, struct file *filp);
@@ -291,9 +299,9 @@ static int my_sel_open_handle_status(struct inode *inode, struct file *filp)
 {
     if (likely(current_uid().val >= 10000 && mysu_selinux_hide_enabled)) {
         void *data;
-        mutex_lock(&selinux_state.status_lock);
+        mutex_lock(&selinux_status_lock);
         data = fake_status;
-        mutex_unlock(&selinux_state.status_lock);
+        mutex_unlock(&selinux_status_lock);
         if (data) {
             filp->private_data = data;
             return 0;
@@ -313,10 +321,12 @@ static int mysu_selinux_hide_enable()
 {
     int ret;
     pr_info("selinux_hide: init selinux hide\n");
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
     if (!backup_sepolicy) {
         pr_err("no backup sepolicy available, please save feature and reboot to retry!\n");
         return -EAGAIN;
     }
+#endif
     selinux_write_op = find_kernel_symbol_exact("write_op");
     if (!selinux_write_op) {
         pr_err("selinux_hide: no write_op found!\n");
@@ -333,9 +343,13 @@ static int mysu_selinux_hide_enable()
     if (!context_struct_compute_av_fn) {
         pr_warn("context_struct_compute_av not found!\n");
     }
-#else
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
     fake_state.initialized = true;
     fake_state.policy = backup_sepolicy;
+#else
+    fake_state.initialized = true;
+    fake_state.ss = selinux_state.ss;
+    fake_state.avc = selinux_state.avc;
 #endif
 
     context_write = &selinux_write_op[SEL_CONTEXT];
@@ -506,15 +520,16 @@ void __exit mysu_selinux_hide_exit()
     }
     mutex_unlock(&selinux_hide_mutex);
     mysu_unregister_feature_handler(MYSU_FEATURE_SELINUX_HIDE);
-    mutex_lock(&selinux_state.status_lock);
+    mutex_lock(&selinux_status_lock);
     if (fake_status)
         __free_page(fake_status);
     fake_status = NULL;
-    mutex_unlock(&selinux_state.status_lock);
+    mutex_unlock(&selinux_status_lock);
 }
 
 void mysu_selinux_hide_drop_backup_if_unused()
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
     mutex_lock(&selinux_hide_mutex);
     if (!mysu_selinux_hide_running && backup_sepolicy) {
         pr_info("selinux_hide is not enabled - drop backup_sepolicy\n");
@@ -524,6 +539,7 @@ void mysu_selinux_hide_drop_backup_if_unused()
         backup_sepolicy = NULL;
     }
     mutex_unlock(&selinux_hide_mutex);
+#endif
 }
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 0)

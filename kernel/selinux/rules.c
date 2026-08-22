@@ -42,6 +42,7 @@ static void reset_avc_cache()
     selinux_xfrm_notify_policyload();
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
 void apply_mysu_rules()
 {
     struct selinux_policy *pol, *old_pol = selinux_state.policy;
@@ -163,6 +164,100 @@ void apply_mysu_rules()
 out_unlock:
     mutex_unlock(&selinux_state.policy_mutex);
 }
+#else
+void apply_mysu_rules()
+{
+    struct policydb *db;
+
+    if (!getenforce()) {
+        pr_info("SELinux permissive or disabled, apply rules!\n");
+    }
+
+    if (!selinux_state.ss) {
+        pr_err("selinux_state.ss is NULL!\n");
+        return;
+    }
+
+    write_lock_irq(&selinux_state.ss->policy_rwlock);
+    db = &selinux_state.ss->policydb;
+
+    mysu_type(db, MYSU_DOMAIN, "domain");
+    mysu_permissive(db, MYSU_DOMAIN);
+    mysu_typeattribute(db, MYSU_DOMAIN, "mlstrustedsubject");
+    mysu_typeattribute(db, MYSU_DOMAIN, "netdomain");
+    mysu_typeattribute(db, MYSU_DOMAIN, "bluetoothdomain");
+
+    // Create unconstrained file type
+    mysu_type(db, MYSU_FILE, "file_type");
+    mysu_typeattribute(db, MYSU_FILE, "mlstrustedobject");
+    mysu_allow(db, "domain", MYSU_FILE, ALL, ALL);
+
+    // allow all!
+    mysu_allow(db, MYSU_DOMAIN, ALL, ALL, ALL);
+
+    // allow us do any ioctl
+    if (db->policyvers >= POLICYDB_VERSION_XPERMS_IOCTL) {
+        mysu_allowxperm(db, MYSU_DOMAIN, ALL, "blk_file", ALL);
+        mysu_allowxperm(db, MYSU_DOMAIN, ALL, "fifo_file", ALL);
+        mysu_allowxperm(db, MYSU_DOMAIN, ALL, "chr_file", ALL);
+        mysu_allowxperm(db, MYSU_DOMAIN, ALL, "file", ALL);
+    }
+
+    // our mysud triggered by init
+    mysu_allow(db, "init", MYSU_DOMAIN, ALL, ALL);
+
+    // copied from Magisk rules
+    // suRights
+    mysu_allow(db, "servicemanager", MYSU_DOMAIN, "dir", "search");
+    mysu_allow(db, "servicemanager", MYSU_DOMAIN, "dir", "read");
+    mysu_allow(db, "servicemanager", MYSU_DOMAIN, "file", "open");
+    mysu_allow(db, "servicemanager", MYSU_DOMAIN, "file", "read");
+    mysu_allow(db, "servicemanager", MYSU_DOMAIN, "process", "getattr");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "process", "sigchld");
+
+    // allowLog
+    mysu_allow(db, "logd", MYSU_DOMAIN, "dir", "search");
+    mysu_allow(db, "logd", MYSU_DOMAIN, "file", "read");
+    mysu_allow(db, "logd", MYSU_DOMAIN, "file", "open");
+    mysu_allow(db, "logd", MYSU_DOMAIN, "file", "getattr");
+
+    // dumpsys, send fd
+    mysu_allow(db, "domain", MYSU_DOMAIN, "fd", "use");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "fifo_file", "write");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "fifo_file", "read");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "fifo_file", "open");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "fifo_file", "getattr");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "unix_stream_socket", "read");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "unix_stream_socket", "write");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "unix_stream_socket", "connectto");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "unix_stream_socket", "getopt");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "unix_stream_socket", "getattr");
+
+    // use memfd created by su domain
+    mysu_allow(db, "domain", MYSU_DOMAIN, "memfd_file", "execute");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "memfd_file", "getattr");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "memfd_file", "map");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "memfd_file", "read");
+    mysu_allow(db, "domain", MYSU_DOMAIN, "memfd_file", "write");
+
+    // bootctl
+    mysu_allow(db, "hwservicemanager", MYSU_DOMAIN, "dir", "search");
+    mysu_allow(db, "hwservicemanager", MYSU_DOMAIN, "file", "read");
+    mysu_allow(db, "hwservicemanager", MYSU_DOMAIN, "file", "open");
+    mysu_allow(db, "hwservicemanager", MYSU_DOMAIN, "process", "getattr");
+
+    // Allow all binder transactions
+    mysu_allow(db, "domain", MYSU_DOMAIN, "binder", ALL);
+
+    // Allow system server kill su process
+    mysu_allow(db, "system_server", MYSU_DOMAIN, "process", "getpgid");
+    mysu_allow(db, "system_server", MYSU_DOMAIN, "process", "sigkill");
+
+    write_unlock_irq(&selinux_state.ss->policy_rwlock);
+
+    reset_avc_cache();
+}
+#endif
 
 #define MYSU_SEPOLICY_MAX_BATCH_SIZE (8U * 1024U * 1024U)
 #define MYSU_SEPOLICY_MAX_ARGS 5
@@ -429,6 +524,7 @@ static int apply_one_sepolicy_cmd(struct policydb *db, const struct sepol_data *
     }
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
 int handle_sepolicy(void __user *user_data, u64 data_len)
 {
     struct selinux_policy *pol, *old_pol;
@@ -531,3 +627,95 @@ out_free:
 
     return ret;
 }
+#else
+int handle_sepolicy(void __user *user_data, u64 data_len)
+{
+    struct policydb *db;
+    struct sepol_batch_cursor cursor;
+    u8 *payload;
+    int ret;
+    int success_cmd_count;
+    u32 cmd_index;
+
+    if (!user_data || !data_len) {
+        return -EINVAL;
+    }
+
+    if (data_len > MYSU_SEPOLICY_MAX_BATCH_SIZE) {
+        return -E2BIG;
+    }
+
+    payload = kvmalloc((size_t)data_len, GFP_KERNEL);
+    if (!payload) {
+        return -ENOMEM;
+    }
+
+    if (copy_from_user(payload, user_data, (size_t)data_len)) {
+        ret = -EFAULT;
+        goto out_free;
+    }
+
+    if (!getenforce()) {
+        pr_info("SELinux permissive or disabled when handle policy!\n");
+    }
+
+    if (!selinux_state.ss) {
+        ret = -EINVAL;
+        goto out_free;
+    }
+
+    write_lock_irq(&selinux_state.ss->policy_rwlock);
+    db = &selinux_state.ss->policydb;
+
+    cursor.cur = payload;
+    cursor.end = payload + (size_t)data_len;
+
+    ret = 0;
+    success_cmd_count = 0;
+    cmd_index = 0;
+    while (cursor.cur < cursor.end) {
+        struct sepol_data header;
+        const char *args[MYSU_SEPOLICY_MAX_ARGS] = { 0 };
+        int expected_argc;
+        u32 arg_index;
+
+        ret = sepol_read_cmd_header(&cursor, &header);
+        if (ret < 0) {
+            pr_err("sepol: failed to read cmd header #%u.\n", cmd_index);
+            break;
+        }
+
+        expected_argc = sepol_expected_argc(header.cmd);
+        if (expected_argc < 0 || expected_argc > MYSU_SEPOLICY_MAX_ARGS) {
+            ret = -EINVAL;
+            pr_err("sepol: invalid cmd header #%u.\n", cmd_index);
+            break;
+        }
+
+        for (arg_index = 0; arg_index < (u32)expected_argc; arg_index++) {
+            ret = sepol_read_string(&cursor, &args[arg_index]);
+            if (ret < 0) {
+                pr_err("sepol: failed to read cmd #%u arg #%u.\n", cmd_index, arg_index);
+                break;
+            }
+        }
+
+        ret = apply_one_sepolicy_cmd(db, &header, args);
+        if (ret < 0) {
+            pr_err("sepol: cmd #%u failed, cmd=%u subcmd=%u.\n", cmd_index, header.cmd, header.subcmd);
+        } else {
+            success_cmd_count++;
+        }
+        cmd_index++;
+    }
+
+    write_unlock_irq(&selinux_state.ss->policy_rwlock);
+
+    reset_avc_cache();
+    ret = success_cmd_count;
+
+out_free:
+    kvfree(payload);
+    return ret;
+}
+#endif
