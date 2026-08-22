@@ -66,8 +66,8 @@ jobs:
         OUT_DIR=/github/workspace/out/aarch64
         mkdir -p $OUT_DIR
 
-        # Copy with KMI-specific naming
-        OUTPUT_NAME="${{ inputs.kmi }}_mysu.ko"
+        # Include arch in filename to avoid collision with x86_64 artifact
+        OUTPUT_NAME="${{ inputs.kmi }}-aarch64_mysu.ko"
         cp mysu.ko "$OUT_DIR/$OUTPUT_NAME"
         
         echo "Copied to: $OUT_DIR/$OUTPUT_NAME"
@@ -80,7 +80,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.kmi }}-aarch64-lkm
-        path: /github/workspace/out/aarch64/${{ inputs.kmi }}_mysu.ko
+        path: /github/workspace/out/aarch64/${{ inputs.kmi }}-aarch64_mysu.ko
 
     - name: Build mysu.ko for x64
       env:
@@ -136,8 +136,8 @@ jobs:
         OUT_DIR=/github/workspace/out/x86_64
         mkdir -p $OUT_DIR
 
-        # Copy with KMI-specific naming
-        OUTPUT_NAME="${{ inputs.kmi }}_mysu.ko"
+        # Include arch in filename to avoid collision with aarch64 artifact
+        OUTPUT_NAME="${{ inputs.kmi }}-x86_64_mysu.ko"
         cp mysu.ko "$OUT_DIR/$OUTPUT_NAME"
         
         echo "Copied to: $OUT_DIR/$OUTPUT_NAME"
@@ -150,4 +150,4 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.kmi }}-x86_64-lkm
-        path: /github/workspace/out/x86_64/${{ inputs.kmi }}_mysu.ko
+        path: /github/workspace/out/x86_64/${{ inputs.kmi }}-x86_64_mysu.ko
