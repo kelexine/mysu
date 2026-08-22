@@ -31,7 +31,7 @@
 #define strncpy_from_user_nofault(dst, src, count) strncpy_from_user(dst, (const char __user *)src, count)
 #endif
 
-#ifndef strscpy_pad
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
 static inline ssize_t strscpy_pad(char *dest, const char *src, size_t count)
 {
     ssize_t res = strscpy(dest, src, count);

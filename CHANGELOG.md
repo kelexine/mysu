@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.4] - 2026-08-22
+
+### Added
+- **Legacy Kernel Compatibility (4.19 / 5.4)**: Integrated backward compatibility layers across kernel subsystems:
+  - `ksys_umount` fallback via `set_fs(KERNEL_DS)` for Linux `< 5.9.0`.
+  - `selinux_status_lock` / `selinux_status_page` macros and `fake_state.ss` support for `< 5.7.0` & `< 5.10.0`.
+  - `probe_kernel_read` / `write` mappings, `TWA_RESUME` / `TWA_NONE` compatibility definitions in `util.h`.
+  - Legacy `fsnotify` event handler fallback for `< 5.3.0`.
+  - Linux 4.19 `policydb` `rwlock` synchronization, `flex_array` operations, and legacy `add_type` / `handle_sepolicy`.
+  - `do_mount` fallback for private mount namespace setup on `< 5.8.0`.
+- **AI Agent Guidelines**: Added [`AGENTS.md`](file:///home/kelexine/dev/mysu/AGENTS.md) defining architecture mapping, kernel/userspace standards, and agent operational constraints.
+
+### Fixed
+- **String Helper Macro Guard**: Restricted `strscpy_pad` inline fallback strictly to Linux `< 4.20.0` in `util.h` to resolve conflicting static declaration errors on Android GKI 5.10–6.6.
+- **Manager App Scroll Glitch**: Resolved double-nested `verticalScroll` modifier collision in `AppUpdateDialog.kt`.
+
+---
+
 ## [1.0.3] - 2026-08-21
 
 ### Added
