@@ -232,12 +232,12 @@ static ssize_t mysu_wrapper_splice_read(struct file *fp, loff_t *off, struct pip
 }
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 0)
-void mysu_wrapper_splice_eof(struct file *fp)
+static void mysu_wrapper_splice_eof(struct file *fp)
 {
     struct mysu_file_wrapper *data = fp->private_data;
     struct file *orig = data->orig;
     if (orig->f_op->splice_eof) {
-        return orig->f_op->splice_eof(orig);
+        orig->f_op->splice_eof(orig);
     }
 }
 #endif

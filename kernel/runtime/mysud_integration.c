@@ -476,7 +476,7 @@ static bool is_volumedown_enough(unsigned int count)
     return count >= 3;
 }
 
-int mysu_handle_input_handle_event(unsigned int *type, unsigned int *code, int *value)
+static int mysu_handle_input_handle_event(unsigned int *type, unsigned int *code, int *value)
 {
     if (*type == EV_KEY && *code == KEY_VOLUMEDOWN) {
         int val = *value;

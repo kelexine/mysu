@@ -639,7 +639,7 @@ static bool add_genfscon(struct policydb *db, const char *fs_name, const char *p
 #else
 // https://cs.android.com/android/_/android/kernel/common/+/f5f3e54f811679761c33526e695bd296190faade
 // Some 5.10 kernel don't have this backport, so copy one.
-void *mysu_kvrealloc_compat(const void *p, size_t oldsize, size_t newsize, gfp_t flags)
+static void *mysu_kvrealloc_compat(const void *p, size_t oldsize, size_t newsize, gfp_t flags)
 {
     void *newp;
 
