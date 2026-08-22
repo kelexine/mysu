@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -137,7 +135,6 @@ private fun AppUpdateDialogMaterial(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(max = 280.dp)
-                            .verticalScroll(rememberScrollState())
                     ) {
                         MarkdownContent(
                             content = versionInfo.changelog,
@@ -261,7 +258,6 @@ private fun AppUpdateDialogMiuix(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(max = 260.dp)
-                            .verticalScroll(rememberScrollState())
                     ) {
                         MarkdownContent(
                             content = versionInfo.changelog,
