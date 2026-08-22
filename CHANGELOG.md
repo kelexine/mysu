@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **String Helper Macro Guard**: Restricted `strscpy_pad` inline fallback strictly to Linux `< 4.20.0` in `util.h` to resolve conflicting static declaration errors on Android GKI 5.10–6.6.
+- **Kernel Signature Hash Synchronization**: Updated default `MYSU_EXPECTED_SIZE` (`0x056d`) and `MYSU_EXPECTED_HASH` in `kernel/Kbuild` to match the official GitHub release signing keystore certificate.
 - **Manager App Scroll Glitch**: Resolved double-nested `verticalScroll` modifier collision in `AppUpdateDialog.kt`.
 
 ---
