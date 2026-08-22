@@ -5,6 +5,9 @@
 
 #include "ss/policydb.h"
 
+struct selinux_policy;
+extern struct selinux_policy *backup_sepolicy;
+
 struct selinux_policy *mysu_dup_sepolicy(struct selinux_policy *old_pol);
 
 void mysu_destroy_sepolicy(struct selinux_policy *orig);
