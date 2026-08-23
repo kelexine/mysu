@@ -147,6 +147,7 @@ fun GithubMarkdown(
 
                         override fun onPageFinished(view: WebView, url: String) {
                             super.onPageFinished(view, url)
+                            onLoadingChange(false)
 
                             val js = """
                                 (function() {
