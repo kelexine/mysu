@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.6] - 2026-08-23
+
+### Added
+- **Kernel VFS Path Virtualization & Module Cloaking**: Introduced `MYSU_FEATURE_VFS_HIDE` (ID=5) to make root artifacts invisible to denied/unprivileged applications:
+  - Intercepted `getdents64` syscall to compact out `/data/adb`, `/data/adb/modules`, `/data/adb/mysu`, `/data/adb/magisk`, and `/system/bin/su` entries in directory streams.
+  - Hooked LSM `inode_getattr` to return `-ENOENT` on `stat()`/`statx()`/`access()` for cloaked paths when called from processes in the umount list.
+- **Daemon & CLI Feature Support**: Extended `mysud` with `FeatureId::VfsHide` supporting `mysud feature check/get/set/list/save vfs_hide`.
+- **Manager App Configuration**:
+  - Implemented JNI bridge functions `isVfsHideEnabled()` and `setVfsHideEnabled()`.
+  - Added reactive UI toggles with `VisibilityOff` icons in both Material 3 Expressive and Miuix settings layouts.
+  - Integrated settings persistence via daemon feature save.
+
+---
+
 ## [1.0.5] - 2026-08-23
 
 ### Added
