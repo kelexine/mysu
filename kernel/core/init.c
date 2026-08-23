@@ -25,6 +25,7 @@
 #include "hook/syscall_hook.h"
 #include "feature/adb_root.h"
 #include "feature/selinux_hide.h"
+#include "feature/vfs_hide.h"
 #include "infra/symbol_resolver.h"
 
 #if defined(__x86_64__) && !defined(CONFIG_MYSU_X86_PATCH_SYSCALL_DISPATCHER)
@@ -134,6 +135,7 @@ int __init mysu_init(void)
     mysu_adb_root_init();
     mysu_lsm_hook_init();
     mysu_selinux_hide_init();
+    mysu_vfs_hide_init();
 
     mysu_supercalls_init();
 
@@ -207,6 +209,7 @@ void __exit mysu_exit(void)
     mysu_allowlist_exit();
 
     mysu_selinux_hide_exit();
+    mysu_vfs_hide_exit();
     mysu_lsm_hook_exit();
     mysu_adb_root_exit();
     mysu_sulog_exit();
