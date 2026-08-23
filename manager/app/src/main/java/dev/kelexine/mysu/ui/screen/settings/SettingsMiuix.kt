@@ -22,13 +22,20 @@ import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DeveloperMode
 import androidx.compose.material.icons.rounded.ElectricalServices
+import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Fence
+import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.FolderDelete
+import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Policy
 import androidx.compose.material.icons.rounded.RemoveCircle
 import androidx.compose.material.icons.rounded.RemoveModerator
 import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material.icons.rounded.UploadFile
 import androidx.compose.runtime.Composable
@@ -198,6 +205,122 @@ fun SettingPagerMiuix(
                                 },
                                 onClick = actions.onOpenProfileTemplate
                             )
+                        }
+                    }
+
+                    if (uiState.isBiometricAvailable) {
+                        Card(
+                            modifier = Modifier
+                                .padding(top = 12.dp)
+                                .fillMaxWidth(),
+                        ) {
+                            SwitchPreference(
+                                title = stringResource(id = R.string.biometric_auth),
+                                summary = stringResource(id = R.string.biometric_auth_summary),
+                                startAction = {
+                                    Icon(
+                                        Icons.Rounded.Fingerprint,
+                                        modifier = Modifier.padding(end = 6.dp),
+                                        contentDescription = stringResource(id = R.string.biometric_auth),
+                                        tint = colorScheme.onBackground
+                                    )
+                                },
+                                checked = uiState.biometricEnabled,
+                                onCheckedChange = actions.onSetBiometricEnabled
+                            )
+                            if (uiState.biometricEnabled) {
+                                val timeoutItems = listOf(
+                                    stringResource(id = R.string.biometric_timeout_always),
+                                    stringResource(id = R.string.biometric_timeout_1min),
+                                    stringResource(id = R.string.biometric_timeout_5min),
+                                    stringResource(id = R.string.biometric_timeout_session),
+                                )
+                                OverlayDropdownPreference(
+                                    title = stringResource(id = R.string.biometric_timeout),
+                                    summary = timeoutItems.getOrElse(uiState.biometricTimeoutMode) { timeoutItems[1] },
+                                    items = timeoutItems,
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.Timer,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = stringResource(id = R.string.biometric_timeout),
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    selectedIndex = uiState.biometricTimeoutMode.coerceIn(0, 3),
+                                    onSelectedIndexChange = actions.onSetBiometricTimeoutMode
+                                )
+                                SwitchPreference(
+                                    title = stringResource(id = R.string.biometric_auth_root_grant),
+                                    summary = stringResource(id = R.string.biometric_auth_root_grant_summary),
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.Lock,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = stringResource(id = R.string.biometric_auth_root_grant),
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    checked = uiState.biometricOnRootGrant,
+                                    onCheckedChange = actions.onSetBiometricOnRootGrant
+                                )
+                                SwitchPreference(
+                                    title = stringResource(id = R.string.biometric_auth_app_profile),
+                                    summary = stringResource(id = R.string.biometric_auth_app_profile_summary),
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.Security,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = stringResource(id = R.string.biometric_auth_app_profile),
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    checked = uiState.biometricOnAppProfile,
+                                    onCheckedChange = actions.onSetBiometricOnAppProfile
+                                )
+                                SwitchPreference(
+                                    title = stringResource(id = R.string.biometric_auth_settings),
+                                    summary = stringResource(id = R.string.biometric_auth_settings_summary),
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.Settings,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = stringResource(id = R.string.biometric_auth_settings),
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    checked = uiState.biometricOnSettings,
+                                    onCheckedChange = actions.onSetBiometricOnSettings
+                                )
+                                SwitchPreference(
+                                    title = stringResource(id = R.string.biometric_auth_modules),
+                                    summary = stringResource(id = R.string.biometric_auth_modules_summary),
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.Extension,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = stringResource(id = R.string.biometric_auth_modules),
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    checked = uiState.biometricOnModules,
+                                    onCheckedChange = actions.onSetBiometricOnModules
+                                )
+                                SwitchPreference(
+                                    title = stringResource(id = R.string.biometric_auth_app_launch),
+                                    summary = stringResource(id = R.string.biometric_auth_app_launch_summary),
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.Key,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = stringResource(id = R.string.biometric_auth_app_launch),
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    checked = uiState.biometricOnAppLaunch,
+                                    onCheckedChange = actions.onSetBiometricOnAppLaunch
+                                )
+                            }
                         }
                     }
 

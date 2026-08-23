@@ -54,7 +54,17 @@ data class SettingsUiState(
     val autoJailbreak: Boolean = false,
 
     // Soft Reboot
-    val useSoftReboot: Boolean = false
+    val useSoftReboot: Boolean = false,
+
+    // Biometric Security
+    val biometricEnabled: Boolean = false,
+    val biometricOnRootGrant: Boolean = true,
+    val biometricOnAppProfile: Boolean = true,
+    val biometricOnSettings: Boolean = true,
+    val biometricOnModules: Boolean = true,
+    val biometricOnAppLaunch: Boolean = false,
+    val biometricTimeoutMode: Int = 1,
+    val isBiometricAvailable: Boolean = false
 )
 
 @Immutable
@@ -73,5 +83,12 @@ data class SettingsScreenActions(
     val onSetEnableWebDebugging: (Boolean) -> Unit,
     val onSetAutoJailbreak: (Boolean) -> Unit,
     val onSetUseSoftReboot: (Boolean) -> Unit,
+    val onSetBiometricEnabled: (Boolean) -> Unit,
+    val onSetBiometricOnRootGrant: (Boolean) -> Unit,
+    val onSetBiometricOnAppProfile: (Boolean) -> Unit,
+    val onSetBiometricOnSettings: (Boolean) -> Unit,
+    val onSetBiometricOnModules: (Boolean) -> Unit,
+    val onSetBiometricOnAppLaunch: (Boolean) -> Unit,
+    val onSetBiometricTimeoutMode: (Int) -> Unit,
     val onOpenAbout: () -> Unit,
 )

@@ -3,25 +3,36 @@ package dev.kelexine.mysu.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -36,9 +47,12 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -51,8 +65,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import dev.kelexine.mysu.Natives
+import dev.kelexine.mysu.R
 import dev.kelexine.mysu.ui.component.bottombar.BottomBar
 import dev.kelexine.mysu.ui.component.bottombar.MainPagerState
 import dev.kelexine.mysu.ui.component.bottombar.NavigationBadgeState
@@ -79,6 +95,9 @@ import dev.kelexine.mysu.ui.screen.sulog.SulogScreen
 import dev.kelexine.mysu.ui.screen.superuser.SuperUserPager
 import dev.kelexine.mysu.ui.screen.template.AppProfileTemplateScreen
 import dev.kelexine.mysu.ui.screen.templateeditor.TemplateEditorScreen
+import dev.kelexine.mysu.ui.security.BiometricAction
+import dev.kelexine.mysu.ui.security.BiometricAuthResult
+import dev.kelexine.mysu.ui.security.BiometricSecurityManager
 import dev.kelexine.mysu.ui.theme.MySUTheme
 import dev.kelexine.mysu.ui.theme.LocalColorMode
 import dev.kelexine.mysu.ui.theme.LocalEnableBlur
@@ -99,7 +118,7 @@ import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     private val intentChannel = Channel<Intent>(capacity = Channel.BUFFERED)
 
@@ -118,6 +137,23 @@ class MainActivity : ComponentActivity() {
             val appSettings = uiState.appSettings
             val uiMode = uiState.uiMode
             val darkMode = appSettings.colorMode.isDark || (appSettings.colorMode.isSystem && isSystemInDarkTheme())
+
+            val biometricManager = remember { BiometricSecurityManager.getInstance() }
+            var isAppUnlocked by remember {
+                mutableStateOf(!biometricManager.isAuthRequired(BiometricAction.APP_LAUNCH))
+            }
+
+            LaunchedEffect(Unit) {
+                if (!isAppUnlocked) {
+                    val result = biometricManager.authenticate(
+                        this@MainActivity,
+                        BiometricAction.APP_LAUNCH
+                    )
+                    if (result is BiometricAuthResult.Success) {
+                        isAppUnlocked = true
+                    }
+                }
+            }
 
             DisposableEffect(darkMode) {
                 enableEdgeToEdge(
@@ -151,61 +187,102 @@ class MainActivity : ComponentActivity() {
                 LocalUiMode provides uiMode,
             ) {
                 MySUTheme(appSettings = appSettings, uiMode = uiMode) {
-                    IntentDispatcher(intentChannel = intentChannel)
-                    val mainScreenEntry = @Composable {
-                        MainScreen(
-                            initialPage = selectedMainPage,
-                            onPageChanged = viewModel::setSelectedMainPage,
-                        )
-                    }
-
-                    val navDisplay = @Composable {
-                        NavDisplay(
-                            backStack = navigator.backStack,
-                            entryDecorators = listOf(
-                                rememberSaveableStateHolderNavEntryDecorator(),
-                                rememberViewModelStoreNavEntryDecorator()
-                            ),
-                            onBack = {
-                                when (val top = navigator.current()) {
-                                    is Route.TemplateEditor -> {
-                                        if (!top.readOnly) {
-                                            navigator.setResult("template_edit", true)
-                                        } else {
-                                            navigator.pop()
+                    if (!isAppUnlocked) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.background),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.padding(24.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.Lock,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(64.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = stringResource(R.string.biometric_prompt_title),
+                                    style = MaterialTheme.typography.titleLarge
+                                )
+                                Button(
+                                    onClick = {
+                                        lifecycleScope.launch {
+                                            val result = biometricManager.authenticate(
+                                                this@MainActivity,
+                                                BiometricAction.APP_LAUNCH
+                                            )
+                                            if (result is BiometricAuthResult.Success) {
+                                                isAppUnlocked = true
+                                            }
                                         }
                                     }
-
-                                    else -> navigator.pop()
+                                ) {
+                                    Text(stringResource(R.string.biometric_unlock))
                                 }
-                            },
-                            entryProvider = entryProvider {
-                                entry<Route.Main> { mainScreenEntry() }
-                                entry<Route.About> { AboutScreen() }
-                                entry<Route.Sulog> { SulogScreen() }
-                                entry<Route.ColorPalette> { ColorPaletteScreen() }
-                                entry<Route.AppProfileTemplate> { AppProfileTemplateScreen() }
-                                entry<Route.TemplateEditor> { key -> TemplateEditorScreen(key.template, key.readOnly) }
-                                entry<Route.AppProfile> { key -> AppProfileScreen(key.uid) }
-                                entry<Route.ModuleRepo> { ModuleRepoScreen() }
-                                entry<Route.ModuleRepoDetail> { key -> ModuleRepoDetailScreen(key.module) }
-                                entry<Route.Install> { InstallScreen() }
-                                entry<Route.Flash> { key -> FlashScreen(key.flashIt) }
-                                entry<Route.ExecuteModuleAction> { key -> ExecuteModuleActionScreen(key.moduleId, key.fromShortcut) }
-                                entry<Route.Home> { mainScreenEntry() }
-                                entry<Route.SuperUser> { mainScreenEntry() }
-                                entry<Route.Module> { mainScreenEntry() }
-                                entry<Route.Settings> { mainScreenEntry() }
                             }
-                        )
-                    }
+                        }
+                    } else {
+                        IntentDispatcher(intentChannel = intentChannel)
+                        val mainScreenEntry = @Composable {
+                            MainScreen(
+                                initialPage = selectedMainPage,
+                                onPageChanged = viewModel::setSelectedMainPage,
+                            )
+                        }
 
-                    when (uiMode) {
-                        UiMode.Material -> androidx.compose.material3.Scaffold(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ) { navDisplay() }
+                        val navDisplay = @Composable {
+                            NavDisplay(
+                                backStack = navigator.backStack,
+                                entryDecorators = listOf(
+                                    rememberSaveableStateHolderNavEntryDecorator(),
+                                    rememberViewModelStoreNavEntryDecorator()
+                                ),
+                                onBack = {
+                                    when (val top = navigator.current()) {
+                                        is Route.TemplateEditor -> {
+                                            if (!top.readOnly) {
+                                                navigator.setResult("template_edit", true)
+                                            } else {
+                                                navigator.pop()
+                                            }
+                                        }
 
-                        UiMode.Miuix -> Scaffold { navDisplay() }
+                                        else -> navigator.pop()
+                                    }
+                                },
+                                entryProvider = entryProvider {
+                                    entry<Route.Main> { mainScreenEntry() }
+                                    entry<Route.About> { AboutScreen() }
+                                    entry<Route.Sulog> { SulogScreen() }
+                                    entry<Route.ColorPalette> { ColorPaletteScreen() }
+                                    entry<Route.AppProfileTemplate> { AppProfileTemplateScreen() }
+                                    entry<Route.TemplateEditor> { key -> TemplateEditorScreen(key.template, key.readOnly) }
+                                    entry<Route.AppProfile> { key -> AppProfileScreen(key.uid) }
+                                    entry<Route.ModuleRepo> { ModuleRepoScreen() }
+                                    entry<Route.ModuleRepoDetail> { key -> ModuleRepoDetailScreen(key.module) }
+                                    entry<Route.Install> { InstallScreen() }
+                                    entry<Route.Flash> { key -> FlashScreen(key.flashIt) }
+                                    entry<Route.ExecuteModuleAction> { key -> ExecuteModuleActionScreen(key.moduleId, key.fromShortcut) }
+                                    entry<Route.Home> { mainScreenEntry() }
+                                    entry<Route.SuperUser> { mainScreenEntry() }
+                                    entry<Route.Module> { mainScreenEntry() }
+                                    entry<Route.Settings> { mainScreenEntry() }
+                                }
+                            )
+                        }
+
+                        when (uiMode) {
+                            UiMode.Material -> androidx.compose.material3.Scaffold(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ) { navDisplay() }
+
+                            UiMode.Miuix -> Scaffold { navDisplay() }
+                        }
                     }
                 }
             }

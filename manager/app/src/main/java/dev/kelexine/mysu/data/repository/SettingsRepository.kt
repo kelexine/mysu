@@ -25,6 +25,13 @@ interface SettingsRepository {
     var suLogFilters: Set<String>?
     var autoJailbreak: Boolean
     var useSoftReboot: Boolean
+    var biometricEnabled: Boolean
+    var biometricOnRootGrant: Boolean
+    var biometricOnAppProfile: Boolean
+    var biometricOnSettings: Boolean
+    var biometricOnModules: Boolean
+    var biometricOnAppLaunch: Boolean
+    var biometricTimeoutMode: Int
     val intentToken: String
 
     suspend fun getSuCompatStatus(): String

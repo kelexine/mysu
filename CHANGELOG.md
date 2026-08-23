@@ -11,7 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.4] - 2026-08-22
+## [1.0.5] - 2026-08-23
+
+### Added
+- **Biometric & Device Credential Security Gate**: Integrated hardware-backed biometric authentication (`BIOMETRIC_STRONG | DEVICE_CREDENTIAL`) across the Manager app:
+  - Added [`BiometricSecurityManager`](file:///home/kelexine/dev/mysu/manager/app/src/main/java/dev/kelexine/mysu/ui/security/BiometricSecurityManager.kt) coroutine bridge supporting fingerprint, face unlock, and device PIN/pattern.
+  - Implemented configurable session authentication timeouts (`Every time`, `1 minute`, `5 minutes`, `Until app closes`).
+  - Added granular security policies to protect root granting/revocation, app profile edits, kernel setting modifications, and module operations.
+  - Added optional App Launch Lock protecting the Manager on application startup.
+  - Added dedicated Security & Authentication preference sections in Material 3 Expressive and Miuix layouts.
 
 ### Added
 - **Legacy Kernel Compatibility (4.19 / 5.4)**: Integrated backward compatibility layers across kernel subsystems:

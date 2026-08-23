@@ -92,6 +92,9 @@ fun AppProfileScreen(uid: Int) {
         sharedUserId = sharedUserId,
     )
 
+    val activity = context as? androidx.fragment.app.FragmentActivity
+    val biometricManager = remember { dev.kelexine.mysu.ui.security.BiometricSecurityManager.getInstance() }
+
     val actions = AppProfileActions(
         onBack = dropUnlessResumed { navigator.pop() },
         onLaunchApp = ::launchApp,
@@ -107,6 +110,17 @@ fun AppProfileScreen(uid: Int) {
         },
         onProfileChange = { updatedProfile ->
             scope.launch {
+                val action = if (updatedProfile.allowSu != profile.allowSu) {
+                    dev.kelexine.mysu.ui.security.BiometricAction.ROOT_GRANT
+                } else {
+                    dev.kelexine.mysu.ui.security.BiometricAction.APP_PROFILE
+                }
+                if (activity != null && biometricManager.isAuthRequired(action)) {
+                    val authResult = biometricManager.authenticate(activity, action, primaryAppInfo.label)
+                    if (authResult !is dev.kelexine.mysu.ui.security.BiometricAuthResult.Success) {
+                        return@launch
+                    }
+                }
                 if (updatedProfile.allowSu) {
                     if (uid < 2000 && uid != 1000) {
                         showMessage(suNotAllowed)

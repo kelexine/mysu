@@ -68,6 +68,14 @@ class SettingsViewModel(
             val autoJailbreak = repo.autoJailbreak
             val useSoftReboot = repo.useSoftReboot
             val isLateLoadMode = Natives.isLateLoadMode
+            val biometricEnabled = repo.biometricEnabled
+            val biometricOnRootGrant = repo.biometricOnRootGrant
+            val biometricOnAppProfile = repo.biometricOnAppProfile
+            val biometricOnSettings = repo.biometricOnSettings
+            val biometricOnModules = repo.biometricOnModules
+            val biometricOnAppLaunch = repo.biometricOnAppLaunch
+            val biometricTimeoutMode = repo.biometricTimeoutMode
+            val isBiometricAvailable = dev.kelexine.mysu.ui.security.BiometricSecurityManager.getInstance(repo).canAuthenticate(mysuApp)
 
             _uiState.update {
                 it.copy(
@@ -102,9 +110,52 @@ class SettingsViewModel(
                     autoJailbreak = autoJailbreak,
                     useSoftReboot = useSoftReboot,
                     isLateLoadMode = isLateLoadMode,
+                    biometricEnabled = biometricEnabled,
+                    biometricOnRootGrant = biometricOnRootGrant,
+                    biometricOnAppProfile = biometricOnAppProfile,
+                    biometricOnSettings = biometricOnSettings,
+                    biometricOnModules = biometricOnModules,
+                    biometricOnAppLaunch = biometricOnAppLaunch,
+                    biometricTimeoutMode = biometricTimeoutMode,
+                    isBiometricAvailable = isBiometricAvailable,
                 )
             }
         }
+    }
+
+    fun setBiometricEnabled(enabled: Boolean) {
+        repo.biometricEnabled = enabled
+        _uiState.update { it.copy(biometricEnabled = enabled) }
+    }
+
+    fun setBiometricOnRootGrant(enabled: Boolean) {
+        repo.biometricOnRootGrant = enabled
+        _uiState.update { it.copy(biometricOnRootGrant = enabled) }
+    }
+
+    fun setBiometricOnAppProfile(enabled: Boolean) {
+        repo.biometricOnAppProfile = enabled
+        _uiState.update { it.copy(biometricOnAppProfile = enabled) }
+    }
+
+    fun setBiometricOnSettings(enabled: Boolean) {
+        repo.biometricOnSettings = enabled
+        _uiState.update { it.copy(biometricOnSettings = enabled) }
+    }
+
+    fun setBiometricOnModules(enabled: Boolean) {
+        repo.biometricOnModules = enabled
+        _uiState.update { it.copy(biometricOnModules = enabled) }
+    }
+
+    fun setBiometricOnAppLaunch(enabled: Boolean) {
+        repo.biometricOnAppLaunch = enabled
+        _uiState.update { it.copy(biometricOnAppLaunch = enabled) }
+    }
+
+    fun setBiometricTimeoutMode(mode: Int) {
+        repo.biometricTimeoutMode = mode
+        _uiState.update { it.copy(biometricTimeoutMode = mode) }
     }
 
     fun setCheckUpdate(enabled: Boolean) {

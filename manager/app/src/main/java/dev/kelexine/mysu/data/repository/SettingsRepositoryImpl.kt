@@ -146,6 +146,34 @@ class SettingsRepositoryImpl : SettingsRepository {
         get() = prefs.getBoolean(KEY_USE_SOFT_REBOOT, false)
         set(value) = prefs.edit { putBoolean(KEY_USE_SOFT_REBOOT, value) }
 
+    override var biometricEnabled: Boolean
+        get() = prefs.getBoolean("biometric_enabled", false)
+        set(value) = prefs.edit { putBoolean("biometric_enabled", value) }
+
+    override var biometricOnRootGrant: Boolean
+        get() = prefs.getBoolean("biometric_on_root_grant", true)
+        set(value) = prefs.edit { putBoolean("biometric_on_root_grant", value) }
+
+    override var biometricOnAppProfile: Boolean
+        get() = prefs.getBoolean("biometric_on_app_profile", true)
+        set(value) = prefs.edit { putBoolean("biometric_on_app_profile", value) }
+
+    override var biometricOnSettings: Boolean
+        get() = prefs.getBoolean("biometric_on_settings", true)
+        set(value) = prefs.edit { putBoolean("biometric_on_settings", value) }
+
+    override var biometricOnModules: Boolean
+        get() = prefs.getBoolean("biometric_on_modules", true)
+        set(value) = prefs.edit { putBoolean("biometric_on_modules", value) }
+
+    override var biometricOnAppLaunch: Boolean
+        get() = prefs.getBoolean("biometric_on_app_launch", false)
+        set(value) = prefs.edit { putBoolean("biometric_on_app_launch", value) }
+
+    override var biometricTimeoutMode: Int
+        get() = prefs.getInt("biometric_timeout_mode", 1) // Default to 1 minute grace period
+        set(value) = prefs.edit { putInt("biometric_timeout_mode", value) }
+
     override val intentToken: String
         get() {
         val existing = prefs.getString(INTENT_TOKEN_KEY, null)

@@ -198,6 +198,7 @@ base {
 
 dependencies {
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.biometric)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material.icons.extended)

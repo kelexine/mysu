@@ -42,6 +42,13 @@ fun SettingPager(
         onSetEnableWebDebugging = viewModel::setEnableWebDebugging,
         onSetAutoJailbreak = viewModel::setAutoJailbreak,
         onSetUseSoftReboot = viewModel::setUseSoftReboot,
+        onSetBiometricEnabled = viewModel::setBiometricEnabled,
+        onSetBiometricOnRootGrant = viewModel::setBiometricOnRootGrant,
+        onSetBiometricOnAppProfile = viewModel::setBiometricOnAppProfile,
+        onSetBiometricOnSettings = viewModel::setBiometricOnSettings,
+        onSetBiometricOnModules = viewModel::setBiometricOnModules,
+        onSetBiometricOnAppLaunch = viewModel::setBiometricOnAppLaunch,
+        onSetBiometricTimeoutMode = viewModel::setBiometricTimeoutMode,
         onOpenAbout = { navigator.push(Route.About) },
     )
 
