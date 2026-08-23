@@ -152,7 +152,7 @@ bool mysu_vfs_hide_should_hide_path(const char *path)
  * under @parent_path and remove entries whose resolved path is cloaked.
  * Returns the adjusted byte count.
  */
-static long filter_dirent64_buf(char *kbuf, long count, const char *parent_path)
+static long filter_dirent64_buf(char *kbuf, long count, const char *parent_path, char *full_path_buf)
 {
     char *p = kbuf;
     char *end = kbuf + count;
@@ -168,12 +168,11 @@ static long filter_dirent64_buf(char *kbuf, long count, const char *parent_path)
             break;
 
         /* Build full path: parent_path + "/" + d_name */
-        if (parent_path) {
-            char full[PATH_MAX];
-            int written = snprintf(full, sizeof(full), "%s/%s", parent_path, de->d_name);
+        if (parent_path && full_path_buf) {
+            int written = snprintf(full_path_buf, PATH_MAX, "%s/%s", parent_path, de->d_name);
 
             if (written > 0 && written < PATH_MAX)
-                hide = path_is_cloaked(full);
+                hide = path_is_cloaked(full_path_buf);
         }
 
         if (!hide) {
@@ -194,6 +193,7 @@ long mysu_vfs_hide_handle_getdents64(int orig_nr, const struct pt_regs *regs)
     long ret;
     struct file *filp = NULL;
     char *path_buf = NULL;
+    char *full_path_buf = NULL;
     char *parent_path = NULL;
     char *kbuf = NULL;
     long kbuf_size;
@@ -261,12 +261,16 @@ long mysu_vfs_hide_handle_getdents64(int orig_nr, const struct pt_regs *regs)
         if (!kbuf)
             goto out_free_path;
 
+        full_path_buf = kmalloc(PATH_MAX, GFP_KERNEL);
+        if (!full_path_buf)
+            goto out_free_kbuf;
+
         if (copy_from_user(kbuf, ubuf, kbuf_size)) {
             pr_warn("vfs_hide: copy_from_user failed\n");
-            goto out_free_kbuf;
+            goto out_free_full_path;
         }
 
-        ret = filter_dirent64_buf(kbuf, kbuf_size, parent_path);
+        ret = filter_dirent64_buf(kbuf, kbuf_size, parent_path, full_path_buf);
 
         if (copy_to_user(ubuf, kbuf, kbuf_size)) {
             pr_warn("vfs_hide: copy_to_user failed\n");
@@ -274,6 +278,8 @@ long mysu_vfs_hide_handle_getdents64(int orig_nr, const struct pt_regs *regs)
         }
     }
 
+out_free_full_path:
+    kfree(full_path_buf);
 out_free_kbuf:
     kfree(kbuf);
 out_free_path:
