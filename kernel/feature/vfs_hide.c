@@ -287,13 +287,14 @@ out_fput:
  * LSM inode_getattr hook — block stat() on cloaked inodes
  * ---------------------------------------------------------------------- */
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
+struct mnt_idmap;
 typedef int (*inode_getattr_fn)(struct mnt_idmap *idmap,
                                 const struct path *path,
                                 struct kstat *stat,
                                 u32 request_mask,
                                 unsigned int query_flags);
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
 typedef int (*inode_getattr_fn)(struct user_namespace *mnt_userns,
                                 const struct path *path,
                                 struct kstat *stat,
@@ -308,13 +309,13 @@ typedef int (*inode_getattr_fn)(const struct path *path,
 
 static inode_getattr_fn orig_inode_getattr;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
 static int mysu_inode_getattr(struct mnt_idmap *idmap,
                               const struct path *path,
                               struct kstat *stat,
                               u32 request_mask,
                               unsigned int query_flags)
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
 static int mysu_inode_getattr(struct user_namespace *mnt_userns,
                               const struct path *path,
                               struct kstat *stat,
@@ -342,9 +343,9 @@ static int mysu_inode_getattr(const struct path *path,
     }
 
     if (orig_inode_getattr) {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
         return orig_inode_getattr(idmap, path, stat, request_mask, query_flags);
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
         return orig_inode_getattr(mnt_userns, path, stat, request_mask, query_flags);
 #else
         return orig_inode_getattr(path, stat, request_mask, query_flags);
@@ -368,8 +369,8 @@ static struct mysu_lsm_hook inode_getattr_hook = MYSU_LSM_HOOK_INIT(inode_getatt
  * pid 1 sibling or our stored mysud_pid).
  *
  * We intercept this by hooking the inode_getattr LSM point for inodes
- * under /proc/*/status combined with a file_open hook that wraps the
- * file's read op.  For simplicity in this implementation we emit a
+ * under /proc/[pid]/status combined with a file_open hook that wraps the
+ * file's read op. For simplicity in this implementation we emit a
  * conservative best-effort approach: the getdents64 hook already hides
  * the /proc/mysud_pid entry from the deny list, which is the primary
  * detection vector. Full status-file rewriting is left for a follow-up
