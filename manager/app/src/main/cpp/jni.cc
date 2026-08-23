@@ -360,6 +360,18 @@ Java_dev_kelexine_mysu_Natives_setSelinuxHideEnabled(JNIEnv *env, jobject thiz, 
 }
 
 extern "C"
+JNIEXPORT jboolean JNICALL
+Java_dev_kelexine_mysu_Natives_isVfsHideEnabled(JNIEnv *env, jobject thiz) {
+    return is_vfs_hide_enabled();
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_dev_kelexine_mysu_Natives_setVfsHideEnabled(JNIEnv *env, jobject thiz, jboolean enabled) {
+    return set_vfs_hide_enabled(enabled);
+}
+
+extern "C"
 JNIEXPORT jstring JNICALL
 Java_dev_kelexine_mysu_Natives_getUserName(JNIEnv *env, jobject thiz, jint uid) {
     struct passwd *pw = getpwuid((uid_t) uid);

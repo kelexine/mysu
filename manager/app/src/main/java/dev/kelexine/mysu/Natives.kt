@@ -90,6 +90,14 @@ object Natives {
     external fun setSelinuxHideEnabled(enabled: Boolean): Int
 
     /**
+     * VFS path cloaking hides /data/adb and module paths from denied UIDs.
+     *  false: disabled (default)
+     *  true:  enabled
+     */
+    external fun isVfsHideEnabled(): Boolean
+    external fun setVfsHideEnabled(enabled: Boolean): Boolean
+
+    /**
      * Get the user name for the uid.
      */
     external fun getUserName(uid: Int): String?

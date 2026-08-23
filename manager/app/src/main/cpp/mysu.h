@@ -51,6 +51,11 @@ int set_selinux_hide_enabled(bool enabled);
 
 bool is_selinux_hide_enabled();
 
+// VFS hide
+bool set_vfs_hide_enabled(bool enabled);
+
+bool is_vfs_hide_enabled();
+
 bool get_allow_list(struct mysu_new_get_allow_list_cmd *);
 
 inline std::pair<int, int> legacy_get_info() {

@@ -59,6 +59,8 @@ class SettingsViewModel(
             val isKernelUmountEnabled = repo.isKernelUmountEnabled()
             val selinuxHideStatus = repo.getSelinuxHideStatus()
             val isSelinuxHideEnabled = repo.isSelinuxHideEnabled()
+            val vfsHideStatus = repo.getVfsHideStatus()
+            val isVfsHideEnabled = repo.isVfsHideEnabled()
             val sulogStatus = repo.getSulogStatus()
             val isSulogEnabled = repo.getSulogPersistValue() == 1L
             val adbRootStatus = repo.getAdbRootStatus()
@@ -103,6 +105,8 @@ class SettingsViewModel(
                     isKernelUmountEnabled = isKernelUmountEnabled,
                     selinuxHideStatus = selinuxHideStatus,
                     isSelinuxHideEnabled = isSelinuxHideEnabled,
+                    vfsHideStatus = vfsHideStatus,
+                    isVfsHideEnabled = isVfsHideEnabled,
                     sulogStatus = sulogStatus,
                     isSulogEnabled = isSulogEnabled,
                     isDefaultUmountModules = isDefaultUmountModules,
@@ -333,6 +337,15 @@ class SettingsViewModel(
                             Toast.LENGTH_LONG).show()
                     }
                 }
+            }
+        }
+    }
+
+    fun setVfsHideEnabled(enabled: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (repo.setVfsHideEnabled(enabled)) {
+                repo.execMySudFeatureSave()
+                _uiState.update { it.copy(isVfsHideEnabled = enabled) }
             }
         }
     }

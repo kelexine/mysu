@@ -208,6 +208,12 @@ class SettingsRepositoryImpl : SettingsRepository {
 
     override fun setSelinuxHideEnabled(enabled: Boolean): Int = Natives.setSelinuxHideEnabled(enabled)
 
+    override suspend fun getVfsHideStatus(): String = getFeatureStatus("vfs_hide")
+
+    override fun isVfsHideEnabled(): Boolean = Natives.isVfsHideEnabled()
+
+    override fun setVfsHideEnabled(enabled: Boolean): Boolean = Natives.setVfsHideEnabled(enabled)
+
     override suspend fun getSulogStatus(): String = getFeatureStatus("sulog")
 
     override suspend fun getSulogPersistValue(): Long? = getFeaturePersistValue("sulog")

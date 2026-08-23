@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Update
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.UploadFile
 import androidx.compose.material3.Icon
@@ -311,6 +312,21 @@ fun SettingPagerMaterial(
                                 enabled = uiState.selinuxHideStatus == "supported",
                                 checked = uiState.isSelinuxHideEnabled,
                                 onCheckedChange = actions.onSetSelinuxHideEnabled
+                            )
+                        },
+                        {
+                            val vfsHideSummary = when (uiState.vfsHideStatus) {
+                                "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                                "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                else -> stringResource(id = R.string.settings_vfs_hide_summary)
+                            }
+                            SegmentedSwitchItem(
+                                icon = Icons.Filled.VisibilityOff,
+                                title = stringResource(id = R.string.settings_vfs_hide),
+                                summary = vfsHideSummary,
+                                enabled = uiState.vfsHideStatus == "supported",
+                                checked = uiState.isVfsHideEnabled,
+                                onCheckedChange = actions.onSetVfsHideEnabled
                             )
                         },
                         {

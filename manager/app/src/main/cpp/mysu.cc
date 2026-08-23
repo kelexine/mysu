@@ -234,3 +234,19 @@ bool is_selinux_hide_enabled() {
     }
     return value != 0;
 }
+
+bool set_vfs_hide_enabled(bool enabled) {
+    return set_feature(MYSU_FEATURE_VFS_HIDE, enabled ? 1 : 0);
+}
+
+bool is_vfs_hide_enabled() {
+    uint64_t value = 0;
+    bool supported = false;
+    if (!get_feature(MYSU_FEATURE_VFS_HIDE, &value, &supported)) {
+        return false;
+    }
+    if (!supported) {
+        return false;
+    }
+    return value != 0;
+}
