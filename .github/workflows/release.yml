@@ -27,6 +27,32 @@ jobs:
       - build-lkm
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Extract Release Notes from CHANGELOG
+        id: release_notes
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#v}"
+          python3 -c "
+          import re, sys
+          tag = '${TAG}'
+          version = '${VERSION}'
+          with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
+              content = f.read()
+          pattern = rf'(## \[v?{re.escape(version)}\].*?)(?=\n## \[|\Z)'
+          match = re.search(pattern, content, re.DOTALL)
+          if match:
+              notes = match.group(1).strip()
+          else:
+              notes = f'### MySU {tag}\n\nSee [CHANGELOG.md](https://github.com/kelexine/mysu/blob/main/CHANGELOG.md) for full details.'
+          with open('RELEASE_NOTES.md', 'w', encoding='utf-8') as f:
+              f.write(notes + '\n')
+          "
+          echo "Generated RELEASE_NOTES.md:"
+          cat RELEASE_NOTES.md
+
       - name: Download artifacts
         uses: actions/download-artifact@v8
 
@@ -58,32 +84,6 @@ jobs:
 
       - name: Display structure of downloaded files
         run: ls -R
-
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Extract Release Notes from CHANGELOG
-        id: release_notes
-        run: |
-          TAG="${{ github.ref_name }}"
-          VERSION="${TAG#v}"
-          python3 -c "
-          import re, sys
-          tag = '${TAG}'
-          version = '${VERSION}'
-          with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
-              content = f.read()
-          pattern = rf'(## \[v?{re.escape(version)}\].*?)(?=\n## \[|\Z)'
-          match = re.search(pattern, content, re.DOTALL)
-          if match:
-              notes = match.group(1).strip()
-          else:
-              notes = f'### MySU {tag}\n\nSee [CHANGELOG.md](https://github.com/kelexine/mysu/blob/main/CHANGELOG.md) for full details.'
-          with open('RELEASE_NOTES.md', 'w', encoding='utf-8') as f:
-              f.write(notes + '\n')
-          "
-          echo "Generated RELEASE_NOTES.md:"
-          cat RELEASE_NOTES.md
 
       - name: release
         uses: softprops/action-gh-release@v3
