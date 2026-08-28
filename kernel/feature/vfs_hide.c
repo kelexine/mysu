@@ -78,7 +78,7 @@ static const struct vfs_hide_prefix vfs_hide_prefixes[] = {
     { NULL, 0 },
 };
 
-tatic const char *const vfs_hide_leaf_names[] = {
+static const char *const vfs_hide_leaf_names[] = {
     "adb",
     "su",
     "mysu",
@@ -241,9 +241,9 @@ long mysu_vfs_hide_handle_getdents64(int orig_nr, const struct pt_regs *regs)
         bool relevant = false;
         int i;
 
-        for (i = 0; vfs_hide_prefixes[i]; i++) {
-            const char *pfx = vfs_hide_prefixes[i];
-            size_t pfx_len = strlen(pfx);
+        for (i = 0; vfs_hide_prefixes[i].str; i++) {
+            const char *pfx = vfs_hide_prefixes[i].str;
+            size_t pfx_len = vfs_hide_prefixes[i].len;
 
             if (strncmp(parent_path, pfx, pfx_len) == 0) {
                 relevant = true;
