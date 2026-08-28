@@ -12,6 +12,8 @@ import android.util.Log
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ipc.RootService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import dev.kelexine.mysu.IMySuInterface
@@ -21,6 +23,8 @@ import dev.kelexine.mysu.mysuApp
 import dev.kelexine.mysu.ui.MySuService
 import dev.kelexine.mysu.ui.util.MySuCli
 import kotlin.coroutines.resume
+
+private const val PARALLEL_CHUNK_SIZE = 32
 
 class SuperUserRepositoryImpl : SuperUserRepository {
 
@@ -66,21 +70,30 @@ class SuperUserRepositoryImpl : SuperUserRepository {
                     iface.getPackages(0)
                 }
 
-                val packages = slice.list
-                val newApps = packages.filter {
+                val packages = slice.list.filter {
                     val ai = it.applicationInfo ?: return@filter false
                     (ai.flags and ApplicationInfo.FLAG_HAS_CODE) != 0
-                }.map {
-                    val appInfo = it.applicationInfo!!
-                    val profile = Natives.getAppProfile(it.packageName, appInfo.uid)
-                    AppInfo(
-                        label = appInfo.loadLabel(pm).toString(),
-                        packageInfo = it,
-                        profile = profile,
-                    )
                 }
 
-                Log.i(TAG, "load cost: ${SystemClock.elapsedRealtime() - start}")
+                val newApps = withContext(Dispatchers.Default) {
+                    packages
+                        .chunked(PARALLEL_CHUNK_SIZE)
+                        .flatMap { chunk ->
+                            chunk.map { pkgInfo ->
+                                async {
+                                    val appInfo = pkgInfo.applicationInfo!!
+                                    val profile = Natives.getAppProfile(pkgInfo.packageName, appInfo.uid)
+                                    AppInfo(
+                                        label = appInfo.loadLabel(pm).toString(),
+                                        packageInfo = pkgInfo,
+                                        profile = profile,
+                                    )
+                                }
+                            }.awaitAll()
+                        }
+                }
+
+                Log.i(TAG, "load cost: ${SystemClock.elapsedRealtime() - start}ms (parallel chunks of $PARALLEL_CHUNK_SIZE)")
                 Pair(newApps, idsArray.toList())
             } finally {
                 withContext(Dispatchers.Main) {

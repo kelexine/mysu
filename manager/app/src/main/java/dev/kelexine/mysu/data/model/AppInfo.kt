@@ -2,9 +2,11 @@ package dev.kelexine.mysu.data.model
 
 import android.content.pm.PackageInfo
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
 import kotlinx.parcelize.Parcelize
 import dev.kelexine.mysu.Natives
 
+@Immutable
 @Parcelize
 data class AppInfo(
     val label: String,

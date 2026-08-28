@@ -35,6 +35,14 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v7
 
+    - name: Restore ccache
+      uses: actions/cache@v4
+      with:
+        path: ~/.ccache
+        key: ccache-${{ inputs.kmi }}-${{ hashFiles('kernel/**') }}
+        restore-keys: |
+          ccache-${{ inputs.kmi }}-
+
     - name: Build mysu.ko
       env:
         EXPECTED_SIZE2: ${{ inputs.expected_size2 }}
@@ -58,6 +66,7 @@ jobs:
         if [ -n "$EXPECTED_SIZE2" ]; then
           EXTRA_ARGS="MYSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 MYSU_EXPECTED_HASH2=$EXPECTED_HASH2"
         fi
+        which ccache > /dev/null 2>&1 && export CC_WRAPPER=ccache || true
         CONFIG_MYSU=m CC=clang make $EXTRA_ARGS
         
         echo "=== Build completed ==="
@@ -125,6 +134,7 @@ jobs:
         if [ -n "$EXPECTED_SIZE2" ]; then
           EXTRA_ARGS="MYSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 MYSU_EXPECTED_HASH2=$EXPECTED_HASH2"
         fi
+        which ccache > /dev/null 2>&1 && export CC_WRAPPER=ccache || true
         
         MDIR=$(realpath .)
 

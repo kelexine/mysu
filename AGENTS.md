@@ -88,6 +88,7 @@ bun run docs:build  # Production build
 
 ## Git Commit
 
+- Never commit or do any destructive git operations without explicit user approval.
 - Mirror existing history style: `<scope>: <summary>` with a short lowercase scope tied to the touched area (e.g., `kernel`, `mysud`, `manager`, `meta-overlayfs`, `docs`, `scripts`). Keep the summary concise, sentence case, and avoid trailing period.
 - Prefer one scope; if multiple areas change, pick the primary one rather than chaining scopes. For doc-only changes use `docs:`; for multi-lang string updates use `translations:` if that matches log history.
 - Keep subject lines brief (target ≤72 chars), no body unless necessary. If referencing a PR/issue, append `(#1234)` at the end as seen in history.

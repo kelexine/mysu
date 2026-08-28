@@ -59,29 +59,36 @@
 #include "policy/feature.h"
 
 /* -------------------------------------------------------------------------
- * Cloaked path prefix table
+ * Cloaked path prefix table with pre-computed lengths
  * ---------------------------------------------------------------------- */
 
-static const char *const vfs_hide_prefixes[] = {
-    "/data/adb",
-    "/data/adb/modules",
-    "/data/adb/mysu",
-    "/data/adb/magisk",
-    "/system/bin/su",
+struct vfs_hide_prefix {
+    const char *str;
+    size_t      len;
+};
+
+#define VFS_HIDE_PREFIX(s) { .str = (s), .len = sizeof(s) - 1 }
+
+static const struct vfs_hide_prefix vfs_hide_prefixes[] = {
+    VFS_HIDE_PREFIX("/data/adb"),
+    VFS_HIDE_PREFIX("/data/adb/modules"),
+    VFS_HIDE_PREFIX("/data/adb/mysu"),
+    VFS_HIDE_PREFIX("/data/adb/magisk"),
+    VFS_HIDE_PREFIX("/system/bin/su"),
+    { NULL, 0 },
+};
+
+tatic const char *const vfs_hide_leaf_names[] = {
+    "adb",
+    "su",
+    "mysu",
+    "modules",
+    "magisk",
     NULL,
 };
 
-/* Global enable gate — zero overhead when disabled. */
 DEFINE_STATIC_KEY_FALSE(mysu_vfs_hide);
 
-/* -------------------------------------------------------------------------
- * Helpers
- * ---------------------------------------------------------------------- */
-
-/*
- * Returns true if @path starts with any cloaked prefix.
- * @path must be a kernel-space string.
- */
 static bool path_is_cloaked(const char *path)
 {
     int i;
@@ -89,12 +96,10 @@ static bool path_is_cloaked(const char *path)
     if (!path || IS_ERR(path))
         return false;
 
-    for (i = 0; vfs_hide_prefixes[i]; i++) {
-        const char *pfx = vfs_hide_prefixes[i];
-        size_t pfx_len = strlen(pfx);
+    for (i = 0; vfs_hide_prefixes[i].str; i++) {
+        size_t pfx_len = vfs_hide_prefixes[i].len;
 
-        if (strncmp(path, pfx, pfx_len) == 0) {
-            /* Accept exact match or prefix followed by '/' or NUL. */
+        if (strncmp(path, vfs_hide_prefixes[i].str, pfx_len) == 0) {
             char next = path[pfx_len];
             if (next == '\0' || next == '/')
                 return true;
@@ -103,34 +108,39 @@ static bool path_is_cloaked(const char *path)
     return false;
 }
 
-/*
- * Returns true if the current task's real UID should have root paths
- * cloaked.  We reuse the existing umount-modules policy: processes that
- * are not granted root and are not the manager are subject to hiding.
- */
+static bool dentry_leaf_may_be_cloaked(struct dentry *dentry)
+{
+    const unsigned char *name;
+    int i;
+
+    if (!dentry)
+        return false;
+
+    name = dentry->d_name.name;
+    if (!name)
+        return false;
+
+    for (i = 0; vfs_hide_leaf_names[i]; i++) {
+        if (strcmp(name, vfs_hide_leaf_names[i]) == 0)
+            return true;
+    }
+    return false;
+}
+
 static bool current_uid_should_hide(void)
 {
     uid_t uid = current_uid().val;
 
-    /* Root and system UIDs are never subjected to hiding. */
     if (uid < 1000)
         return false;
 
     return mysu_uid_should_umount(uid);
 }
 
-/*
- * Resolve the canonical path for @file into @buf (size PATH_MAX).
- * Returns a pointer into @buf on success, ERR_PTR on failure.
- */
 static char *file_to_path(struct file *file, char *buf)
 {
     return d_path(&file->f_path, buf, PATH_MAX);
 }
-
-/* -------------------------------------------------------------------------
- * Public API
- * ---------------------------------------------------------------------- */
 
 bool mysu_vfs_hide_should_hide_path(const char *path)
 {
@@ -143,15 +153,6 @@ bool mysu_vfs_hide_should_hide_path(const char *path)
     return path_is_cloaked(path);
 }
 
-/* -------------------------------------------------------------------------
- * getdents64 hook — strip cloaked entries in-place
- * ---------------------------------------------------------------------- */
-
-/*
- * Walk a getdents64 result buffer (kernel copy) of @count bytes rooted
- * under @parent_path and remove entries whose resolved path is cloaked.
- * Returns the adjusted byte count.
- */
 static long filter_dirent64_buf(char *kbuf, long count, const char *parent_path, char *full_path_buf)
 {
     char *p = kbuf;
@@ -167,7 +168,6 @@ static long filter_dirent64_buf(char *kbuf, long count, const char *parent_path,
         if (reclen == 0 || p + reclen > end)
             break;
 
-        /* Build full path: parent_path + "/" + d_name */
         if (parent_path && full_path_buf) {
             int written = snprintf(full_path_buf, PATH_MAX, "%s/%s", parent_path, de->d_name);
 
@@ -197,8 +197,8 @@ long mysu_vfs_hide_handle_getdents64(int orig_nr, const struct pt_regs *regs)
     char *parent_path = NULL;
     char *kbuf = NULL;
     long kbuf_size;
+    unsigned int fd;
 
-    /* Always call the real syscall first. */
     ret = mysu_syscall_table[orig_nr](regs);
 
     if (!static_branch_unlikely(&mysu_vfs_hide))
@@ -210,11 +210,22 @@ long mysu_vfs_hide_handle_getdents64(int orig_nr, const struct pt_regs *regs)
     if (!current_uid_should_hide())
         return ret;
 
-    /* Retrieve the file descriptor's path to check against prefixes. */
-    unsigned int fd = (unsigned int)PT_REGS_PARM1(regs);
+    fd = (unsigned int)PT_REGS_PARM1(regs);
     filp = fget(fd);
     if (!filp)
         return ret;
+
+    {
+        struct dentry *dir_dentry = filp->f_path.dentry;
+        bool may_be_relevant = dentry_leaf_may_be_cloaked(dir_dentry) ||
+                               (dir_dentry->d_parent &&
+                                dentry_leaf_may_be_cloaked(dir_dentry->d_parent));
+
+        if (!may_be_relevant) {
+            fput(filp);
+            return ret;
+        }
+    }
 
     path_buf = kmalloc(PATH_MAX, GFP_KERNEL);
     if (!path_buf)
@@ -226,7 +237,6 @@ long mysu_vfs_hide_handle_getdents64(int orig_nr, const struct pt_regs *regs)
         goto out_free_path;
     }
 
-    /* Only process directories we care about. */
     {
         bool relevant = false;
         int i;
@@ -239,8 +249,6 @@ long mysu_vfs_hide_handle_getdents64(int orig_nr, const struct pt_regs *regs)
                 relevant = true;
                 break;
             }
-            /* Also filter the parent of the prefix (e.g. /data/adb
-             * when the prefix is /data/adb). */
             if (strncmp(pfx, parent_path, strlen(parent_path)) == 0 &&
                 pfx[strlen(parent_path)] == '/') {
                 relevant = true;
@@ -252,7 +260,6 @@ long mysu_vfs_hide_handle_getdents64(int orig_nr, const struct pt_regs *regs)
             goto out_free_path;
     }
 
-    /* Copy the userspace buffer to kernel for in-place filtering. */
     {
         void __user *ubuf = (void __user *)PT_REGS_PARM2(regs);
 
@@ -335,7 +342,13 @@ static int mysu_inode_getattr(const struct path *path,
 #endif
 {
     if (static_branch_unlikely(&mysu_vfs_hide) && current_uid_should_hide()) {
-        char *buf = kmalloc(PATH_MAX, GFP_KERNEL);
+        char *buf;
+
+       if (!dentry_leaf_may_be_cloaked(path->dentry)) {
+            goto call_orig;
+        }
+
+        buf = kmalloc(PATH_MAX, GFP_KERNEL);
 
         if (buf) {
             char *p = d_path(path, buf, PATH_MAX);
@@ -348,6 +361,7 @@ static int mysu_inode_getattr(const struct path *path,
         }
     }
 
+call_orig:
     if (orig_inode_getattr) {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
         return orig_inode_getattr(idmap, path, stat, request_mask, query_flags);
@@ -366,26 +380,6 @@ static struct mysu_lsm_hook inode_getattr_hook = MYSU_LSM_HOOK_INIT(inode_getatt
                                                                      mysu_inode_getattr,
                                                                      0);
 
-/* -------------------------------------------------------------------------
- * /proc/[pid]/status TracerPid cloaking
- *
- * When a process in the umount list reads its own /proc/self/status (or
- * another process's), replace the "TracerPid:\t<pid>\n" line with
- * "TracerPid:\t0\n" if the tracer is the mysud daemon process (init child
- * pid 1 sibling or our stored mysud_pid).
- *
- * We intercept this by hooking the inode_getattr LSM point for inodes
- * under /proc/[pid]/status combined with a file_open hook that wraps the
- * file's read op. For simplicity in this implementation we emit a
- * conservative best-effort approach: the getdents64 hook already hides
- * the /proc/mysud_pid entry from the deny list, which is the primary
- * detection vector. Full status-file rewriting is left for a follow-up
- * that hooks file_open on procfs.
- * ---------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------------
- * Feature handler — integrates with GET/SET_FEATURE supercalls
- * ---------------------------------------------------------------------- */
 
 static int vfs_hide_feature_get(u64 *value)
 {
@@ -413,25 +407,18 @@ static const struct mysu_feature_handler mysu_vfs_hide_handler = {
     .set_handler = vfs_hide_feature_set,
 };
 
-/* -------------------------------------------------------------------------
- * Lifecycle
- * ---------------------------------------------------------------------- */
-
 void __init mysu_vfs_hide_init(void)
 {
     int ret;
 
-    /* Register the feature toggle. */
     ret = mysu_register_feature_handler(&mysu_vfs_hide_handler);
     if (ret)
         pr_err("vfs_hide: failed to register feature handler: %d\n", ret);
 
-    /* Install the getdents64 syscall hook (dispatcher-based, not table patch). */
     ret = mysu_register_syscall_hook(__NR_getdents64, mysu_vfs_hide_handle_getdents64);
     if (ret)
         pr_warn("vfs_hide: getdents64 hook register failed: %d\n", ret);
 
-    /* Install the LSM inode_getattr hook. */
     ret = mysu_lsm_hook(&inode_getattr_hook);
     if (ret)
         pr_warn("vfs_hide: inode_getattr LSM hook failed: %d\n", ret);

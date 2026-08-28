@@ -294,8 +294,8 @@ bool __mysu_is_allow_uid_for_current(uid_t uid)
 
 bool mysu_uid_should_umount(uid_t uid)
 {
-    struct app_profile *profile;
     bool res;
+
     if (likely(mysu_is_manager_appid_valid()) && unlikely(mysu_get_manager_appid() == uid % PER_USER_RANGE)) {
         // we should not umount on manager!
         return false;
@@ -308,25 +308,27 @@ bool mysu_uid_should_umount(uid_t uid)
     return !__mysu_is_allow_uid(uid);
 #else
     rcu_read_lock();
-    profile = mysu_get_app_profile(uid);
-    if (!profile) {
-        // no app profile found, it must be non root app
-        res = default_non_root_profile.umount_modules;
-    } else if (profile->allow_su) {
-        // if found and it is granted to su, we shouldn't umount for it
-        res = false;
-    } else {
-        // found an app profile
-        if (profile->nrp_config.use_default) {
-            res = default_non_root_profile.umount_modules;
-        } else {
-            res = profile->nrp_config.profile.umount_modules;
+    {
+        struct perm_data *p = NULL;
+
+        hash_for_each_possible_rcu(allow_list, p, list, uid) {
+            if (uid != p->profile.curr_uid)
+                continue;
+
+            if (p->profile.allow_su) {
+                res = false;
+            } else if (p->profile.nrp_config.use_default) {
+                res = default_non_root_profile.umount_modules;
+            } else {
+                res = p->profile.nrp_config.profile.umount_modules;
+            }
+            rcu_read_unlock();
+            return res;
         }
+
+        res = default_non_root_profile.umount_modules;
     }
     rcu_read_unlock();
-
-    if (profile)
-        mysu_put_app_profile(profile);
     return res;
 #endif
 }
