@@ -1,0 +1,21 @@
+{
+  "$schema": "https://github.com/kelexine/mysu — mysu_port rewrite rules",
+  "description": "Single source of truth for legacy Magisk/KernelSU -> MySU rewrite rules. Consumed by mysu_port.rules at runtime; do not hand-duplicate these in shell scripts.",
+  "path_rules": [
+    { "pattern": "/data/adb/ksu/", "replacement": "/data/adb/mysu/", "note": "ksu working dir -> mysu working dir" },
+    { "pattern": "/data/adb/ksu\\b", "replacement": "/data/adb/mysu", "note": "bare ksu dir reference (no trailing slash)" },
+    { "pattern": "/data/adb/modules/", "replacement": "/data/adb/mysu/modules/", "note": "Magisk/legacy module root -> mysud MODULE_DIR (see userspace/mysud/src/defs.rs)" },
+    { "pattern": "/data/adb/modules\\b", "replacement": "/data/adb/mysu/modules", "note": "bare modules dir reference" },
+    { "pattern": "/data/adb/ksud", "replacement": "/data/adb/mysud", "note": "ksud daemon path -> mysud daemon path" },
+    { "pattern": "\\bksud\\b", "replacement": "mysud", "note": "bare ksud identifier/binary name -> mysud" }
+  ],
+  "webui_rules": [
+    { "pattern": "\\bwindow\\.ksu\\b", "replacement": "window.mysu", "note": "WebUI global bridge object" },
+    { "pattern": "\\bksu\\.(exec|spawn|fullScreen|enableEdgeToEdge|toast|moduleInfo|listPackages|getPackagesInfo|exit)\\b", "replacement": "mysu.\\1", "note": "WebUI bridge method calls (see js/index.js for the supported method surface)" },
+    { "pattern": "typeof\\s+ksu\\b", "replacement": "typeof mysu", "note": "feature-detection guards for the bridge object" }
+  ],
+  "text_extensions": [".sh", ".prop", ".rc", ".txt", ".json"],
+  "webui_extensions": [".js", ".html", ".htm"],
+  "explicit_filenames": ["customize.sh", "post-fs-data.sh", "service.sh", "post-mount.sh", "uninstall.sh", "action.sh", "module.prop"],
+  "required_module_prop_fields": ["id", "name", "version", "versionCode", "author"]
+}
