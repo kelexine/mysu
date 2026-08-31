@@ -17,11 +17,11 @@ There are two supported ways to handle this syscall hook issue on `x86_64`:
 
 You only need to use one of them. Do not apply both at the same time.
 
-### Option 1: Enable `MYSU_X86_PATCH_SYSCALL_DISPATCHER`
+### Option 1: Enable `CONFIG_MYSU_X86_PATCH_SYSCALL_DISPATCHER`
 
-MySU 3.2.6 introduced an official mechanism for `x86_64`: the build option `MYSU_X86_PATCH_SYSCALL_DISPATCHER`.
+MySU includes an official mechanism for `x86_64`: the kernel build option `CONFIG_MYSU_X86_PATCH_SYSCALL_DISPATCHER` (or `MYSU_X86_PATCH_SYSCALL_DISPATCHER=y`).
 
-When this option is enabled, MySU dynamically patches the hardened syscall dispatcher at runtime so the syscall hook can work without requiring the previous kernel source patch set. This is the recommended approach if you are building a kernel with MySU 3.2.6 or newer.
+When this option is enabled, MySU dynamically patches the hardened syscall dispatcher at runtime so the syscall hook can work without requiring the previous kernel source patch set. This is the recommended approach for modern x86_64 kernels.
 
 ### Option 2: Apply the original kernel source patches
 
@@ -53,6 +53,6 @@ https://github.com/android-generic/kernel-zenith/commit/f5813e10b7630e1ccd86fc2c
 
 ## Which method should I choose?
 
-- If you are using MySU 3.2.6 or newer and can change the MySU build configuration, enable `MYSU_X86_PATCH_SYSCALL_DISPATCHER`.
+- If you are configuring your kernel or LKM build, enable `CONFIG_MYSU_X86_PATCH_SYSCALL_DISPATCHER`.
 - If you prefer to keep your current kernel-side patch workflow, continue using the original source patches above.
 

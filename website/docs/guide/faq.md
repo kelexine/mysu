@@ -2,19 +2,19 @@
 
 ## What is the relationship between MySU and KernelSU?
 
-MySU is a personal, heavily refactored, and rebranded fork of **[KernelSU](https://github.com/tiann/KernelSU)** maintained for personal use on custom Linux kernels (`TheVoid-Kernel`, 4.19.x, 5.10+, and 6.x). It features a streamlined userspace daemon (`mysud`), a clean `/data/adb/mysu/` directory layout with zero filesystem symlinks, and TheVoid adaptive Material 3 manager theme.
+MySU is a personal, heavily refactored, and rebranded fork of **[KernelSU](https://github.com/tiann/KernelSU)** maintained for personal use on custom Linux kernels (4.19.x, 5.10+, and 6.x). It features a streamlined userspace daemon (`mysud`), a clean `/data/adb/mysu/` directory layout with zero filesystem symlinks, and TheVoid adaptive Material 3 & Miuix manager theme.
 
 All credit for the groundbreaking kernel-assisted root concept and core driver architecture goes to **weishu (tiann)** and the **KernelSU team**.
 
 ## Does MySU support my device?
 
-MySU supports devices running Android with an unlocked bootloader. However, official support is only for GKI Linux Kernels 5.10+ (in practice, this means your device needs to have Android 12 out-of-the-box to be supported).
+MySU supports devices running Android with an unlocked bootloader across both modern GKI 2.0 (Linux 5.10–6.13+) and custom/legacy non-GKI kernels (4.14.x, 4.19.x, and 5.4.x).
 
 You can easily check the support for your device through the MySU manager, which is available [here](https://github.com/kelexine/mysu/releases). 
 
-If the app shows `Not installed`, it means your device is officially supported by MySU.
+If the app shows `Not installed`, it means your device kernel already includes MySU or is a compatible GKI image.
 
-If the app shows `Unsupported`, it means your device isn't officially supported at present. However, you can build kernel source code and integrate MySU to make it work, or use [Unofficially supported devices](unofficially-support-devices).
+If the app shows `Unsupported`, it means your device's stock kernel does not currently have MySU integrated. You can compile your kernel source with MySU enabled or build a standalone LKM (`mysu.ko`). See [Integrate for non-GKI Devices](how-to-integrate-for-non-gki).
 
 ## Do I need to unlock the bootloader to use MySU?
 
@@ -53,9 +53,9 @@ It's the device's kernel that affects MySU's compatibility, and it has nothing t
 1. Devices launched with Android 12 must be supported.
 2. Devices with an older kernel (some devices with Android 12 also have the older kernel) are compatible (you should build kernel yourself).
 
-## Can MySU support old kernel?
+## Can MySU support old kernels?
 
-It's possible. MySU is backported to kernel 4.14 now. For older kernels, you need to backport it manually, and PRs are always welcome!
+Yes. MySU has been validated on Linux 4.14.x, 4.19.x, and 5.4.x trees as well as modern 5.10–6.13+ GKI kernels.
 
 ## How to integrate MySU for an older kernel?
 

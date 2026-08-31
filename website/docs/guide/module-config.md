@@ -113,10 +113,17 @@ Modules can declare which MySU features they manage using the `manage.<feature>`
 **Supported Features:**
 - `su_compat` - SU compatibility mode
 - `kernel_umount` - Kernel automatic unmount
+- `sulog` - Kernel su audit logging
+- `adb_root` - Root ADB shell support
+- `selinux_hide` - SELinux status hiding
+- `vfs_hide` - VFS path cloaking and TracerPid hiding
 
 ```bash
 # Declare that this module manages SU compatibility and enables it
 mysud module config set manage.su_compat true
+
+# Declare that this module manages VFS cloaking and enables it
+mysud module config set manage.vfs_hide true
 
 # Declare that this module manages kernel unmount and disables it
 mysud module config set manage.kernel_umount false
@@ -136,5 +143,5 @@ Managed features are exposed through the module list API as a `managedFeatures` 
 - Better coordination between modules and core MySU functionality
 
 ::: warning SUPPORTED FEATURES ONLY
-Only use the predefined feature names listed above (`su_compat`, `kernel_umount`). These correspond to actual MySU internal features. Using other feature names will not cause errors but serves no functional purpose.
+Only use the predefined feature names listed above (`su_compat`, `kernel_umount`, `sulog`, `adb_root`, `selinux_hide`, `vfs_hide`). These correspond to actual MySU internal features. Using other feature names will not cause errors but serves no functional purpose.
 :::

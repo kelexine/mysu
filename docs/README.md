@@ -1,13 +1,13 @@
 <div align="center">
   <img src="logo.png" style="width: 96px;" alt="MySU Logo" />
   <h1>MySU: A Personal Fork</h1>
-  <p><strong>Kernel-Assisted Superuser & Systemless Framework for TheVoid & Custom Kernels</strong></p>
+  <p><strong>Kernel-Assisted Superuser & Systemless Framework for Custom & GKI Kernels</strong></p>
 </div>
 
 ---
 
 > [!NOTE] Personal Project Context & Attribution
-> **MySU** is a personal, heavily refactored, and rebranded fork of upstream **[KernelSU](https://github.com/tiann/KernelSU)**, maintained by **[kelexine](https://github.com/kelexine)** primarily for personal use on custom Linux kernels (`TheVoid-Kernel`, 4.19.x legacy, 5.10+, and 6.x).
+> **MySU** is a personal, heavily refactored, and rebranded fork of upstream **[KernelSU](https://github.com/tiann/KernelSU)**, maintained by **[kelexine](https://github.com/kelexine)** primarily for personal use on custom Linux kernels (4.19.x legacy, 5.10+, and 6.x).
 >
 > All core architectural concepts, kernel hooking foundations, and superuser paradigms originate from the pioneering work of **weishu (tiann)** and the **KernelSU Contributors**.
 
@@ -30,9 +30,11 @@ bun run docs:dev
 1. **Kernel-Level Privilege Escalation**: Direct syscall and LSM hook infrastructure paired with anonymous inode ioctl communication (`[mysu_driver]`).
 2. **Dynamic In-Memory SELinux Live-Patching**: Modifies runtime access vectors (`avtab`) to grant root domain permissions without disabling enforcing mode.
 3. **Pure Rust Userspace (`mysud`)**: Multi-call daemon managing `/data/adb/mysu/` with programmatic module compatibility and zero filesystem symlink clutter.
-4. **Per-App Sandboxing & App Profiles**: Granular privilege delegation (UID/GID, capability bitmasks, seccomp filters, custom SELinux domains).
-5. **Pluggable Metamodule Architecture**: Decoupled overlayfs and mount virtualization infrastructure for clean, systemless modifications.
-6. **TheVoid Adaptive Material 3 Manager**: Android management app with deep obsidian dark themes, Void violet accents, and isolated App Zygote services.
+4. **Per-App Sandboxing & VFS Path Cloaking**: Granular privilege delegation (UID/GID, capabilities, seccomp) with in-kernel directory filtering (`vfs_hide`) and `TracerPid` cloaking.
+5. **Hardware Biometric Security Gate**: AndroidX Biometric-gated root authorizations, profile management, and kernel configuration changes with configurable timeouts.
+6. **Automated Module Porting Tool**: Dedicated Python migration toolchain (`scripts/mysu-module-port.sh` / `scripts/mysu_port/`) for seamless Magisk/KernelSU package conversion.
+7. **Pluggable Metamodule Architecture**: Decoupled overlayfs and mount virtualization infrastructure for clean, systemless modifications.
+8. **TheVoid Adaptive M3 & Miuix Manager**: Android management app with deep obsidian AMOLED pitch black themes, Void violet accents, and isolated App Zygote services.
 
 ---
 

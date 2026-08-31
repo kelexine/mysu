@@ -80,8 +80,21 @@ mysud resetprop --delete persist.sys.test
 # Check syntax of a custom SELinux rule:
 mysud sepolicy check "allow su * * *"
 
-# Dynamically apply a rule at runtime:
+# Dynamically apply a rule at runtime to active policydb:
 mysud sepolicy apply "allow system_server mysu_daemon process getattr"
+
+# Apply rules file live:
+mysud sepolicy live /path/to/sepolicy.rule
+```
+
+### App Profile CLI (`mysud profile`)
+Inspect and modify per-app profiles directly from shell:
+```bash
+# Get profile for a package:
+mysud profile get com.example.app
+
+# Set profile attributes:
+mysud profile set com.example.app --allow-su 1
 ```
 
 ---
@@ -105,11 +118,28 @@ mysud feature set adb_root 1
 
 # Toggle SELinux rule hiding:
 mysud feature set selinux_hide 1
+
+# Toggle VFS path cloaking (/data/adb & TracerPid hiding):
+mysud feature set vfs_hide 1
 ```
 
 ---
 
-## 4. Kernel Module Late-Loading (`mysud late-load`)
+## 4. Boot Image Patching CLI (`mysud boot-patch`)
+
+Patch boot or `init_boot` partitions on host or device:
+
+```bash
+# Patch boot image specifying KMI:
+mysud boot-patch -b boot.img --kmi android13-5.10 -o new-boot.img
+
+# Direct flash to inactive OTA slot on A/B device:
+mysud boot-patch --ota --flash
+```
+
+---
+
+## 5. Kernel Module Late-Loading (`mysud late-load`)
 
 For devices using the Loadable Kernel Module (LKM) workflow:
 - `mysud late-load` dynamically loads `mysu.ko` into the running kernel using `init_module` syscalls.
@@ -125,7 +155,7 @@ mysud late-load --allow-shell
 
 ---
 
-## 5. Audit Logging (`mysud sulog`)
+## 6. Audit Logging (`mysud sulog`)
 
 Track and monitor superuser privilege escalation in real time:
 

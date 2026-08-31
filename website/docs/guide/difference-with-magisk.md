@@ -10,12 +10,12 @@ While **MySU** and **Magisk** both provide systemless modification environments 
 |---|---|---|
 | **Execution Space** | Userspace (`app_process` / Zygote hijacking) | **Ring 0 Kernel Space** (Syscall & LSM hooks) |
 | **Root Interception** | Replaces `/system/bin/app_process` to inject into Zygote | Dynamic kernel dispatcher intercepts `execve`/`setresuid` |
-| **Root Detection Resistance** | Relies on DenyList / Zygisk unmounting in userspace | **Kernel-enforced isolation**: unauthorized apps never see `su` or mounts |
+| **Root Detection Resistance** | Relies on DenyList / Zygisk unmounting in userspace | **Kernel-enforced isolation**: unauthorized apps never see `su` or mounts; **VFS Path Cloaking (`vfs_hide`)** hides `/data/adb` and cloaks `TracerPid` |
 | **SELinux Strategy** | Live reload of policy database using `magiskpolicy` | **In-memory live-patching** of `avtab`/`policydb` (Enforcing mode retained) |
 | **Manager Communication** | Local UNIX domain sockets (`/dev/socket/...`) | **Anonymous inode supercalls** (`[mysu_driver]` ioctls) |
 | **Manager Verification** | Package name check & userspace keystore checks | **In-kernel APK v2 signature verification** (`EXPECTED_HASH`/`SIZE`) |
 | **Module Mounting** | Hardcoded magic mount loopback devices | **Pluggable Metamodules** (OverlayFS / Magic Mount) |
-| **Userspace Footprint** | `/data/adb/magisk/` with daemon symlinks | `/data/adb/mysud` (Rust 2024 binary, zero symlinks) |
+| **Userspace Footprint** | `/data/adb/magisk/` with daemon symlinks | `/data/adb/mysu/` (`mysud` Rust 2024 binary, zero symlinks) |
 | **Recovery Mode** | Supports installation via TWRP / custom recovery | Installed via boot image patching, fastboot, or kernel flashing |
 
 ---
@@ -55,14 +55,21 @@ MySU supports all standard Magisk stages, plus dedicated post-mount and boot-com
 4. **`boot-completed.sh`**: Runs once the Android system broadcasts `ACTION_BOOT_COMPLETED` (NON-BLOCKING).
 
 ### Automated Porting Tool
-To convert legacy Magisk/KernelSU modules to native MySU modules without manual editing, use the bundled migration script:
+To convert legacy Magisk/KernelSU modules to native MySU modules without manual editing, use the bundled migration toolchain:
 
 ```bash
-# Convert a legacy zip package
+# Convert a legacy zip package:
 ./scripts/mysu-module-port.sh legacy_module.zip output_mysu.zip
 
 # Or using the justfile shortcut:
 just port_module legacy_module.zip
+
+# Or using the Python engine directly:
+python3 -m scripts.mysu_port legacy_module.zip -o output_mysu.zip
 ```
 
-The porter automatically rewrites `/data/adb/ksu` and `/data/adb/magisk` paths to `/data/adb/mysu`, updates daemon calls from `ksud`/`magisk` to `mysud`, and preserves binary integrity.
+The porter engine (`scripts/mysu_port/`) runs an AST and pattern-matching pipeline to:
+- Translate `/data/adb/ksu` and `/data/adb/magisk` paths to `/data/adb/mysu`.
+- Map daemon invocations (`ksud`/`magisk`) to `mysud`.
+- Rewrite environment checks (`$KSU` / `$MAGISK`) to `$MYSU`.
+- Validate script syntax and preserve binary payloads.

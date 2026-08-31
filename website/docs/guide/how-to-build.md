@@ -42,18 +42,25 @@ make -C $KDIR M=$(pwd) modules
 - **Android NDK**: NDK r25c+ (configured in `ANDROID_NDK_HOME`)
 - **Just**: `cargo install just`
 
-### Build with Just
-Use the root `justfile` for automated compilation:
+### Build with Just or Cargo NDK
+Use the root `justfile` or `cargo-ndk` for automated compilation:
 
 ```bash
 # Build mysud release binary for aarch64-linux-android:
 just build_mysud
 
+# Or using cargo-ndk:
+cd userspace/mysud
+cargo ndk -t arm64-v8a build --release
+
 # Lint with clippy and check formatting:
 just clippy
+# Or:
+cargo ndk -t arm64-v8a clippy
+cargo fmt
 ```
 
-Alternatively, build directly using `cargo` or `cross`:
+Alternatively, build directly using `cross`:
 
 ```bash
 cross build --target aarch64-linux-android --release --package mysud
@@ -109,3 +116,22 @@ python3 repack_apk.py \
 The kernel verifies the Manager APK via embedded APK v2 signature checks. If you use a custom release keystore:
 1. Run `python3 repack_apk.py` or `mysud debug get-sign <signed_manager.apk>` to compute the size and SHA-256 hash.
 2. Ensure `EXPECTED_SIZE` and `EXPECTED_HASH` in `kernel/manager/apk_sign.h` match your signature.
+
+---
+
+## 5. Building the Documentation Website
+
+The documentation site is built using **VitePress** and **Bun**:
+
+```bash
+cd website
+
+# Install dependencies
+bun install
+
+# Start local preview server
+bun run docs:dev
+
+# Build production static site
+bun run docs:build
+```

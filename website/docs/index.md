@@ -25,20 +25,23 @@ features:
     title: Ring 0 Kernel Security Engine
     details: Operates inside the Linux kernel with dynamic syscall & LSM hooking, anonymous inode supercalls ([mysu_driver]), and hardware-level isolation.
   - icon: 🛡️
-    title: Per-App Granular Sandboxing
-    details: Strict allowlisting ensures only authorized apps see root. Non-root apps observe an unmodified stock Android environment with auto-unmounted modules.
+    title: Per-App Sandboxing & VFS Cloaking
+    details: Strict allowlisting, automatic kernel module unmounting, and in-kernel VFS path cloaking (/data/adb & TracerPid hiding) for unauthorized applications.
   - icon: ⚙️
-    title: Pure Userspace Daemon (mysud)
-    details: Clean /data/adb/mysud binary with programmatic module adaptation, magic mount overlay virtualization, and zero symlink footprint.
+    title: Pure Rust Userspace (mysud)
+    details: Modular multi-call daemon at /data/adb/mysu/ with programmatic module adaptation, overlayfs management, and zero symlink clutter.
   - icon: 🔒
     title: Granular App Profiles & Capabilities
     details: Configure root mount namespaces, Linux capability bitmasks, custom UID/GID mappings, and seccomp filters per application.
   - icon: 🧩
     title: Live In-Memory SELinux Patching
     details: Modifies runtime avtab and policydb to grant root execution privileges while keeping system SELinux fully in Enforcing mode.
+  - icon: 🛡️
+    title: Hardware Biometric Security Gate
+    details: AndroidX Biometric-gated root authorizations, profile management, and kernel configuration changes with configurable timeouts.
   - icon: 🎨
-    title: TheVoid Adaptive Material 3 Manager
-    details: Android management app built with Jetpack Compose, featuring obsidian dark themes, Void violet accents, and isolated App Zygote services.
+    title: TheVoid Adaptive M3 & Miuix Manager
+    details: Android management app built with Jetpack Compose, featuring obsidian AMOLED pitch black themes and Void violet accents.
 ---
 
 <div class="showcase-container">

@@ -1,7 +1,7 @@
 # What is MySU?
 
 ::: tip Project Context & Upstream Attribution
-**MySU** is a heavily refactored, customized, and rebranded fork of the upstream **[KernelSU](https://github.com/tiann/KernelSU)** project, maintained by [kelexine](https://github.com/kelexine) primarily for personal use across custom Linux kernels (`TheVoid-Kernel`, 4.19.x legacy, and modern GKI 2.0+).
+**MySU** is a heavily refactored, customized, and rebranded fork of the upstream **[KernelSU](https://github.com/tiann/KernelSU)** project, maintained by [kelexine](https://github.com/kelexine) primarily for personal use across custom Linux kernels (4.19.x legacy through modern GKI 2.0+).
 
 All core architecture, kernel-level hooking paradigms, and root mechanics originate from the foundational work created by **weishu (tiann)** and the **KernelSU Contributors**.
 :::
@@ -66,11 +66,20 @@ MySU dynamically intercepts critical syscalls (`setresuid`, `execve`, `execveat`
 ### 3. In-Memory SELinux Live-Patching
 MySU modifies the kernel's live access vector table (`avtab`) and policy database (`policydb`) in RAM. It grants root processes and daemons permissive domains (`u:r:mysu:s0`, `u:r:mysud:s0`) while keeping the system in strict **Enforcing** mode.
 
-### 4. Per-App Granular Sandboxing & `kernel_umount`
-Only explicitly authorized applications can see `su` or invoke superuser privileges. For any unauthorized app, MySU's `kernel_umount` subsystem automatically strips all module mount points and `/data/adb` paths from the application's mount namespace upon process creation.
+### 4. Per-App Granular Sandboxing, `kernel_umount` & VFS Cloaking
+Only explicitly authorized applications can see `su` or invoke superuser privileges:
+- **`kernel_umount`**: Automatically unmounts all module overlays, loop mounts, and `/data/adb` directories from unauthorized apps upon process fork.
+- **VFS Path Cloaking (`vfs_hide`)**: Dynamic directory filtering (`sys_getdents64`) and LSM inode lookup interception that hides `/data/adb`, `/data/adb/modules`, `/data/adb/mysu`, and `/system/bin/su` from denied UIDs.
+- **`TracerPid` Cloaking**: Transparently masks `/proc/[pid]/status` `TracerPid` to prevent anti-root scanners from identifying daemon monitoring.
 
-### 5. Pure Rust Userspace (`mysud` & `mysuinit`)
-The userspace runtime is written entirely in modern Rust (Edition 2024). It operates at `/data/adb/mysud` without symlink clutter, providing built-in boot image patching, magic mounting, module management, and CLI tooling.
+### 5. Hardware Biometric Security Gate
+The Android Manager app integrates hardware-backed biometric verification (`BIOMETRIC_STRONG | DEVICE_CREDENTIAL`) with configurable timeouts, securing root grants, profile edits, kernel setting modifications, and manager launch against unauthorized on-device access.
+
+### 6. Pure Rust Userspace (`mysud` & `mysuinit`)
+The userspace runtime is written entirely in modern Rust (Edition 2024). It operates at `/data/adb/mysu/` without symlink clutter, providing built-in boot image patching, magic mounting, module management, and CLI tooling.
+
+### 7. Automated Module Migration Tooling
+Dedicated Python migration tooling (`scripts/mysu-module-port.sh` / `scripts/mysu_port/`) with rule-based transformations to adapt Magisk and KernelSU module packages into native MySU modules seamlessly.
 
 ---
 

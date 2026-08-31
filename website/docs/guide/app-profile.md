@@ -59,6 +59,20 @@ Applications that are not granted root should not be able to detect root artifac
 - **Umount Modules by Default**: Enabled by default in Manager settings. Whenever a non-root application process is forked by Zygote, the kernel unmounts all custom module overlays, loopback mounts, and `/data/adb` paths from that process's mount namespace.
 - **Per-App Toggle**: If a specific non-root app requires access to modified system libraries, you can explicitly uncheck "Umount modules" for that app.
 
+### VFS Path Cloaking (`vfs_hide`)
+For denied applications, MySU's in-kernel VFS cloaking intercepts directory walks (`sys_getdents64`) and file access probes (`inode_getattr`):
+- **Hidden Paths**: `/data/adb`, `/data/adb/modules`, `/data/adb/mysu`, `/data/adb/magisk`, and `/system/bin/su` are filtered in-place.
+- **`TracerPid` Cloaking**: `/proc/[pid]/status` reads for unauthorized UIDs report `TracerPid: 0` to prevent detection of daemon tracing.
+
 ::: info Kernel Version Compatibility
 On Linux kernels 5.10+ (GKI 2.0), `kernel_umount` is natively supported. On legacy non-GKI kernels (such as 4.19.x), `path_umount` must be backported to `fs/namespace.c` for automatic unmounting to function. See [Integrate for non-GKI devices](how-to-integrate-for-non-gki.md).
 :::
+
+---
+
+## 3. Hardware Biometric Security Gate
+
+To protect profile configurations against unauthorized modification or rogue app interference, the Manager app integrates **AndroidX Biometric Authentication** (`BIOMETRIC_STRONG | DEVICE_CREDENTIAL`):
+- **Guarded Operations**: Opening the Manager, granting root requests, editing App Profiles, and modifying kernel feature flags.
+- **Timeout Policies**: Configurable timeouts (`Always`, `1 Minute`, `5 Minutes`, `Session`) allow tailoring between maximum security and usability.
+

@@ -1,6 +1,6 @@
 # Integrate for non-GKI devices
 
-MySU can be integrated into non-GKI custom kernels and has been validated across 4.14.x, 4.19.x, and 5.4.x trees (such as `TheVoid-Kernel`).
+MySU can be integrated into non-GKI custom kernels and has been validated across 4.14.x, 4.19.x, and 5.4.x trees.
 
 Due to the device-specific nature of non-GKI Android kernels, universal prebuilt boot images cannot be provided. However, integrating MySU into your device's kernel source tree is straightforward.
 

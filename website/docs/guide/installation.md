@@ -57,7 +57,7 @@ If you find that your kernel version is `android12-5.10.101`, but your Android s
 
 ## Introduction
 
-Since version [0.9.0](https://github.com/kelexine/MySU/releases/tag/v0.9.0), MySU supports two running modes on GKI devices:
+MySU supports two running modes on GKI devices:
 
 1. `LKM`: Load the **Loadable Kernel Module** (LKM) into the device kernel without replacing the original kernel.
 2. `GKI`: Replace the original kernel of the device with the **Generic Kernel Image** (GKI) provided by MySU.
@@ -108,7 +108,7 @@ Open the manager, click the installation icon in the upper right corner, and sev
 Using the manager's "Direct install" can automatically back up the stock boot (or init_boot) image for temporarily restoring it during incremental OTA updates. Note that this backup is created only if the current slot has not already been patched by MySU.
 The SHA1 of the backup image is stored in the patched boot image, and the backup file is saved at `/data/adb/mysu/mysu_backup_$SHA1`.
 When you use the manager's "Uninstall → Restore stock image" feature, if there is a matching backup file for the SHA1 recorded in the currently patched image, it will be restored directly.
-Since 3.2.6, if you are installing MySU for the first time without root, after patching the boot image via "Select a file" you can choose "Backup as stock image". In that case, the backup image is stored in the manager's internal storage; after flashing and booting the patched image, opening the manager for the first time will automatically move that backup to `/data/adb/mysu`.
+If you are installing MySU for the first time without root, after patching the boot image via "Select a file" you can choose "Backup as stock image". In that case, the backup image is stored in the manager's internal storage; after flashing and booting the patched image, opening the manager for the first time will automatically move that backup to `/data/adb/mysu`.
 :::
 
 ### Use the command line

@@ -292,17 +292,17 @@ The `customize.sh` script runs in MySU's BusyBox `ash` shell with Standalone Mod
 #### Variables
 
 - `MYSU` (bool): a variable to mark that the script is running in the MySU environment, and the value of this variable will always be true. You can use it to distinguish between MySU and Magisk.
-- `MYSU_VER` (string): the version string of currently installed MySU (e.g. `v0.4.0`).
-- `MYSU_VER_CODE` (int): the version code of currently installed MySU in userspace (e.g. `10672`).
-- `MYSU_KERNEL_VER_CODE` (int): the version code of currently installed MySU in kernel space (e.g. `10672`).
+- `MYSU_VER` (string): the version string of currently installed MySU (e.g. `v1.0.6`).
+- `MYSU_VER_CODE` (int): the version code of currently installed MySU in userspace (e.g. `32513`).
+- `MYSU_KERNEL_VER_CODE` (int): the version code of currently installed MySU in kernel space (e.g. `32513`).
 - `BOOTMODE` (bool): always be `true` in MySU.
 - `MODPATH` (path): the path where your module files should be installed.
 - `TMPDIR` (path): a place where you can temporarily store files.
 - `ZIPFILE` (path): your module's installation ZIP.
 - `ARCH` (string): the CPU architecture of the device. Value is either `arm`, `arm64`, `x86`, or `x64`.
 - `IS64BIT` (bool): `true` if `$ARCH` is either `arm64` or `x64`.
-- `API` (int): the API level (Android version) of the device (e.g., `23` for Android 6.0).
-- `MYSU_UAPI_VER` (int): the UAPI version of MySU userspace (mysud) (e.g., `2`). This version is incremented when there are breaking changes in the kernel driver, and can be used by modules to check compatibility.
+- `API` (int): the API level (Android version) of the device (e.g., `35` for Android 15).
+- `MYSU_UAPI_VER` (int): the UAPI version of MySU userspace (mysud) (e.g., `4`). This version is incremented when there are breaking changes in the kernel driver, and can be used by modules to check compatibility.
 - `MYSU_RUNTIME_MODE` (string): the current MySU runtime mode. Possible values are `built-in` (a.k.a. GKI mode, compiled into the kernel), `lkm` (loaded as a kernel module at boot), or `late-load` (loaded as a kernel module after boot).
 - `MYSU_LATE_LOAD` (int?): if MySU is late-loaded after boot, this variable is set to `1`; otherwise it is not set.
 

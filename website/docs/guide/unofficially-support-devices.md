@@ -1,8 +1,7 @@
 # Unofficially supported devices
 
-::: warning
-This document is for archival reference only and is no longer maintained.
-Since MySU v1.0, we have dropped official support for non-GKI devices.
+::: info Non-GKI Support Note
+While generic prebuilt boot images are provided for GKI 2.0+ devices, custom kernels and legacy non-GKI trees (4.14.x, 4.19.x, 5.4.x) are fully supported via source-level integration or LKM building. See the [Integrate for non-GKI Devices](how-to-integrate-for-non-gki.md) guide.
 :::
 
 ::: warning
