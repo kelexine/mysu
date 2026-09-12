@@ -23,8 +23,12 @@ struct action_cache {
 };
 
 struct seccomp_filter {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0)
     refcount_t refs;
     refcount_t users;
+#else
+    refcount_t usage;
+#endif
     bool log;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
     bool wait_killable_recv;
@@ -32,41 +36,39 @@ struct seccomp_filter {
     struct action_cache cache;
     struct seccomp_filter *prev;
     struct bpf_prog *prog;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
     struct notification *notif;
     struct mutex notify_lock;
     wait_queue_head_t wqh;
+#endif
 };
 
 void mysu_seccomp_clear_cache(struct seccomp_filter *filter, int nr)
 {
-    if (!filter) {
-        return;
-    }
-
-    if (nr >= 0 && nr < SECCOMP_ARCH_NATIVE_NR) {
-        clear_bit(nr, filter->cache.allow_native);
-    }
+    for (; filter; filter = filter->prev) {
+        if (nr >= 0 && nr < SECCOMP_ARCH_NATIVE_NR) {
+            clear_bit(nr, filter->cache.allow_native);
+        }
 
 #ifdef SECCOMP_ARCH_COMPAT
-    if (nr >= 0 && nr < SECCOMP_ARCH_COMPAT_NR) {
-        clear_bit(nr, filter->cache.allow_compat);
-    }
+        if (nr >= 0 && nr < SECCOMP_ARCH_COMPAT_NR) {
+            clear_bit(nr, filter->cache.allow_compat);
+        }
 #endif
+    }
 }
 
 void mysu_seccomp_allow_cache(struct seccomp_filter *filter, int nr)
 {
-    if (!filter) {
-        return;
-    }
-
-    if (nr >= 0 && nr < SECCOMP_ARCH_NATIVE_NR) {
-        set_bit(nr, filter->cache.allow_native);
-    }
+    for (; filter; filter = filter->prev) {
+        if (nr >= 0 && nr < SECCOMP_ARCH_NATIVE_NR) {
+            set_bit(nr, filter->cache.allow_native);
+        }
 
 #ifdef SECCOMP_ARCH_COMPAT
-    if (nr >= 0 && nr < SECCOMP_ARCH_COMPAT_NR) {
-        set_bit(nr, filter->cache.allow_compat);
-    }
+        if (nr >= 0 && nr < SECCOMP_ARCH_COMPAT_NR) {
+            set_bit(nr, filter->cache.allow_compat);
+        }
 #endif
+    }
 }

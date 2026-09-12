@@ -83,10 +83,13 @@ static const char __user *get_user_arg_ptr(struct user_arg_ptr argv, int nr)
     }
 #endif
 
-    if (get_user(native, argv.ptr.native + nr))
+    const char __user *const __user *native_argv =
+        (const char __user *const __user *)untagged_addr((unsigned long)argv.ptr.native);
+
+    if (get_user(native, native_argv + nr))
         return ERR_PTR(-EFAULT);
 
-    return native;
+    return (const char __user *)untagged_addr((unsigned long)native);
 }
 
 /*
@@ -154,13 +157,15 @@ void mysu_handle_execveat_mysud(const char *path, struct user_arg_ptr *argv)
 
     /* This applies to versions Android 10+ */
     static const char system_bin_init[] = "/system/bin/init";
+    static const char root_init[] = "/init";
     static bool init_second_stage_executed = false;
 
     // https://cs.android.com/android/platform/superproject/+/android-16.0.0_r2:system/core/init/main.cpp;l=77
-    if (unlikely(!memcmp(path, system_bin_init, sizeof(system_bin_init) - 1) && argv)) {
+    if (unlikely((!memcmp(path, system_bin_init, sizeof(system_bin_init) - 1) ||
+                  !strcmp(path, root_init)) && argv)) {
         char buf[16];
         if (!init_second_stage_executed && check_argv(*argv, 1, "second_stage", buf, sizeof(buf))) {
-            pr_info("/system/bin/init second_stage executed\n");
+            pr_info("init second_stage executed: %s\n", path);
             mysu_selinux_hide_handle_second_stage();
             apply_mysu_rules();
             cache_sid();
@@ -171,7 +176,9 @@ void mysu_handle_execveat_mysud(const char *path, struct user_arg_ptr *argv)
 
     if (unlikely(first_zygote && !memcmp(path, app_process, sizeof(app_process) - 1) && argv)) {
         char buf[16];
-        if (check_argv(*argv, 1, "-Xzygote", buf, sizeof(buf))) {
+        if (check_argv(*argv, 1, "-Xzygote", buf, sizeof(buf)) ||
+            check_argv(*argv, 1, "--zygote", buf, sizeof(buf)) ||
+            check_argv(*argv, 2, "--zygote", buf, sizeof(buf))) {
             pr_info("exec zygote, /data prepared, second_stage: %d\n", init_second_stage_executed);
             on_post_fs_data();
             first_zygote = false;
@@ -414,7 +421,7 @@ static bool is_init_rc(struct file *fp)
         return false;
     }
 
-    if (strcmp(dpath, "/system/etc/init/hw/init.rc")) {
+    if (strcmp(dpath, "/system/etc/init/hw/init.rc") && strcmp(dpath, "/init.rc")) {
         return false;
     }
 
@@ -522,7 +529,9 @@ bool mysu_is_safe_mode()
 
 static void mysu_execve_hook_mysud_common(const char __user *filename_user, const char __user *const __user *argv_user)
 {
-    struct user_arg_ptr argv = { .ptr.native = argv_user };
+    struct user_arg_ptr argv = {
+        .ptr.native = (const char __user *const __user *)untagged_addr((unsigned long)argv_user)
+    };
     char path[32];
     long ret;
     unsigned long addr;

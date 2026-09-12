@@ -91,7 +91,7 @@ static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
         if (!tw)
             return 0;
 
-        tw->outp = (int __user *)arg4;
+        tw->outp = (int __user *)untagged_addr(arg4);
         tw->cb.func = mysu_install_fd_tw_func;
 
         if (task_work_add(current, &tw->cb, TWA_RESUME)) {

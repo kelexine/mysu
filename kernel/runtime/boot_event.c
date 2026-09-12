@@ -9,6 +9,7 @@
 #include "runtime/mysud_boot.h"
 #include "runtime/mysud.h"
 #include "manager/manager_observer.h"
+#include "manager/manager_identity.h"
 #include "manager/throne_tracker.h"
 
 bool mysu_module_mounted __read_mostly = false;
@@ -66,6 +67,11 @@ void on_boot_completed(void)
 {
     mysu_boot_completed = true;
     pr_info("on_boot_completed!\n");
-    track_throne(true);
+    if (!mysu_is_manager_appid_valid()) {
+        pr_info("on_boot_completed: manager not crowned yet, searching now\n");
+        track_throne(false);
+    } else {
+        track_throne(true);
+    }
     mysu_selinux_hide_drop_backup_if_unused();
 }
