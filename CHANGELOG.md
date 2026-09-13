@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.11] - 2026-09-13
+
+### Fixed
+- **Manager Kernel Version Compatibility Baseline**:
+  - Aligned `MINIMAL_SUPPORTED_KERNEL` in `manager/app/src/main/java/dev/kelexine/mysu/Natives.kt` from legacy `32513` to `30000`.
+  - Resolves false-positive "kernel version too low" warning banner and restores full manager features and navigation tabs on native MySU builds (`30000 + commitCount`).
+
+---
+
 ## [1.0.10] - 2026-09-13
 
 ### Fixed
