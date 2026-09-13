@@ -806,18 +806,30 @@ static bool add_type(struct policydb *db, const char *type_name, bool attr)
     }
 
     if (db->type_attr_map_array) {
+        if (value > db->type_attr_map_array->total_nr_elements)
+            db->type_attr_map_array->total_nr_elements = value + 64;
         struct ebitmap e;
         ebitmap_init(&e);
         ebitmap_set_bit(&e, value - 1, 1);
-        flex_array_put(db->type_attr_map_array, value - 1, &e, GFP_KERNEL | __GFP_ZERO);
+        int ret = flex_array_put(db->type_attr_map_array, value - 1, &e, GFP_KERNEL | __GFP_ZERO);
+        if (ret)
+            pr_err("add_type: put type_attr_map failed: %d\n", ret);
     }
 
     if (db->type_val_to_struct_array) {
-        flex_array_put_ptr(db->type_val_to_struct_array, value - 1, type, GFP_KERNEL | __GFP_ZERO);
+        if (value > db->type_val_to_struct_array->total_nr_elements)
+            db->type_val_to_struct_array->total_nr_elements = value + 64;
+        int ret = flex_array_put_ptr(db->type_val_to_struct_array, value - 1, type, GFP_KERNEL | __GFP_ZERO);
+        if (ret)
+            pr_err("add_type: put type_val_to_struct failed: %d\n", ret);
     }
 
     if (db->sym_val_to_name[SYM_TYPES]) {
-        flex_array_put_ptr(db->sym_val_to_name[SYM_TYPES], value - 1, key, GFP_KERNEL | __GFP_ZERO);
+        if (value > db->sym_val_to_name[SYM_TYPES]->total_nr_elements)
+            db->sym_val_to_name[SYM_TYPES]->total_nr_elements = value + 64;
+        int ret = flex_array_put_ptr(db->sym_val_to_name[SYM_TYPES], value - 1, key, GFP_KERNEL | __GFP_ZERO);
+        if (ret)
+            pr_err("add_type: put sym_val_to_name failed: %d\n", ret);
     }
 
     int i;
@@ -860,6 +872,8 @@ static void add_typeattribute_raw(struct policydb *db, struct type_datum *type, 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0)
     struct ebitmap *sattr = &db->type_attr_map_array[type->value - 1];
 #else
+    if (db->type_attr_map_array && type->value > db->type_attr_map_array->total_nr_elements)
+        db->type_attr_map_array->total_nr_elements = type->value + 64;
     struct ebitmap *sattr = flex_array_get(db->type_attr_map_array, type->value - 1);
 #endif
     if (sattr)
