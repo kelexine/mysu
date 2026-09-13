@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.12] - 2026-09-13
+
+### Fixed
+- **Module Section Notification Permission Crash on Android 13+ / 16**:
+  - Upgraded `androidx.fragment:fragment-ktx` to `1.8.6` in `manager/gradle/libs.versions.toml` and `manager/app/build.gradle.kts`.
+  - Resolves `java.lang.IllegalArgumentException: Can only use lower 16 bits for requestCode` crash triggered when opening the Module tab and requesting `POST_NOTIFICATIONS` permission, eliminating legacy 2020 `FragmentActivity:1.2.5` requestCode validation restrictions.
+
+---
+
 ## [1.0.11] - 2026-09-13
 
 ### Fixed
