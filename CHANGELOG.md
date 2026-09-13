@@ -11,6 +11,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.9] - 2026-09-13
+
+### Fixed
+- **Kernel Manager Certificate Size Limit**:
+  - Lifted hardcoded `CERT_MAX_LENGTH` limit in `kernel/manager/apk_sign.c` from 1024 to 4096 bytes.
+  - Replaced fixed stack buffer `char cert[CERT_MAX_LENGTH]` with dynamic kernel allocation `kmalloc(certificate_size, GFP_KERNEL)` to safely accommodate larger X.509 certificates (e.g. 1389-byte / `0x056d` custom release certificates) without overflowing kernel stack frames.
+  - Fixed false-positive `"cert length overlimit"` rejection during APK v2 signature verification, restoring manager APK crowning and driver connection on custom-signed builds.
+
+---
+
+## [1.0.8] - 2026-09-12
+
+### Fixed
+- **Legacy Kernel Seccomp Action Cache & ABI Alignment**:
+  - Resolved fatal `SIGSYS` (`SYS_SECCOMP` syscall 142) crash on Linux < 5.9 kernels paired with Android 16 userspace by guarding `struct seccomp_filter` layout to prevent 4-byte member offset drift.
+  - Recursively traversed the entire filter hierarchy in `mysu_seccomp_allow_cache()` and `mysu_seccomp_clear_cache()` to ensure ancestor filters permit syscalls.
+- **ARM64 Top-Byte-Ignore (TBI) Pointer Sanitization**:
+  - Sanitized userspace pointers with `untagged_addr()` across `argv` array and strings in `mysud_integration.c` to prevent pointer dereference faults from Bionic memory tagging.
+  - Sanitized user output pointer with `untagged_addr()` in `reboot_handler_pre()` (`supercall.c`) before scheduling `task_work`.
+- **Init & Boot Event Detection**:
+  - Added `/init.rc` fallback to `is_init_rc()` and expanded argument matching for `/init` and `--zygote` in `mysud_integration.c`.
+  - Triggered `track_throne(false)` with manager search on boot completion when `mysu_manager_appid` is invalid.
+
+### Added
+- **Porting Automation & Test Suite**:
+  - Modularized `mysu_port` package and introduced unit test suite for rule transformations and string replacement semantics.
+- **Documentation**:
+  - Updated guide and technical references for Android 16 compatibility and kernel support matrix.
+
+---
+
 ## [1.0.7] - 2026-08-28
 
 ### Added
