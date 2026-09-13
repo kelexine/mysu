@@ -48,13 +48,14 @@ static int patch_syscall_table(int nr, syscall_fn_t fn)
 
 // Direct syscall table patching: overwrite syscall_table[nr] with fn,
 // save original to *old, and record for restoration at module exit.
-void mysu_syscall_table_hook(int nr, syscall_fn_t fn, syscall_fn_t *old)
+// Returns 0 on success, or negative error code on failure.
+int mysu_syscall_table_hook(int nr, syscall_fn_t fn, syscall_fn_t *old)
 {
     if (mysu_syscall_table == NULL)
-        return;
+        return -ENOENT;
     if (nr < 0 || nr >= __NR_syscalls) {
         pr_info("invalid nr: %d\n", nr);
-        return;
+        return -EINVAL;
     }
 
     mutex_lock(&hooked_entries_lock);
@@ -82,9 +83,13 @@ void mysu_syscall_table_hook(int nr, syscall_fn_t fn, syscall_fn_t *old)
         }
     }
 
-    patch_syscall_table(nr, fn);
+    int ret = patch_syscall_table(nr, fn);
+    if (ret && !found && hooked_count > 0 && hooked_entries[hooked_count - 1].nr == nr) {
+        hooked_count--;
+    }
 
     mutex_unlock(&hooked_entries_lock);
+    return ret;
 }
 
 // Restore syscall_table[nr] to its original value and remove from tracking list.
@@ -123,7 +128,12 @@ static int __init mysu_find_ni_syscall_slots(int *out_slots, int max_slots)
         return 0;
 
     ni_syscall = (unsigned long)mysu_resolve_symbol_for_functable_hook("__arm64_sys_ni_syscall");
-
+#ifndef MODULE
+    if (!ni_syscall) {
+        extern long __arm64_sys_ni_syscall(const struct pt_regs *);
+        ni_syscall = (unsigned long)__arm64_sys_ni_syscall;
+    }
+#endif
     pr_info("sys_ni_syscall: 0x%lx\n", ni_syscall);
 
     if (!ni_syscall)
@@ -200,11 +210,18 @@ bool mysu_has_syscall_hook(int nr)
 void __init mysu_syscall_hook_init(void)
 {
     int ni_slot;
+    int err;
 
     memset(syscall_hooks, 0, sizeof(syscall_hooks));
 
     mysu_syscall_table = (syscall_fn_t *)mysu_resolve_symbol_for_functable_hook("sys_call_table");
-    pr_info("sys_call_table=0x%lx", (unsigned long)mysu_syscall_table);
+#ifndef MODULE
+    if (!mysu_syscall_table) {
+        extern const syscall_fn_t sys_call_table[];
+        mysu_syscall_table = (syscall_fn_t *)sys_call_table;
+    }
+#endif
+    pr_info("sys_call_table=0x%lx\n", (unsigned long)mysu_syscall_table);
 
     if (!mysu_syscall_table)
         return;
@@ -215,8 +232,14 @@ void __init mysu_syscall_hook_init(void)
         return;
     }
 
+    err = mysu_syscall_table_hook(ni_slot, (syscall_fn_t)mysu_syscall_dispatcher, NULL);
+    if (err) {
+        pr_err("failed to patch dispatcher into slot %d: %d\n", ni_slot, err);
+        mysu_dispatcher_nr = -1;
+        return;
+    }
+
     mysu_dispatcher_nr = ni_slot;
-    mysu_syscall_table_hook(mysu_dispatcher_nr, (syscall_fn_t)mysu_syscall_dispatcher, NULL);
     pr_info("dispatcher installed at slot %d\n", mysu_dispatcher_nr);
 }
 

@@ -278,6 +278,12 @@ int mysu_lsm_hook(struct mysu_lsm_hook *hook)
             selected_origin, hook->replacement);
 #else
     heads_addr = find_kernel_symbol_exact("security_hook_heads");
+#ifndef MODULE
+    if (!heads_addr) {
+        extern struct security_hook_heads security_hook_heads;
+        heads_addr = (unsigned long)&security_hook_heads;
+    }
+#endif
     if (!heads_addr) {
         pr_err("lsm_hook: failed to resolve security_hook_heads\n");
         ret = -ENOENT;

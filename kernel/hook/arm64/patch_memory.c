@@ -13,7 +13,25 @@
 #include "linux/stop_machine.h"
 #include "asm/cacheflush.h"
 #include "asm-generic/fixmap.h"
+#include <asm/sections.h>
+#include <asm/memory.h>
 #include "util.h"
+
+#ifndef pmd_leaf
+#ifdef pmd_sect
+#define pmd_leaf(pmd) pmd_sect(pmd)
+#else
+#define pmd_leaf(pmd) 0
+#endif
+#endif
+
+#ifndef pud_leaf
+#ifdef pud_sect
+#define pud_leaf(pud) pud_sect(pud)
+#else
+#define pud_leaf(pud) 0
+#endif
+#endif
 
 // https://github.com/fuqiuluo/ovo/blob/f7da411458e87d32438dc14fce5a3313ed0c967e/ovo/mmuhack.c#L21
 
@@ -49,26 +67,25 @@ unsigned long phys_from_virt(unsigned long addr, int *err)
 #endif
 
     pud = pud_offset(p4d, addr);
-    if (pud_none(*pud) || pud_bad(*pud))
+    if (pud_none(*pud))
         goto fail;
     pr_debug("pud of 0x%lx p=0x%lx v=0x%lx", addr, (uintptr_t)pud, (uintptr_t)pud_val(*pud));
-#if defined(pud_leaf)
     if (pud_leaf(*pud)) {
         pr_debug("Address 0x%lx maps to a PUD-level huge page\n", addr);
         return __pud_to_phys(*pud) + ((addr & ~PUD_MASK));
     }
-#endif
+    if (pud_bad(*pud))
+        goto fail;
 
     pmd = pmd_offset(pud, addr);
+    if (pmd_none(*pmd))
+        goto fail;
     pr_debug("pmd of 0x%lx p=0x%lx v=0x%lx", addr, (uintptr_t)pmd, (uintptr_t)pmd_val(*pmd));
-#if defined(pmd_leaf)
     if (pmd_leaf(*pmd)) {
         pr_debug("Address 0x%lx maps to a PMD-level huge page\n", addr);
         return __pmd_to_phys(*pmd) + ((addr & ~PMD_MASK));
     }
-#endif
-
-    if (pmd_none(*pmd) || pmd_bad(*pmd))
+    if (pmd_bad(*pmd))
         goto fail;
 
     pte = pte_offset_kernel(pmd, addr);
@@ -80,6 +97,12 @@ unsigned long phys_from_virt(unsigned long addr, int *err)
     return __pte_to_phys(*pte) + ((addr & ~PAGE_MASK));
 
 fail:
+#if defined(__pa_symbol)
+    if (addr >= (unsigned long)_text && addr < (unsigned long)_end) {
+        pr_debug("phys_from_virt fallback to __pa_symbol for 0x%lx\n", addr);
+        return __pa_symbol(addr);
+    }
+#endif
     *err = -ENOENT;
     return 0;
 }

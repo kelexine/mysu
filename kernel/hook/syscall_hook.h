@@ -36,8 +36,8 @@ bool mysu_has_syscall_hook(int nr);
 // Directly overwrite syscall_table[@nr] with @fn using fixmap + stop_machine.
 // Saves the original handler to *@old (if non-NULL) and records the entry
 // for restoration at module exit. Use this for boot-time hooks that replace
-// a real syscall entry (e.g. mysud hooking __NR_execve/__NR_read/__NR_fstat).
-void mysu_syscall_table_hook(int nr, syscall_fn_t fn, syscall_fn_t *old);
+// Returns 0 on success, or negative error code on failure.
+int mysu_syscall_table_hook(int nr, syscall_fn_t fn, syscall_fn_t *old);
 
 // Restore syscall_table[@nr] to its original value recorded by
 // mysu_syscall_table_hook(), and remove the entry from the tracking list.

@@ -5,7 +5,9 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/version.h>
+#include <linux/cred.h>
 
+#include "mysu.h"
 #include "policy/allowlist.h"
 #include "manager/apk_sign.h"
 #include "klog.h" // IWYU pragma: keep
@@ -249,9 +251,12 @@ static bool is_uid_exist(uid_t uid, char *package, void *data)
 
 void track_throne(bool prune_only)
 {
+    const struct cred *saved = mysu_cred ? override_creds(mysu_cred) : NULL;
     struct file *fp = filp_open(SYSTEM_PACKAGES_LIST_PATH, O_RDONLY, 0);
     if (IS_ERR(fp)) {
         pr_err("%s: open " SYSTEM_PACKAGES_LIST_PATH " failed: %ld\n", __func__, PTR_ERR(fp));
+        if (saved)
+            revert_creds(saved);
         return;
     }
 
@@ -341,6 +346,8 @@ out:
         list_del(&np->list);
         kfree(np);
     }
+    if (saved)
+        revert_creds(saved);
 }
 
 void __init mysu_throne_tracker_init()

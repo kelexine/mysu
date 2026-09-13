@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.10] - 2026-09-13
+
+### Fixed
+- **ARM64 Section/Block Page-Table Translation on 4.19**:
+  - Defined fallback macros for `pmd_leaf` and `pud_leaf` mapped to `pmd_sect` / `pud_sect` on Linux < 5.14 in `kernel/hook/arm64/patch_memory.c`.
+  - Reordered section mapping checks ahead of `pmd_bad` / `pud_bad`, resolving `-ENOENT` page table walk failures on 2MB PMD section mappings.
+  - Added `__pa_symbol(addr)` fallback for addresses located within `[_text, _end)`.
+- **Fail-Safe Syscall Dispatcher Activation**:
+  - Updated `mysu_syscall_table_hook()` to return `int` and roll back tracking entries if `patch_syscall_table()` fails.
+  - In `mysu_syscall_hook_init()`, guarded `mysu_dispatcher_nr` registration so it only activates when `mysu_syscall_table_hook()` succeeds, leaving `mysu_dispatcher_nr = -1` and preventing spurious `-ENOSYS` crashes.
+- **Built-in Kernel Symbol Resolution**:
+  - Added `#ifndef MODULE` direct linker symbol fallbacks for `sys_call_table` and `__arm64_sys_ni_syscall` in `kernel/hook/arm64/syscall_hook.c`.
+  - Added `#ifndef MODULE` direct linker symbol fallback for `security_hook_heads` in `kernel/hook/lsm_hook.c`.
+- **Throne Tracking DAC/MAC Permissions**:
+  - Wrapped `track_throne()` file operations in `kernel/manager/throne_tracker.c` with `override_creds(mysu_cred)` / `revert_creds(saved)` to ensure root credentials when reading packages list and scanning `/data/app`.
+
+---
+
 ## [1.0.9] - 2026-09-13
 
 ### Fixed
