@@ -124,3 +124,50 @@ def test_port_in_place_directory(tmp_path: Path):
     assert result.output_path is None
     assert result.module_id == "legacy_dir"
     assert "/data/adb/mysu/bin/busybox" in (mod_dir / "customize.sh").read_text()
+
+
+def test_port_injects_polyfill_and_syncs_sha256(tmp_path: Path):
+    import hashlib
+
+    src_zip = tmp_path / "sha_mod.zip"
+    with zipfile.ZipFile(src_zip, "w") as zf:
+        zf.writestr(
+            "module.prop",
+            "id=sha_mod\nname=Sha Mod\nversion=v1\nversionCode=1\nauthor=author\n",
+        )
+        custom_content = (
+            '#!/system/bin/sh\nif [ "$KSU" = "true" ]; then echo /data/adb/ksu/bin; fi\n'
+        )
+        zf.writestr("customize.sh", custom_content)
+        zf.writestr(
+            "customize.sh.sha256",
+            hashlib.sha256(custom_content.encode("utf-8")).hexdigest() + "\n",
+        )
+
+        html_content = (
+            "<!DOCTYPE html><html><head><title>Test</title></head><body></body></html>"
+        )
+        zf.writestr("webroot/index.html", html_content)
+        zf.writestr(
+            "webroot/index.html.sha256",
+            hashlib.sha256(html_content.encode("utf-8")).hexdigest() + "\n",
+        )
+
+    out_zip = tmp_path / "sha_mod_ported.zip"
+    result = port_module(src_zip, out_zip)
+
+    check_dir = tmp_path / "sha_check"
+    safe_extract(result.output_path, check_dir)
+
+    # Check customize.sh rewrite and sha256 update
+    custom_ported = (check_dir / "customize.sh").read_text()
+    assert "$MYSU" in custom_ported
+    assert "/data/adb/mysu/bin" in custom_ported
+    custom_sha = (check_dir / "customize.sh.sha256").read_text().strip()
+    assert custom_sha == hashlib.sha256(custom_ported.encode("utf-8")).hexdigest()
+
+    # Check webroot/index.html polyfill injection and sha256 update
+    html_ported = (check_dir / "webroot" / "index.html").read_text()
+    assert 'Object.defineProperty(window,"ksu"' in html_ported
+    html_sha = (check_dir / "webroot" / "index.html.sha256").read_text().strip()
+    assert html_sha == hashlib.sha256(html_ported.encode("utf-8")).hexdigest()

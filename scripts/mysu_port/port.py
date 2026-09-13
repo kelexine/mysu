@@ -5,7 +5,9 @@ Author: kelexine <https://github.com/kelexine>
 
 from __future__ import annotations
 
+import hashlib
 import logging
+import re
 import tempfile
 import zipfile
 from dataclasses import dataclass
@@ -79,6 +81,72 @@ def process_directory(work_dir: Path, rule_set: RuleSet) -> tuple[int, int]:
     return files_modified, total_substitutions
 
 
+_WEBUI_POLYFILL = (
+    "<script>"
+    'if(typeof window.ksu==="undefined"){'
+    "try{"
+    'Object.defineProperty(window,"ksu",{'
+    "get:function(){return window.mysu},"
+    "configurable:true,enumerable:true"
+    "})"
+    "}catch(e){"
+    'if(typeof window.mysu!=="undefined")window.ksu=window.mysu;'
+    "}"
+    "}"
+    "</script>"
+)
+
+
+def inject_webui_polyfill(work_dir: Path) -> int:
+    """Inject fallback bridge polyfill into WebUI HTML files so ksu calls resolve to mysu."""
+    injected_count = 0
+    for html_path in work_dir.rglob("*.html"):
+        if not html_path.is_file():
+            continue
+        if "webroot" not in html_path.parts:
+            continue
+        try:
+            content = html_path.read_text(encoding="utf-8")
+        except OSError as exc:
+            logger.warning("skipping unreadable html file %s: %s", html_path, exc)
+            continue
+
+        if "window.ksu" in content and "window.mysu" in content:
+            continue
+
+        head_match = re.search(r"<head[^>]*>", content, re.IGNORECASE)
+        if head_match:
+            idx = head_match.end()
+            new_content = content[:idx] + _WEBUI_POLYFILL + content[idx:]
+        else:
+            new_content = _WEBUI_POLYFILL + content
+
+        html_path.write_text(new_content, encoding="utf-8")
+        injected_count += 1
+        logger.info("injected WebUI bridge polyfill into %s", html_path)
+    return injected_count
+
+
+def update_all_checksums(work_dir: Path) -> int:
+    """Synchronize any .sha256 companion checksum files with modified target files."""
+    updated = 0
+    for sha_path in work_dir.rglob("*.sha256"):
+        target_name = sha_path.name[:-7]
+        target_path = sha_path.parent / target_name
+        if not target_path.is_file():
+            continue
+        try:
+            current_hash = hashlib.sha256(target_path.read_bytes()).hexdigest()
+            stored_hash = sha_path.read_text(encoding="utf-8").strip()
+            if current_hash != stored_hash:
+                sha_path.write_text(f"{current_hash}\n", encoding="utf-8")
+                updated += 1
+                logger.debug("updated checksum for %s (%s)", target_path, current_hash)
+        except OSError as exc:
+            logger.warning("failed to update checksum %s: %s", sha_path, exc)
+    return updated
+
+
 def port_module(
     input_path: Path,
     output_path: Path | None = None,
@@ -102,6 +170,12 @@ def port_module(
             module_id = _validate_or_skip(work_dir, rule_set, skip_validation)
 
             files_modified, substitutions = process_directory(work_dir, rule_set)
+            injected = inject_webui_polyfill(work_dir)
+            if injected:
+                files_modified += injected
+            checksums_updated = update_all_checksums(work_dir)
+            if checksums_updated:
+                logger.info("synchronized %d companion checksum file(s)", checksums_updated)
 
             out = output_path or input_path.with_name(f"{input_path.stem}_mysu.zip")
             archive.repack(work_dir, out)
@@ -113,6 +187,12 @@ def port_module(
     elif input_path.is_dir():
         module_id = _validate_or_skip(input_path, rule_set, skip_validation)
         files_modified, substitutions = process_directory(input_path, rule_set)
+        injected = inject_webui_polyfill(input_path)
+        if injected:
+            files_modified += injected
+        checksums_updated = update_all_checksums(input_path)
+        if checksums_updated:
+            logger.info("synchronized %d companion checksum file(s)", checksums_updated)
         logger.info(
             "ported %s in-place (%d file(s) modified)", input_path, files_modified
         )

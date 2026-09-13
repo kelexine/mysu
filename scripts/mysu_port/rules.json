@@ -7,15 +7,24 @@
     { "pattern": "/data/adb/modules/", "replacement": "/data/adb/mysu/modules/", "note": "Magisk/legacy module root -> mysud MODULE_DIR (see userspace/mysud/src/defs.rs)" },
     { "pattern": "/data/adb/modules\\b", "replacement": "/data/adb/mysu/modules", "note": "bare modules dir reference" },
     { "pattern": "/data/adb/ksud", "replacement": "/data/adb/mysud", "note": "ksud daemon path -> mysud daemon path" },
-    { "pattern": "\\bksud\\b", "replacement": "mysud", "note": "bare ksud identifier/binary name -> mysud" }
+    { "pattern": "\\bksud\\b", "replacement": "mysud", "note": "bare ksud identifier/binary name -> mysud" },
+    { "pattern": "\\$KSU\\b", "replacement": "$MYSU", "note": "KernelSU env var check -> MySU env var check" },
+    { "pattern": "\\bKSU=true\\b", "replacement": "MYSU=true", "note": "KernelSU env flag -> MySU env flag" },
+    { "pattern": "\\$KSU_KERNEL_VER_CODE\\b", "replacement": "$MYSU_KERNEL_VER_CODE", "note": "KSU kernel ver code -> MYSU kernel ver code" },
+    { "pattern": "\\$KSU_VER_CODE\\b", "replacement": "$MYSU_VER_CODE", "note": "KSU ver code -> MYSU ver code" },
+    { "pattern": "\\$KSU_VER\\b", "replacement": "$MYSU_VER", "note": "KSU ver name -> MYSU ver name" }
   ],
   "webui_rules": [
     { "pattern": "\\bwindow\\.ksu\\b", "replacement": "window.mysu", "note": "WebUI global bridge object" },
-    { "pattern": "\\bksu\\.(exec|spawn|fullScreen|enableEdgeToEdge|toast|moduleInfo|listPackages|getPackagesInfo|exit)\\b", "replacement": "mysu.\\1", "note": "WebUI bridge method calls (see js/index.js for the supported method surface)" },
-    { "pattern": "typeof\\s+ksu\\b", "replacement": "typeof mysu", "note": "feature-detection guards for the bridge object" }
+    { "pattern": "\\bksu\\.", "replacement": "mysu.", "note": "WebUI bridge method and property calls" },
+    { "pattern": "\\btypeof\\s+ksu\\b", "replacement": "typeof mysu", "note": "feature-detection guards for the bridge object" },
+    { "pattern": "\\btypeof\\s*\\(\\s*ksu\\s*\\)", "replacement": "typeof(mysu)", "note": "parenthesized feature-detection guards" },
+    { "pattern": "ksu://", "replacement": "mysu://", "note": "WebUI icon URI scheme" },
+    { "pattern": "\\bmui\\.kernelsu\\.org\\b", "replacement": "mui.mysu.org", "note": "WebUI domain" },
+    { "pattern": "(?<!mysu:\\s)\\bksu:(?!//)", "replacement": "mysu: ksu:", "note": "CSP ksu: protocol allowlist" }
   ],
   "text_extensions": [".sh", ".prop", ".rc", ".txt", ".json"],
-  "webui_extensions": [".js", ".html", ".htm"],
+  "webui_extensions": [".js", ".mjs", ".cjs", ".html", ".htm"],
   "explicit_filenames": ["customize.sh", "post-fs-data.sh", "service.sh", "post-mount.sh", "uninstall.sh", "action.sh", "module.prop"],
   "required_module_prop_fields": ["id", "name", "version", "versionCode", "author"]
 }

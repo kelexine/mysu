@@ -51,7 +51,12 @@ class RuleSet:
 
     def matches_webui_target(self, path: Path) -> bool:
         """True if ``path`` should additionally receive WebUI bridge rules."""
-        return path.suffix.lower() in self.webui_extensions
+        suffix = path.suffix.lower()
+        if suffix in self.webui_extensions:
+            return True
+        if suffix == ".json" and ("webroot" in path.parts or path.name == "config.json"):
+            return True
+        return False
 
 
 def _compile_rules(raw: list[dict[str, str]]) -> tuple[CompiledRule, ...]:

@@ -68,6 +68,54 @@ def test_webui_rules_do_not_touch_unrelated_words():
     assert count == 0
 
 
+def test_path_rules_rewrite_ksu_env_vars():
+    rules = load_rules()
+    sh = (
+        'if [ "$KSU" = "true" ]; then\n'
+        '  echo "Kernel: $KSU_KERNEL_VER_CODE, Ver: $KSU_VER ($KSU_VER_CODE)"\n'
+        'fi\n'
+        'KSU=true\n'
+    )
+    result, count = apply_rules(sh, rules.path_rules)
+    assert 'if [ "$MYSU" = "true" ]; then' in result
+    assert "$MYSU_KERNEL_VER_CODE" in result
+    assert "$MYSU_VER" in result
+    assert "$MYSU_VER_CODE" in result
+    assert "MYSU=true" in result
+    assert count == 5
+
+
+def test_webui_rules_rewrite_icon_uris_and_domain():
+    rules = load_rules()
+    text = (
+        'const icon = "ksu://icon/" + pkg;\n'
+        'const domain = "https://mui.kernelsu.org";\n'
+    )
+    result, count = apply_rules(text, rules.webui_rules)
+    assert 'const icon = "mysu://icon/" + pkg;' in result
+    assert 'const domain = "https://mui.mysu.org";' in result
+    assert count == 2
+
+
+def test_webui_rules_rewrite_csp_and_guards():
+    rules = load_rules()
+    csp = "default-src 'self'; img-src 'self' ksu:; font-src 'self'"
+    result, count = apply_rules(csp, rules.webui_rules)
+    assert "img-src 'self' mysu: ksu:;" in result
+    assert count == 1
+
+    # Idempotent
+    result2, count2 = apply_rules(result, rules.webui_rules)
+    assert result2 == result
+    assert count2 == 0
+
+    # Minified guard
+    minified = 'function Ct(){return typeof ksu<"u"}'
+    res_min, cnt_min = apply_rules(minified, rules.webui_rules)
+    assert 'return typeof mysu<"u"' in res_min
+    assert cnt_min == 1
+
+
 def test_load_rules_missing_file_raises(tmp_path: Path):
     missing = tmp_path / "does_not_exist.json"
     with pytest.raises(RulesLoadError):
