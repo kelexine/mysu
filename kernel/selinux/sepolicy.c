@@ -813,11 +813,11 @@ static bool add_type(struct policydb *db, const char *type_name, bool attr)
     }
 
     if (db->type_val_to_struct_array) {
-        flex_array_put(db->type_val_to_struct_array, value - 1, type, GFP_KERNEL | __GFP_ZERO);
+        flex_array_put_ptr(db->type_val_to_struct_array, value - 1, type, GFP_KERNEL | __GFP_ZERO);
     }
 
     if (db->sym_val_to_name[SYM_TYPES]) {
-        flex_array_put(db->sym_val_to_name[SYM_TYPES], value - 1, key, GFP_KERNEL | __GFP_ZERO);
+        flex_array_put_ptr(db->sym_val_to_name[SYM_TYPES], value - 1, key, GFP_KERNEL | __GFP_ZERO);
     }
 
     int i;

@@ -24,8 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Built-in Kernel Symbol Resolution**:
   - Added `#ifndef MODULE` direct linker symbol fallbacks for `sys_call_table` and `__arm64_sys_ni_syscall` in `kernel/hook/arm64/syscall_hook.c`.
   - Added `#ifndef MODULE` direct linker symbol fallback for `security_hook_heads` in `kernel/hook/lsm_hook.c`.
-- **Throne Tracking DAC/MAC Permissions**:
-  - Wrapped `track_throne()` file operations in `kernel/manager/throne_tracker.c` with `override_creds(mysu_cred)` / `revert_creds(saved)` to ensure root credentials when reading packages list and scanning `/data/app`.
+- **Pre-5.7 SELinux Type Array Pointer Storage**:
+  - Replaced `flex_array_put` with `flex_array_put_ptr` in `kernel/selinux/sepolicy.c:add_type()` for `db->type_val_to_struct_array` and `db->sym_val_to_name[SYM_TYPES]`.
+  - Fixes memory corruption where string bytes `"mysu\0"` were copied into the flex array instead of the pointer address, preventing fatal NULL pointer dereference panics at `context_struct_to_string()` -> `__pi_strlen()`.
+- **Pre-5.10 SELinux Policy Lock Sleep Elimination**:
+  - Replaced `write_lock_irq(&selinux_state.ss->policy_rwlock)` with dedicated mutex serialization (`sepolicy_rw_mutex`) in `apply_mysu_rules()` and `handle_sepolicy()` on Linux < 5.10.
+  - Eliminates atomic context violations and `BUG: sleeping function called from invalid context` warnings caused by `cond_resched()` and memory allocations inside `hashtab_insert()`.
 
 ---
 

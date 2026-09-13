@@ -1,5 +1,6 @@
 #include "linux/rcupdate.h"
 #include "security.h"
+#include <linux/mutex.h>
 #include <linux/uaccess.h>
 #include <linux/types.h>
 #include <linux/version.h>
@@ -16,6 +17,10 @@
 #include "xfrm.h"
 
 struct selinux_policy *backup_sepolicy;
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
+static DEFINE_MUTEX(sepolicy_rw_mutex);
+#endif
 
 #define SELINUX_POLICY_INSTEAD_SELINUX_SS
 
@@ -178,7 +183,7 @@ void apply_mysu_rules()
         return;
     }
 
-    write_lock_irq(&selinux_state.ss->policy_rwlock);
+    mutex_lock(&sepolicy_rw_mutex);
     db = &selinux_state.ss->policydb;
 
     mysu_type(db, MYSU_DOMAIN, "domain");
@@ -253,7 +258,7 @@ void apply_mysu_rules()
     mysu_allow(db, "system_server", MYSU_DOMAIN, "process", "getpgid");
     mysu_allow(db, "system_server", MYSU_DOMAIN, "process", "sigkill");
 
-    write_unlock_irq(&selinux_state.ss->policy_rwlock);
+    mutex_unlock(&sepolicy_rw_mutex);
 
     reset_avc_cache();
 }
@@ -664,7 +669,7 @@ int handle_sepolicy(void __user *user_data, u64 data_len)
         goto out_free;
     }
 
-    write_lock_irq(&selinux_state.ss->policy_rwlock);
+    mutex_lock(&sepolicy_rw_mutex);
     db = &selinux_state.ss->policydb;
 
     cursor.cur = payload;
@@ -709,7 +714,7 @@ int handle_sepolicy(void __user *user_data, u64 data_len)
         cmd_index++;
     }
 
-    write_unlock_irq(&selinux_state.ss->policy_rwlock);
+    mutex_unlock(&sepolicy_rw_mutex);
 
     reset_avc_cache();
     ret = success_cmd_count;
