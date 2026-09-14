@@ -89,6 +89,7 @@ import dev.kelexine.mysu.ui.screen.home.HomePager
 import dev.kelexine.mysu.ui.screen.install.InstallScreen
 import dev.kelexine.mysu.ui.screen.module.ModulePager
 import dev.kelexine.mysu.ui.screen.modulerepo.ModuleRepoDetailScreen
+import dev.kelexine.mysu.ui.screen.modulerepo.ModuleRepoPager
 import dev.kelexine.mysu.ui.screen.modulerepo.ModuleRepoScreen
 import dev.kelexine.mysu.ui.screen.settings.SettingPager
 import dev.kelexine.mysu.ui.screen.sulog.SulogScreen
@@ -394,7 +395,8 @@ fun MainScreen(
                         0 -> if (isCurrentPage || contentReady) HomePager(navController, bottomInnerPadding, isCurrentPage)
                         1 -> if (isCurrentPage || contentReady) SuperUserPager(navController, bottomInnerPadding, isCurrentPage)
                         2 -> if (isCurrentPage || contentReady) ModulePager(bottomInnerPadding, isCurrentPage)
-                        3 -> if (isCurrentPage || contentReady) SettingPager(navController, bottomInnerPadding)
+                        3 -> if (isCurrentPage || contentReady) ModuleRepoPager(navController, bottomInnerPadding, isCurrentPage)
+                        4 -> if (isCurrentPage || contentReady) SettingPager(navController, bottomInnerPadding)
                     }
                 }
             }

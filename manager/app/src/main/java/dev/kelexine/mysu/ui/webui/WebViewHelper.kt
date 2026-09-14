@@ -65,7 +65,8 @@ internal suspend fun prepareWebView(
         }
 
         webUIState.moduleName = moduleInfo.name
-        webUIState.modDir = "/data/adb/modules/${moduleId}"
+        val mysuModDir = File("/data/adb/mysu/modules/${moduleId}")
+        webUIState.modDir = if (mysuModDir.exists()) mysuModDir.absolutePath else "/data/adb/modules/${moduleId}"
 
         if (SuperUserViewModel.apps.isEmpty()) {
             SuperUserViewModel().fetchAppList()
@@ -98,7 +99,8 @@ internal suspend fun prepareWebView(
                         webRoot,
                         shell,
                         { webUIState.currentInsets },
-                        { enable -> webUIState.isInsetsEnabled = enable })
+                        { enable -> webUIState.isInsetsEnabled = enable }
+                    )
                 )
                 .build()
 

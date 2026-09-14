@@ -45,7 +45,7 @@ fun stripTicks(s: String): String {
 
 fun fetchReleaseDescriptionHtml(moduleId: String, latestTag: String): String? {
     if (!isNetworkAvailable(mysuApp)) return null
-    val url = "https://modules.mysu.org/module/$moduleId.json"
+    val url = "https://raw.githubusercontent.com/MySU-org/modules/main/modules/$moduleId.json"
     return runCatching {
         mysuApp.okhttpClient.newCall(Request.Builder().url(url).build()).execute().use { resp ->
             if (!resp.isSuccessful) null else {
@@ -73,7 +73,7 @@ fun fetchReleaseDescriptionHtml(moduleId: String, latestTag: String): String? {
 
 fun fetchModuleDetail(moduleId: String): ModuleDetail? {
     if (!isNetworkAvailable(mysuApp)) return null
-    val url = "https://modules.mysu.org/module/$moduleId.json"
+    val url = "https://raw.githubusercontent.com/MySU-org/modules/main/modules/$moduleId.json"
     return runCatching {
         mysuApp.okhttpClient.newCall(Request.Builder().url(url).build()).execute().use { resp ->
             if (!resp.isSuccessful) return@use null

@@ -69,6 +69,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
@@ -133,6 +134,8 @@ import top.yukonga.miuix.kmp.utils.scrollEndHaptic
 fun ModuleRepoScreenMiuix(
     state: ModuleRepoUiState,
     actions: ModuleRepoActions,
+    isPager: Boolean = false,
+    bottomInnerPadding: Dp = 0.dp,
 ) {
     val searchStatus = state.searchStatus
     val density = LocalDensity.current
@@ -201,18 +204,20 @@ fun ModuleRepoScreenMiuix(
                             }
                         },
                         navigationIcon = {
-                            IconButton(
-                                onClick = actions.onBack
-                            ) {
-                                val layoutDirection = LocalLayoutDirection.current
-                                Icon(
-                                    modifier = Modifier.graphicsLayer {
-                                        if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
-                                    },
-                                    imageVector = MiuixIcons.Back,
-                                    contentDescription = null,
-                                    tint = colorScheme.onSurface
-                                )
+                            if (!isPager) {
+                                IconButton(
+                                    onClick = actions.onBack
+                                ) {
+                                    val layoutDirection = LocalLayoutDirection.current
+                                    Icon(
+                                        modifier = Modifier.graphicsLayer {
+                                            if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
+                                        },
+                                        imageVector = MiuixIcons.Back,
+                                        contentDescription = null,
+                                        tint = colorScheme.onSurface
+                                    )
+                                }
                             }
                         },
                         scrollBehavior = scrollBehavior, bottomContent = {
@@ -340,6 +345,9 @@ fun ModuleRepoScreenMiuix(
                                 }
                             }
                         }
+                    }
+                    item {
+                        Spacer(Modifier.height(WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + bottomInnerPadding))
                     }
                 }
             }
@@ -532,7 +540,7 @@ fun ModuleRepoScreenMiuix(
                                 }
                             }
                             item {
-                                Spacer(Modifier.height(WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()))
+                                Spacer(Modifier.height(WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + bottomInnerPadding))
                             }
                         }
                     }

@@ -11,9 +11,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import dev.kelexine.mysu.ui.LocalUiMode
 import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.navigation3.LocalNavigator
+import dev.kelexine.mysu.ui.navigation3.Navigator
 import dev.kelexine.mysu.ui.navigation3.Route
 import dev.kelexine.mysu.ui.screen.flash.FlashIt
 import dev.kelexine.mysu.ui.util.module.fetchModuleDetail
@@ -65,14 +68,66 @@ fun ModuleRepoScreen() {
 }
 
 @Composable
+fun ModuleRepoPager(
+    navigator: Navigator,
+    bottomInnerPadding: Dp,
+    isCurrentPage: Boolean = true,
+) {
+    val viewModel = viewModel<ModuleRepoViewModel>()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val installedVm = viewModel<ModuleViewModel>()
+    val installedUiState by installedVm.uiState.collectAsStateWithLifecycle()
+
+    var hasActivated by remember { mutableStateOf(false) }
+    if (isCurrentPage) hasActivated = true
+
+    if (hasActivated) {
+        LaunchedEffect(Unit) {
+            if (uiState.modules.isEmpty()) {
+                viewModel.refresh()
+            }
+            if (installedUiState.moduleList.isEmpty()) {
+                installedVm.fetchModuleList()
+            }
+        }
+    }
+
+    val actions = ModuleRepoActions(
+        onBack = {},
+        onRefresh = viewModel::refresh,
+        onSearchTextChange = viewModel::updateSearchText,
+        onClearSearch = { viewModel.updateSearchText("") },
+        onSearchStatusChange = viewModel::updateSearchStatus,
+        onSetSortOrder = viewModel::setSortOrder,
+        onOpenRepoDetail = { module ->
+            val args = RepoModuleArg(
+                moduleId = module.moduleId,
+                moduleName = module.moduleName,
+                authors = module.authors,
+                authorsList = module.authorList.map { AuthorArg(it.name, it.link) },
+                latestRelease = module.latestRelease,
+                latestReleaseTime = module.latestReleaseTime,
+                releases = emptyList()
+            )
+            navigator.push(Route.ModuleRepoDetail(args))
+        },
+    )
+
+    when (LocalUiMode.current) {
+        UiMode.Miuix -> ModuleRepoScreenMiuix(uiState, actions, isPager = true, bottomInnerPadding = bottomInnerPadding)
+        UiMode.Material -> ModuleRepoScreenMaterial(uiState, actions, isPager = true, bottomInnerPadding = bottomInnerPadding)
+    }
+}
+
+@Composable
 fun ModuleRepoDetailScreen(module: RepoModuleArg) {
     val navigator = LocalNavigator.current
     val uriHandler = LocalUriHandler.current
     var readmeHtml by remember(module.moduleId) { mutableStateOf<String?>(null) }
     var readmeLoaded by remember(module.moduleId) { mutableStateOf(false) }
     var detailReleases by remember(module.moduleId) { mutableStateOf<List<ReleaseArg>>(emptyList()) }
-    var webUrl by remember(module.moduleId) { mutableStateOf("https://modules.mysu.org/module/${module.moduleId}") }
-    var sourceUrl by remember(module.moduleId) { mutableStateOf("https://github.com/MySU-Modules-Repo/${module.moduleId}") }
+    var webUrl by remember(module.moduleId) { mutableStateOf("https://github.com/MySU-org/modules") }
+    var sourceUrl by remember(module.moduleId) { mutableStateOf("https://github.com/MySU-org/modules") }
 
     LaunchedEffect(module.moduleId) {
         if (module.moduleId.isNotEmpty()) {

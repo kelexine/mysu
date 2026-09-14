@@ -117,6 +117,8 @@ import dev.kelexine.mysu.ui.util.rememberContentReady
 fun ModuleRepoScreenMaterial(
     state: ModuleRepoUiState,
     actions: ModuleRepoActions,
+    isPager: Boolean = false,
+    bottomInnerPadding: Dp = 0.dp,
 ) {
     val haptic = LocalHapticFeedback.current
     val listState = rememberLazyListState()
@@ -136,9 +138,9 @@ fun ModuleRepoScreenMaterial(
                 onSearchTextChange = actions.onSearchTextChange,
                 onClearClick = actions.onClearSearch,
                 scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    TopBarBackButton(onClick = actions.onBack)
-                },
+                navigationIcon = if (!isPager) {
+                    { TopBarBackButton(onClick = actions.onBack) }
+                } else null,
                 actions = {
                     var showSortMenu by remember { mutableStateOf(false) }
 
@@ -196,6 +198,7 @@ fun ModuleRepoScreenMaterial(
                         modules = state.searchResults,
                         listState = searchListState,
                         modifier = Modifier.fillMaxSize(),
+                        bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + bottomInnerPadding,
                         onModuleClick = {
                             closeSearch()
                             actions.onOpenRepoDetail(it)
@@ -266,6 +269,7 @@ fun ModuleRepoScreenMaterial(
                     modifier = Modifier
                         .fillMaxSize()
                         .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + bottomInnerPadding,
                     onModuleClick = actions.onOpenRepoDetail
                 )
             }

@@ -15,6 +15,5 @@ fun isNetworkAvailable(context: Context): Boolean {
             caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
 
     return hasTransport &&
-            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
