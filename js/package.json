@@ -1,6 +1,6 @@
 {
-  "name": "mysu",
-  "version": "3.0.2",
+  "name": "@mysu-org/mysu",
+  "version": "3.0.3",
   "description": "Library for MySU's module WebUI",
   "main": "index.js",
   "types": "index.d.ts",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kelexine/MySU.git"
+    "url": "git+https://github.com/mysu-org/mysu-js.git"
   },
   "keywords": [
     "su",
@@ -20,7 +20,7 @@
   "author": "kelexine",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/kelexine/MySU/issues"
+    "url": "https://github.com/mysu-org/mysu-js/issues"
   },
-  "homepage": "https://github.com/kelexine/MySU#readme"
+  "homepage": "https://github.com/mysu-org/mysu-js#readme"
 }

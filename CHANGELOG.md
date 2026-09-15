@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.13] - 2026-09-15
+
+### Added
+- **Automated Source Module Porter (`mysu_port`)**:
+  - Enhanced source module porter with automatic WebUI dependency installation (`bun`/`pnpm`/`npm`), asset normalization, and directory tree staging.
+  - Implemented `adapt_module_scripts()` to automatically prepend `/data/adb/mysu/bin` to `PATH`, align legacy version thresholds (`MIN_KERNELSU_VERSION=30000`), and inject MySU Manager intent launch triggers into module `action.sh` scripts.
+  - Added `__main__.py` entrypoint allowing direct execution via `python3 -m mysu_port`.
+- **MySU JavaScript Bridge (`@mysu-org/mysu` v3.0.3)**:
+  - Transitioned package namespace to `@mysu-org/mysu` published to npm registry.
+  - Converted `listPackages()` and `getPackagesInfo()` to asynchronous Promise returns matching modern WebUI specifications.
+  - Added `isMySuWebui()` and `isKsuWebui()` environment detection helpers.
+
+### Fixed
+- **WebUI Activity Intent Dispatching**:
+  - Expanded `WebUIActivity.kt` module ID resolution to inspect intent extras (`-e id` and `-e MOD_ID`) in addition to URI query parameters, ensuring reliable WebUI launches from root shell actions.
+
+---
+
 ## [1.0.12] - 2026-09-13
 
 ### Fixed

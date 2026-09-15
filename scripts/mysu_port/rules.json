@@ -21,10 +21,13 @@
     { "pattern": "\\btypeof\\s*\\(\\s*ksu\\s*\\)", "replacement": "typeof(mysu)", "note": "parenthesized feature-detection guards" },
     { "pattern": "ksu://", "replacement": "mysu://", "note": "WebUI icon URI scheme" },
     { "pattern": "\\bmui\\.kernelsu\\.org\\b", "replacement": "mui.mysu.org", "note": "WebUI domain" },
-    { "pattern": "(?<!mysu:\\s)\\bksu:(?!//)", "replacement": "mysu: ksu:", "note": "CSP ksu: protocol allowlist" }
+    { "pattern": "(?<!mysu:\\s)\\bksu:(?!//)", "replacement": "mysu: ksu:", "note": "CSP ksu: protocol allowlist" },
+    { "pattern": "['\"]kernelsu-alt['\"]", "replacement": "\"@mysu-org/mysu\"", "note": "kernelsu-alt npm package import" },
+    { "pattern": "['\"]kernelsu['\"]", "replacement": "\"@mysu-org/mysu\"", "note": "kernelsu npm package import" },
+    { "pattern": "io\\.github\\.a13e300\\.ksuwebui", "replacement": "dev.kelexine.mysu", "note": "WebUI standalone package -> MySU" }
   ],
   "text_extensions": [".sh", ".prop", ".rc", ".txt", ".json"],
-  "webui_extensions": [".js", ".mjs", ".cjs", ".html", ".htm"],
+  "webui_extensions": [".js", ".mjs", ".cjs", ".html", ".htm", ".ts", ".vue", ".jsx", ".tsx", ".css"],
   "explicit_filenames": ["customize.sh", "post-fs-data.sh", "service.sh", "post-mount.sh", "uninstall.sh", "action.sh", "module.prop"],
   "required_module_prop_fields": ["id", "name", "version", "versionCode", "author"]
 }

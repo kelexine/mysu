@@ -122,7 +122,7 @@ export function moduleInfo() {
   return mysu.moduleInfo();
 }
 
-export function listPackages(type) {
+export async function listPackages(type) {
   try {
     return JSON.parse(mysu.listPackages(type));
   } catch (error) {
@@ -130,7 +130,7 @@ export function listPackages(type) {
   }
 }
 
-export function getPackagesInfo(packages) {
+export async function getPackagesInfo(packages) {
   try {
     if (typeof packages !== "string") {
       packages = JSON.stringify(packages);
@@ -144,3 +144,9 @@ export function getPackagesInfo(packages) {
 export function exit() {
   mysu.exit();
 }
+
+
+export function isMySuWebui() {
+  return typeof window.mysu !== "undefined";
+}
+

@@ -40,9 +40,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Skip WebUI/native compilation in source mode (adapt code and package only)",
     )
     parser.add_argument(
-        "--skip-validation",
-        action="store_true",
-        help="Skip module.prop validation (adapt whatever is there, even if malformed)",
+        "--upload-org",
+        metavar="ORG",
+        help="Push ported source repo to GitHub organization (e.g. MySU-org)",
+    )
+    parser.add_argument(
+        "--register-catalog",
+        type=Path,
+        metavar="CATALOG_DIR",
+        help="Register output zip in MySU module catalog repository directory",
     )
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Enable debug logging"
@@ -70,6 +76,44 @@ def main(argv: list[str] | None = None) -> int:
                 "built" if res.native_built else "skipped",
                 res.substitutions,
             )
+
+            if args.upload_org:
+                import subprocess
+                repo_path = args.input.resolve()
+                org = args.upload_org
+                repo_name = res.module_id
+                target_url = f"https://github.com/{org}/{repo_name}"
+                logger.info("uploading source repository to %s...", target_url)
+                # Ensure git repo initialized and remote configured
+                subprocess.run(["git", "init", "-b", "main"], cwd=repo_path, check=False)
+                subprocess.run(["git", "config", "user.name", "kelexine"], cwd=repo_path, check=False)
+                subprocess.run(["git", "config", "user.email", "frankiekelechi@gmail.com"], cwd=repo_path, check=False)
+                subprocess.run(["git", "add", "-A"], cwd=repo_path, check=False)
+                subprocess.run(["git", "commit", "-m", f"feat(mysu): natively port {repo_name} to MySU ecosystem\n\nSigned-off-by: kelexine <frankiekelechi@gmail.com>"], cwd=repo_path, check=False)
+                # Create remote repo on GitHub Org if needed
+                subprocess.run(["gh", "repo", "create", f"{org}/{repo_name}", "--public", "--confirm"], check=False)
+                subprocess.run(["git", "remote", "remove", "origin"], cwd=repo_path, check=False)
+                subprocess.run(["git", "remote", "add", "origin", f"git@github.com:{org}/{repo_name}.git"], cwd=repo_path, check=False)
+                subprocess.run(["git", "push", "-u", "origin", "main", "--force"], cwd=repo_path, check=False)
+                logger.info("source repository pushed -> %s", target_url)
+
+            if args.register_catalog:
+                import subprocess
+                catalog_script = args.register_catalog / "scripts" / "add_module.py"
+                if catalog_script.is_file():
+                    logger.info("registering module %s in catalog %s...", res.module_id, args.register_catalog)
+                    subprocess.run([
+                        sys.executable,
+                        str(catalog_script),
+                        "--id", res.module_id,
+                        "--name", res.module_id.replace("_", " ").title(),
+                        "--summary", f"{res.module_id.replace('_', ' ').title()} natively ported for MySU",
+                        "--version", "1.0.0-mysu",
+                        "--version-code", "1000",
+                        "--zip", str(res.output_zip),
+                        "--gh-release",
+                    ], cwd=args.register_catalog, check=False)
+
             return 0
 
         result = port_module(

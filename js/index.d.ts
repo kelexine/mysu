@@ -50,11 +50,13 @@ interface PackagesInfo {
     uid: number;
 }
 
-declare function listPackages(type: string): string[];
+declare function listPackages(type: string): Promise<string[]>;
 
-declare function getPackagesInfo(packages: string[]): PackagesInfo[];
+declare function getPackagesInfo(packages: string[]): Promise<PackagesInfo[]>;
 
 declare function exit();
+
+declare function isMySuWebui(): boolean;
 
 export {
     exec,
@@ -66,4 +68,6 @@ export {
     listPackages,
     getPackagesInfo,
     exit,
+    isMySuWebui,
+    PackagesInfo,
 }

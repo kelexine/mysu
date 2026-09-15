@@ -119,3 +119,40 @@ def test_port_source_module(tmp_path: Path):
         cust_content = zf.read("customize.sh").decode("utf-8")
         assert "$MYSU" in cust_content
         assert "/data/adb/mysu/bin" in cust_content
+
+
+def test_adapt_module_scripts(tmp_path: Path):
+    from mysu_port.source import adapt_module_scripts
+
+    module_dir = tmp_path / "mod"
+    module_dir.mkdir()
+
+    action_sh = module_dir / "action.sh"
+    action_sh.write_text(
+        '#!/bin/sh\n'
+        'PATH=/data/adb/ap/bin:/data/adb/ksu/bin:$PATH\n'
+        'if pm path io.github.a13e300.ksuwebui > /dev/null 2>&1; then\n'
+        '    am start -n "io.github.a13e300.ksuwebui/.WebUIActivity" -e id "$ID"\n'
+        'fi\n',
+        encoding="utf-8",
+    )
+
+    customize_sh = module_dir / "customize.sh"
+    customize_sh.write_text(
+        'MIN_KERNELSU_VERSION=32234\n'
+        'manager_paths="/data/adb/ap/bin /data/adb/ksu/bin"\n',
+        encoding="utf-8",
+    )
+
+    mods, subs = adapt_module_scripts(module_dir)
+    assert mods == 2
+    assert subs >= 4
+
+    action_res = action_sh.read_text(encoding="utf-8")
+    assert "/data/adb/mysu/bin:" in action_res
+    assert "dev.kelexine.mysu/.ui.webui.WebUIActivity" in action_res
+
+    cust_res = customize_sh.read_text(encoding="utf-8")
+    assert "MIN_KERNELSU_VERSION=30000" in cust_res
+    assert "/data/adb/mysu/bin" in cust_res
+

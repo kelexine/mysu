@@ -87,15 +87,16 @@ def adapt_webui_source(webui_dir: Path, rule_set: RuleSet) -> tuple[int, int]:
             modified_pkg = False
             for dep_key in ("dependencies", "devDependencies"):
                 deps = data.get(dep_key, {})
-                if "kernelsu" in deps:
-                    del deps["kernelsu"]
-                    deps[MYSU_JS_PKG] = MYSU_JS_VERSION
-                    modified_pkg = True
+                for legacy_dep in ("kernelsu", "kernelsu-alt", "@kernelsu/core"):
+                    if legacy_dep in deps:
+                        del deps[legacy_dep]
+                        deps[MYSU_JS_PKG] = MYSU_JS_VERSION
+                        modified_pkg = True
             if modified_pkg:
                 pkg_json.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
                 files_modified += 1
                 total_substitutions += 1
-                logger.info("adapted %s: replaced kernelsu with %s", pkg_json, MYSU_JS_PKG)
+                logger.info("adapted %s: replaced legacy dependencies with %s", pkg_json, MYSU_JS_PKG)
         except (OSError, json.JSONDecodeError) as exc:
             logger.warning("failed to patch package.json in %s: %s", webui_dir, exc)
 
@@ -114,12 +115,21 @@ def adapt_webui_source(webui_dir: Path, rule_set: RuleSet) -> tuple[int, int]:
         orig = content
         sub_count = 0
 
-        # Import statements
-        new_content, c = re.subn(r'from\s+[\'"]kernelsu[\'"]', f'from "{MYSU_JS_PKG}"', content)
+        # Import statements matching kernelsu and kernelsu-alt
+        new_content, c = re.subn(r'from\s+[\'"](?:kernelsu|kernelsu-alt)[\'"]', f'from "{MYSU_JS_PKG}"', content)
         content = new_content
         sub_count += c
 
-        new_content, c = re.subn(r'import\s+[\'"]kernelsu[\'"]', f'import "{MYSU_JS_PKG}"', content)
+        new_content, c = re.subn(r'import\s+[\'"](?:kernelsu|kernelsu-alt)[\'"]', f'import "{MYSU_JS_PKG}"', content)
+        content = new_content
+        sub_count += c
+
+        # Global object and bridge method calls
+        new_content, c = re.subn(r'\bwindow\.ksu\b', 'window.mysu', content)
+        content = new_content
+        sub_count += c
+
+        new_content, c = re.subn(r'\bksu\.(exec|spawn|toast|fullScreen|moduleInfo)\b', r'mysu.\1', content)
         content = new_content
         sub_count += c
 
@@ -129,6 +139,11 @@ def adapt_webui_source(webui_dir: Path, rule_set: RuleSet) -> tuple[int, int]:
         sub_count += c
 
         new_content, c = re.subn(r'https://mui\.kernelsu\.org/', 'https://mui.mysu.org/', content)
+        content = new_content
+        sub_count += c
+
+        # Text branding
+        new_content, c = re.subn(r'\bKernelSU\b', 'MySU', content)
         content = new_content
         sub_count += c
 
@@ -153,7 +168,15 @@ def build_webui(webui_dir: Path, out_webroot: Path) -> bool:
         logger.warning("no suitable package manager found (bun/pnpm/npm) for building WebUI")
         return False
 
-    cmd = [pm, "run", "build"] if pm != "bun" else ["bun", "run", "build"]
+    # Install dependencies if node_modules is missing
+    if not (webui_dir / "node_modules").is_dir():
+        install_cmd = [pm, "install"]
+        logger.info("installing WebUI dependencies in %s via %s...", webui_dir, " ".join(install_cmd))
+        ires = subprocess.run(install_cmd, cwd=webui_dir, capture_output=True, text=True)
+        if ires.returncode != 0:
+            logger.warning("package install encountered issues:\n%s\n%s", ires.stdout, ires.stderr)
+
+    cmd = [pm, "run", "build"]
     logger.info("building WebUI in %s via %s...", webui_dir, " ".join(cmd))
     res = subprocess.run(cmd, cwd=webui_dir, capture_output=True, text=True)
     if res.returncode != 0:
@@ -161,20 +184,34 @@ def build_webui(webui_dir: Path, out_webroot: Path) -> bool:
         return False
 
     dist_dir = webui_dir / "dist"
-    if not dist_dir.is_dir():
-        logger.warning("WebUI build succeeded but %s does not exist", dist_dir)
+    alt_webui = out_webroot.parent / "webui"
+
+    if (out_webroot / "index.html").is_file():
+        logger.info("WebUI assets built directly to %s", out_webroot)
+        return True
+    elif dist_dir.is_dir() and (dist_dir / "index.html").is_file():
+        out_webroot.mkdir(parents=True, exist_ok=True)
+        for item in dist_dir.iterdir():
+            dest = out_webroot / item.name
+            if item.is_dir():
+                shutil.copytree(item, dest, dirs_exist_ok=True)
+            else:
+                shutil.copy2(item, dest)
+        logger.info("deployed WebUI dist -> %s", out_webroot)
+        return True
+    elif alt_webui.is_dir() and (alt_webui / "index.html").is_file():
+        out_webroot.mkdir(parents=True, exist_ok=True)
+        for item in alt_webui.iterdir():
+            dest = out_webroot / item.name
+            if item.is_dir():
+                shutil.copytree(item, dest, dirs_exist_ok=True)
+            else:
+                shutil.copy2(item, dest)
+        logger.info("deployed WebUI from %s -> %s", alt_webui, out_webroot)
+        return True
+    else:
+        logger.warning("WebUI build completed, but no index.html found in %s, %s, or %s", out_webroot, dist_dir, alt_webui)
         return False
-
-    out_webroot.mkdir(parents=True, exist_ok=True)
-    for item in dist_dir.iterdir():
-        dest = out_webroot / item.name
-        if item.is_dir():
-            shutil.copytree(item, dest, dirs_exist_ok=True)
-        else:
-            shutil.copy2(item, dest)
-
-    logger.info("deployed WebUI dist -> %s", out_webroot)
-    return True
 
 
 def build_native_daemon(repo_root: Path, out_libs_dir: Path) -> bool:
@@ -216,6 +253,53 @@ def build_native_daemon(repo_root: Path, out_libs_dir: Path) -> bool:
     return False
 
 
+def adapt_module_scripts(module_dir: Path) -> tuple[int, int]:
+    """Adapt module shell scripts to properly bind to MySU Manager and bin paths."""
+    modified = 0
+    subs = 0
+
+    for script_name in ("customize.sh", "action.sh", "service.sh", "post-fs-data.sh", "uninstall.sh", "boot-completed.sh"):
+        script_path = module_dir / script_name
+        if not script_path.is_file():
+            continue
+        content = script_path.read_text(encoding="utf-8", errors="ignore")
+        orig = content
+        s = 0
+
+        # Prepend /data/adb/mysu/bin to PATH if PATH starts with /data/adb/
+        if "PATH=/data/adb/" in content and "/data/adb/mysu/bin" not in content:
+            content, c = re.subn(r'PATH=/data/adb/', 'PATH=/data/adb/mysu/bin:/data/adb/', content)
+            s += c
+
+        # Add /data/adb/mysu/bin to manager_paths if present
+        if 'manager_paths=' in content and '/data/adb/mysu/bin' not in content:
+            content, c = re.subn(r'manager_paths="([^"]*)"', r'manager_paths="/data/adb/mysu/bin \1"', content)
+            s += c
+
+        # Adjust legacy minimum version thresholds (e.g. MIN_KERNELSU_VERSION=32000 -> 30000)
+        content, c = re.subn(r'MIN_KERNELSU_VERSION=\d+', 'MIN_KERNELSU_VERSION=30000', content)
+        s += c
+
+        # Support MySU Manager in action.sh WebUI launch check
+        if script_name == "action.sh" and "io.github.a13e300.ksuwebui" in content and "dev.kelexine.mysu" not in content:
+            mysu_intent_check = (
+                'pm path dev.kelexine.mysu > /dev/null 2>&1 && {\n'
+                '\techo "- Launching WebUI in MySU Manager..."\n'
+                '\tam start -n "dev.kelexine.mysu/.ui.webui.WebUIActivity" -e id "$ID"\n'
+                '\texit 0\n'
+                '}\n\t'
+            )
+            content, c = re.subn(r'(pm path io\.github\.a13e300\.ksuwebui)', mysu_intent_check + r'\1', content)
+            s += c
+
+        if s > 0:
+            script_path.write_text(content, encoding="utf-8")
+            modified += 1
+            subs += s
+
+    return modified, subs
+
+
 def port_source_module(
     repo_path: Path,
     output_zip: Path | None = None,
@@ -247,6 +331,12 @@ def port_source_module(
             out_webroot = module_dir / "webroot"
             webui_built = build_webui(webui_dir, out_webroot)
 
+    # Normalize webroot if built to webui
+    if (module_dir / "webui" / "index.html").is_file() and not (module_dir / "webroot" / "index.html").is_file():
+        (module_dir / "webroot").mkdir(parents=True, exist_ok=True)
+        shutil.copytree(module_dir / "webui", module_dir / "webroot", dirs_exist_ok=True)
+        logger.info("normalized %s -> %s", module_dir / "webui", module_dir / "webroot")
+
     # 2. Native C/C++ compilation
     native_built = False
     if not skip_build and (repo_path / "jni").is_dir():
@@ -257,6 +347,11 @@ def port_source_module(
     files_mod, subs = process_directory(module_dir, rule_set)
     total_files_modified += files_mod
     total_substitutions += subs
+
+    # 3b. Adapt specific module scripts for MySU Manager and bin paths
+    script_mods, script_subs = adapt_module_scripts(module_dir)
+    total_files_modified += script_mods
+    total_substitutions += script_subs
 
     # 4. Inject fallback WebUI bridge polyfill if needed
     injected = inject_webui_polyfill(module_dir)
