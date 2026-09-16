@@ -6,5 +6,6 @@
 #include "uapi/selinux.h"
 #include "uapi/sulog.h"
 #include "uapi/app_profile.h"
+#include "uapi/mysufs.h"
 
 #endif // __MYSU_UAPI_MYSU_H

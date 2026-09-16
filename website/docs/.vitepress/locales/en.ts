@@ -45,6 +45,7 @@ function sidebarGuide() {
       text: 'Overview',
       items: [
         { text: 'What is MySU?', link: '/guide/what-is-mysu' },
+        { text: 'MYSUFS Stealth Engine', link: '/guide/mysufs' },
         { text: 'Difference with Magisk', link: '/guide/difference-with-magisk' },
         { text: 'App Profile & Sandboxing', link: '/guide/app-profile' },
       ]
@@ -53,8 +54,10 @@ function sidebarGuide() {
       text: 'Installation & Kernel Integration',
       items: [
         { text: 'Installation', link: '/guide/installation' },
+        { text: 'Fresh Kernel Integration', link: '/guide/fresh-kernel-setup' },
         { text: 'How to Build', link: '/guide/how-to-build' },
         { text: 'Integrate for non-GKI Devices', link: '/guide/how-to-integrate-for-non-gki' },
+        { text: 'MYSUFS Kernel Integration', link: '/guide/mysufs-integration' },
         { text: 'x86_64 Support', link: '/guide/x86_64-support' },
         { text: 'Unofficially Supported Devices', link: '/guide/unofficially-support-devices' },
       ]

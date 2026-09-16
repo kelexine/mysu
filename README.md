@@ -12,6 +12,7 @@
 
 ## Features
 - **Kernel-Level Elevation**: Direct syscall and LSM hook infrastructure paired with anonymous inode ioctl communication (`[mysu_driver]`).
+- **MYSUFS Stealth Subsystem**: In-kernel VFS cloaking, mount table isolation (`mnt_id >= 2,000,000,000`), inode stat spoofing, open redirection, and SELinux AVC audit log concealment.
 - **Clean Userspace (`mysud`)**: Native `/data/adb/mysu/` layout with pure programmatic module adaptation and pure environment variables (`MYSU=true`).
 - **TheVoid Adaptive Material 3 Manager**: Android management app with deep obsidian dark themes, Void violet accents, and granular app profiles.
 - **Automated Module Porting**: Dedicated migration tools (`scripts/mysu-module-port.sh` / `scripts/mysu_port.py`) to convert Magisk/MySU packages to native MySU modules.
@@ -51,6 +52,11 @@ mysud module list
 # Install a module with automated script adaptation
 mysud module install /path/to/module.zip
 
+# MYSUFS stealth inspection and rule injection
+mysud mysufs version
+mysud mysufs hide-mnts true
+mysud mysufs add-sus-path /data/adb
+
 # Check SELinux policy rule syntax
 mysud sepolicy check "allow su * * *"
 ```
@@ -64,13 +70,16 @@ mysud sepolicy check "allow su * * *"
 ## Architecture
 ```
 Kernel Space:   [MySU Driver / Supercall] <---> [SELinux / LSM / Syscall Hooks]
-                               ▲
-                               │ ioctl ([mysu_driver])
-                               ▼
+                           │                               │
+                           ▼                               ▼
+                [MYSUFS VFS Stealth]  <--->  [Mount Isolation / Stat Spoof]
+                           ▲
+                           │ ioctl ([mysu_driver])
+                           ▼
 Userspace:      [mysud Daemon] (/data/adb/mysu/) <---> [Init / Metamodules]
-                               ▲
-                               │ IPC / CLI
-                               ▼
+                           ▲
+                           │ IPC / CLI
+                           ▼
 Management:     [MySU Manager App] (dev.kelexine.mysu)
 ```
 

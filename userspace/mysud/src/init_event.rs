@@ -122,9 +122,52 @@ pub fn on_post_data_fs() -> Result<()> {
 
     run_stage("post-mount", true);
 
+    init_mysufs_default_rules();
+
     std::env::set_current_dir("/").with_context(|| "failed to chdir to /")?;
 
     Ok(())
+}
+
+fn init_mysufs_default_rules() {
+    let version = match mysucalls::mysufs_show_version() {
+        Ok(v) => v,
+        Err(_) => {
+            // Kernel does not support MYSUFS or CONFIG_MYSU_MYSUFS is disabled
+            return;
+        }
+    };
+
+    info!("MYSUFS detected (version: {version}), configuring stealth cloaking rules...");
+
+    // 1. Hide all MYSUFS mounts from non-su processes
+    if let Err(e) = mysucalls::mysufs_set_hide_sus_mnts(true) {
+        warn!("MYSUFS failed to enable mount hiding: {e}");
+    }
+
+    // 2. Add default root & module directory paths
+    let cloaked_paths = [
+        "/data/adb",
+        "/data/adb/modules",
+        "/data/adb/mysu",
+        "/data/adb/magisk",
+        "/system/bin/su",
+    ];
+
+    for path in &cloaked_paths {
+        if Path::new(path).exists() {
+            if let Err(e) = mysucalls::mysufs_add_sus_path(path) {
+                warn!("MYSUFS failed to add cloaked path {path}: {e}");
+            }
+        }
+    }
+
+    // 3. Enable AVC log spoofing to prevent SELinux denial leakage
+    if let Err(e) = mysucalls::mysufs_enable_avc_log_spoofing(true) {
+        warn!("MYSUFS failed to enable AVC log spoofing: {e}");
+    }
+
+    info!("MYSUFS stealth cloaking successfully initialized");
 }
 
 pub fn run_stage(stage: &str, block: bool) {

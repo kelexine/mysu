@@ -23,6 +23,9 @@
 #include "sulog/event.h"
 #include "sulog/fd.h"
 #include "supercall/supercall.h"
+#ifdef CONFIG_MYSU_MYSUFS
+#include <linux/mysufs.h>
+#endif
 
 static int do_grant_root(void __user *arg)
 {
@@ -690,6 +693,122 @@ static int do_disable_escape_to_root(void __user *arg)
     return 0;
 }
 
+#ifdef CONFIG_MYSU_MYSUFS
+#ifdef CONFIG_MYSU_MYSUFS_SUS_PATH
+static int do_mysufs_add_sus_path(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_add_sus_path(&param);
+    return 0;
+}
+
+static int do_mysufs_add_sus_path_loop(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_add_sus_path_loop(&param);
+    return 0;
+}
+#endif
+
+#ifdef CONFIG_MYSU_MYSUFS_SUS_MOUNT
+static int do_mysufs_set_hide_sus_mnts(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_set_hide_sus_mnts_for_non_su_procs(&param);
+    return 0;
+}
+#endif
+
+#ifdef CONFIG_MYSU_MYSUFS_SUS_KSTAT
+static int do_mysufs_add_sus_kstat(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_add_sus_kstat(&param);
+    return 0;
+}
+
+static int do_mysufs_update_sus_kstat(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_update_sus_kstat(&param);
+    return 0;
+}
+#endif
+
+#ifdef CONFIG_MYSU_MYSUFS_SPOOF_UNAME
+static int do_mysufs_set_uname(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_set_uname(&param);
+    return 0;
+}
+#endif
+
+#ifdef CONFIG_MYSU_MYSUFS_ENABLE_LOG
+static int do_mysufs_enable_log(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_enable_log(&param);
+    return 0;
+}
+#endif
+
+#ifdef CONFIG_MYSU_MYSUFS_SPOOF_CMDLINE_OR_BOOTCONFIG
+static int do_mysufs_set_cmdline(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_set_cmdline_or_bootconfig(&param);
+    return 0;
+}
+#endif
+
+#ifdef CONFIG_MYSU_MYSUFS_OPEN_REDIRECT
+static int do_mysufs_add_open_redirect(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_add_open_redirect(&param);
+    return 0;
+}
+#endif
+
+#ifdef CONFIG_MYSU_MYSUFS_SUS_MAP
+static int do_mysufs_add_sus_map(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_add_sus_map(&param);
+    return 0;
+}
+#endif
+
+static int do_mysufs_enable_avc_log_spoofing(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_set_avc_log_spoofing(&param);
+    return 0;
+}
+
+static int do_mysufs_show_version(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_show_version(&param);
+    return 0;
+}
+
+static int do_mysufs_show_enabled_features(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_get_enabled_features(&param);
+    return 0;
+}
+
+static int do_mysufs_show_variant(void __user *arg)
+{
+    void __user *param = arg;
+    mysufs_show_variant(&param);
+    return 0;
+}
+#endif // CONFIG_MYSU_MYSUFS
+
 // IOCTL handlers mapping table
 // clang-format off
 static const struct mysu_ioctl_cmd_map mysu_ioctl_handlers[] = {
@@ -837,6 +956,108 @@ static const struct mysu_ioctl_cmd_map mysu_ioctl_handlers[] = {
         .handler = do_disable_escape_to_root, 
         .perm_check = only_root 
     },
+#ifdef CONFIG_MYSU_MYSUFS
+#ifdef CONFIG_MYSU_MYSUFS_SUS_PATH
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_ADD_SUS_PATH,
+        .name = "MYSUFS_ADD_SUS_PATH",
+        .handler = do_mysufs_add_sus_path,
+        .perm_check = manager_or_root
+    },
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_ADD_SUS_PATH_LOOP,
+        .name = "MYSUFS_ADD_SUS_PATH_LOOP",
+        .handler = do_mysufs_add_sus_path_loop,
+        .perm_check = manager_or_root
+    },
+#endif
+#ifdef CONFIG_MYSU_MYSUFS_SUS_MOUNT
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_SET_HIDE_SUS_MNTS,
+        .name = "MYSUFS_SET_HIDE_SUS_MNTS",
+        .handler = do_mysufs_set_hide_sus_mnts,
+        .perm_check = manager_or_root
+    },
+#endif
+#ifdef CONFIG_MYSU_MYSUFS_SUS_KSTAT
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_ADD_SUS_KSTAT,
+        .name = "MYSUFS_ADD_SUS_KSTAT",
+        .handler = do_mysufs_add_sus_kstat,
+        .perm_check = manager_or_root
+    },
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_UPDATE_SUS_KSTAT,
+        .name = "MYSUFS_UPDATE_SUS_KSTAT",
+        .handler = do_mysufs_update_sus_kstat,
+        .perm_check = manager_or_root
+    },
+#endif
+#ifdef CONFIG_MYSU_MYSUFS_SPOOF_UNAME
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_SET_UNAME,
+        .name = "MYSUFS_SET_UNAME",
+        .handler = do_mysufs_set_uname,
+        .perm_check = manager_or_root
+    },
+#endif
+#ifdef CONFIG_MYSU_MYSUFS_ENABLE_LOG
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_ENABLE_LOG,
+        .name = "MYSUFS_ENABLE_LOG",
+        .handler = do_mysufs_enable_log,
+        .perm_check = manager_or_root
+    },
+#endif
+#ifdef CONFIG_MYSU_MYSUFS_SPOOF_CMDLINE_OR_BOOTCONFIG
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_SET_CMDLINE,
+        .name = "MYSUFS_SET_CMDLINE",
+        .handler = do_mysufs_set_cmdline,
+        .perm_check = manager_or_root
+    },
+#endif
+#ifdef CONFIG_MYSU_MYSUFS_OPEN_REDIRECT
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_ADD_OPEN_REDIRECT,
+        .name = "MYSUFS_ADD_OPEN_REDIRECT",
+        .handler = do_mysufs_add_open_redirect,
+        .perm_check = manager_or_root
+    },
+#endif
+#ifdef CONFIG_MYSU_MYSUFS_SUS_MAP
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_ADD_SUS_MAP,
+        .name = "MYSUFS_ADD_SUS_MAP",
+        .handler = do_mysufs_add_sus_map,
+        .perm_check = manager_or_root
+    },
+#endif
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_ENABLE_AVC_LOG_SPOOFING,
+        .name = "MYSUFS_ENABLE_AVC_LOG_SPOOFING",
+        .handler = do_mysufs_enable_avc_log_spoofing,
+        .perm_check = manager_or_root
+    },
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_SHOW_VERSION,
+        .name = "MYSUFS_SHOW_VERSION",
+        .handler = do_mysufs_show_version,
+        .perm_check = manager_or_root
+    },
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_SHOW_ENABLED_FEATURES,
+        .name = "MYSUFS_SHOW_ENABLED_FEATURES",
+        .handler = do_mysufs_show_enabled_features,
+        .perm_check = manager_or_root
+    },
+    {
+        .cmd = MYSU_IOCTL_MYSUFS_SHOW_VARIANT,
+        .name = "MYSUFS_SHOW_VARIANT",
+        .handler = do_mysufs_show_variant,
+        .perm_check = manager_or_root
+    },
+#endif // CONFIG_MYSU_MYSUFS
     {
         .cmd = 0,
         .name = NULL,

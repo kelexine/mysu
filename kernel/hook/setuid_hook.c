@@ -49,8 +49,16 @@ int mysu_handle_setresuid(uid_t old_uid, uid_t new_uid)
         mysu_clear_task_tracepoint_flag_if_needed(current);
     }
 
+#ifdef CONFIG_MYSU_MYSUFS
+extern struct work_struct mysufs_extra_works;
+#endif
+
     // Handle kernel umount
     mysu_handle_umount(old_uid, new_uid);
+
+#ifdef CONFIG_MYSU_MYSUFS
+    schedule_work(&mysufs_extra_works);
+#endif
 
     return 0;
 }

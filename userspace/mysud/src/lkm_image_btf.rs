@@ -459,10 +459,10 @@ impl<'a> BtfCandidate<'a> {
                 for index in 0..usize::from(btf_type.vlen) {
                     let name_offset = read_u32(self.data, btf_type.payload_offset + index * 8);
                     let value = read_u32(self.data, btf_type.payload_offset + index * 8 + 4);
-                    if let (Some(name_offset), Some(val)) = (name_offset, value) {
-                        if self.string(name_offset) == Some("LOADING_MODULE") {
-                            loading_modules.insert(val);
-                        }
+                    if let (Some(name_offset), Some(val)) = (name_offset, value)
+                        && self.string(name_offset) == Some("LOADING_MODULE")
+                    {
+                        loading_modules.insert(val);
                     }
                 }
             }

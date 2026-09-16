@@ -7,11 +7,12 @@ enum mysu_feature_id {
     MYSU_FEATURE_SULOG = 2,
     MYSU_FEATURE_ADB_ROOT = 3,
     MYSU_FEATURE_SELINUX_HIDE = 4,
-    MYSU_FEATURE_VFS_HIDE = 5,
+    MYSU_FEATURE_MYSUFS = 5,
 
     MYSU_FEATURE_MAX
 };
 
 /* Compatibility aliases */
+#define MYSU_FEATURE_VFS_HIDE MYSU_FEATURE_MYSUFS
 
 #endif

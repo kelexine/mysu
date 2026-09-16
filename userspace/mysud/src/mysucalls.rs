@@ -294,3 +294,260 @@ pub fn set_mysu_no_new_privs() -> anyhow::Result<()> {
     }
     Ok(())
 }
+
+fn copy_str_to_buf(src: &str, dst: &mut [std::os::raw::c_char]) {
+    for b in dst.iter_mut() {
+        *b = 0;
+    }
+    for (s, d) in src.bytes().zip(dst.iter_mut()) {
+        *d = s as std::os::raw::c_char;
+    }
+}
+
+fn buf_to_string(buf: &[std::os::raw::c_char]) -> String {
+    let u8_slice = unsafe { std::slice::from_raw_parts(buf.as_ptr() as *const u8, buf.len()) };
+    let len = u8_slice
+        .iter()
+        .position(|&c| c == 0)
+        .unwrap_or(u8_slice.len());
+    String::from_utf8_lossy(&u8_slice[..len]).into_owned()
+}
+
+pub fn mysufs_add_sus_path(path: &str) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_sus_path {
+        target_pathname: [0; mysu_uapi::MYSUFS_MAX_LEN_PATHNAME as usize],
+        err: 0,
+    };
+    copy_str_to_buf(path, &mut cmd.target_pathname);
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_ADD_SUS_PATH, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_add_sus_path failed with error: {}", cmd.err);
+    }
+    Ok(())
+}
+
+pub fn mysufs_add_sus_path_loop(path: &str) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_sus_path {
+        target_pathname: [0; mysu_uapi::MYSUFS_MAX_LEN_PATHNAME as usize],
+        err: 0,
+    };
+    copy_str_to_buf(path, &mut cmd.target_pathname);
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_ADD_SUS_PATH_LOOP, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_add_sus_path_loop failed with error: {}", cmd.err);
+    }
+    Ok(())
+}
+
+pub fn mysufs_set_hide_sus_mnts(enabled: bool) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_hide_sus_mnts_for_non_su_procs {
+        enabled: if enabled { 1 } else { 0 },
+        err: 0,
+    };
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_SET_HIDE_SUS_MNTS, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_set_hide_sus_mnts failed with error: {}", cmd.err);
+    }
+    Ok(())
+}
+
+pub fn mysufs_add_sus_kstat(
+    pathname: &str,
+    target_ino: u64,
+    spoofed_ino: u64,
+    spoofed_dev: u64,
+    spoofed_size: i64,
+    flags: i32,
+) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_sus_kstat {
+        is_statically: 0,
+        target_ino,
+        target_pathname: [0; mysu_uapi::MYSUFS_MAX_LEN_PATHNAME as usize],
+        spoofed_ino,
+        spoofed_dev,
+        spoofed_nlink: 0,
+        spoofed_size,
+        spoofed_atime_tv_sec: 0,
+        spoofed_atime_tv_nsec: 0,
+        spoofed_mtime_tv_sec: 0,
+        spoofed_mtime_tv_nsec: 0,
+        spoofed_ctime_tv_sec: 0,
+        spoofed_ctime_tv_nsec: 0,
+        spoofed_blocks: 0,
+        spoofed_blksize: 0,
+        flags,
+        err: 0,
+    };
+    copy_str_to_buf(pathname, &mut cmd.target_pathname);
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_ADD_SUS_KSTAT, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_add_sus_kstat failed with error: {}", cmd.err);
+    }
+    Ok(())
+}
+
+pub fn mysufs_update_sus_kstat(
+    target_ino: u64,
+    spoofed_ino: u64,
+    spoofed_dev: u64,
+    spoofed_size: i64,
+    flags: i32,
+) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_sus_kstat {
+        is_statically: 0,
+        target_ino,
+        target_pathname: [0; mysu_uapi::MYSUFS_MAX_LEN_PATHNAME as usize],
+        spoofed_ino,
+        spoofed_dev,
+        spoofed_nlink: 0,
+        spoofed_size,
+        spoofed_atime_tv_sec: 0,
+        spoofed_atime_tv_nsec: 0,
+        spoofed_mtime_tv_sec: 0,
+        spoofed_mtime_tv_nsec: 0,
+        spoofed_ctime_tv_sec: 0,
+        spoofed_ctime_tv_nsec: 0,
+        spoofed_blocks: 0,
+        spoofed_blksize: 0,
+        flags,
+        err: 0,
+    };
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_UPDATE_SUS_KSTAT, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_update_sus_kstat failed with error: {}", cmd.err);
+    }
+    Ok(())
+}
+
+pub fn mysufs_set_uname(release: &str, version: &str) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_uname {
+        release: [0; mysu_uapi::MYSUFS_UTS_LEN as usize],
+        version: [0; mysu_uapi::MYSUFS_UTS_LEN as usize],
+        err: 0,
+    };
+    copy_str_to_buf(release, &mut cmd.release);
+    copy_str_to_buf(version, &mut cmd.version);
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_SET_UNAME, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_set_uname failed with error: {}", cmd.err);
+    }
+    Ok(())
+}
+
+pub fn mysufs_enable_log(enabled: bool) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_log {
+        enabled: if enabled { 1 } else { 0 },
+        err: 0,
+    };
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_ENABLE_LOG, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_enable_log failed with error: {}", cmd.err);
+    }
+    Ok(())
+}
+
+pub fn mysufs_set_cmdline(cmdline: &str) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_spoof_cmdline_or_bootconfig {
+        fake_cmdline_or_bootconfig: [0; mysu_uapi::MYSUFS_FAKE_CMDLINE_OR_BOOTCONFIG_SIZE as usize],
+        err: 0,
+    };
+    copy_str_to_buf(cmdline, &mut cmd.fake_cmdline_or_bootconfig);
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_SET_CMDLINE, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_set_cmdline failed with error: {}", cmd.err);
+    }
+    Ok(())
+}
+
+pub fn mysufs_add_open_redirect(
+    target: &str,
+    redirected: &str,
+    uid_scheme: i32,
+) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_open_redirect {
+        target_pathname: [0; mysu_uapi::MYSUFS_MAX_LEN_PATHNAME as usize],
+        redirected_pathname: [0; mysu_uapi::MYSUFS_MAX_LEN_PATHNAME as usize],
+        uid_scheme,
+        err: 0,
+    };
+    copy_str_to_buf(target, &mut cmd.target_pathname);
+    copy_str_to_buf(redirected, &mut cmd.redirected_pathname);
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_ADD_OPEN_REDIRECT, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_add_open_redirect failed with error: {}", cmd.err);
+    }
+    Ok(())
+}
+
+pub fn mysufs_add_sus_map(path: &str) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_sus_map {
+        target_pathname: [0; mysu_uapi::MYSUFS_MAX_LEN_PATHNAME as usize],
+        err: 0,
+    };
+    copy_str_to_buf(path, &mut cmd.target_pathname);
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_ADD_SUS_MAP, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_add_sus_map failed with error: {}", cmd.err);
+    }
+    Ok(())
+}
+
+pub fn mysufs_enable_avc_log_spoofing(enabled: bool) -> anyhow::Result<()> {
+    let mut cmd = mysu_uapi::st_mysufs_avc_log_spoofing {
+        enabled: if enabled { 1 } else { 0 },
+        err: 0,
+    };
+    mysuctl(
+        mysu_uapi::MYSU_IOCTL_MYSUFS_ENABLE_AVC_LOG_SPOOFING,
+        &raw mut cmd,
+    )?;
+    if cmd.err != 0 {
+        bail!(
+            "mysufs_enable_avc_log_spoofing failed with error: {}",
+            cmd.err
+        );
+    }
+    Ok(())
+}
+
+pub fn mysufs_show_version() -> anyhow::Result<String> {
+    let mut cmd = mysu_uapi::st_mysufs_version {
+        mysufs_version: [0; mysu_uapi::MYSUFS_MAX_VERSION_BUFSIZE as usize],
+        err: 0,
+    };
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_SHOW_VERSION, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_show_version failed with error: {}", cmd.err);
+    }
+    Ok(buf_to_string(&cmd.mysufs_version))
+}
+
+pub fn mysufs_show_enabled_features() -> anyhow::Result<String> {
+    let mut cmd = mysu_uapi::st_mysufs_enabled_features {
+        enabled_features: [0; mysu_uapi::MYSUFS_ENABLED_FEATURES_SIZE as usize],
+        err: 0,
+    };
+    mysuctl(
+        mysu_uapi::MYSU_IOCTL_MYSUFS_SHOW_ENABLED_FEATURES,
+        &raw mut cmd,
+    )?;
+    if cmd.err != 0 {
+        bail!(
+            "mysufs_show_enabled_features failed with error: {}",
+            cmd.err
+        );
+    }
+    Ok(buf_to_string(&cmd.enabled_features))
+}
+
+pub fn mysufs_show_variant() -> anyhow::Result<String> {
+    let mut cmd = mysu_uapi::st_mysufs_variant {
+        mysufs_variant: [0; mysu_uapi::MYSUFS_MAX_VARIANT_BUFSIZE as usize],
+        err: 0,
+    };
+    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_SHOW_VARIANT, &raw mut cmd)?;
+    if cmd.err != 0 {
+        bail!("mysufs_show_variant failed with error: {}", cmd.err);
+    }
+    Ok(buf_to_string(&cmd.mysufs_variant))
+}

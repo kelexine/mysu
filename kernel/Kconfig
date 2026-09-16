@@ -43,4 +43,71 @@ config MYSU_X86_PATCH_SYSCALL_DISPATCHER
 	  Dynamically patch x64's hardened syscall dispatcher to support syscall hooks. This is a
 	  replacement for a kernel source code patch, and is useful for x86_64 LKM mode.
 
+menuconfig MYSU_MYSUFS
+	bool "MYSUFS (SU File System) Kernel Anti-Detection"
+	depends on MYSU
+	default y
+	help
+	  Enable kernel-level anti-detection subsystem (MYSUFS) providing deep VFS path cloaking,
+	  mount hiding, stat/statfs spoofing, open redirection, maps hiding, and signature spoofing.
+
+if MYSU_MYSUFS
+
+config MYSU_MYSUFS_SUS_PATH
+	bool "Enable MYSUFS path cloaking"
+	default y
+	help
+	  Hide specific paths from unauthorized processes via VFS dcache/lookup filtering.
+
+config MYSU_MYSUFS_SUS_MOUNT
+	bool "Enable MYSUFS mount cloaking"
+	default y
+	help
+	  Hide internal mounts and unshared mount namespaces from non-root processes.
+
+config MYSU_MYSUFS_SUS_KSTAT
+	bool "Enable MYSUFS stat spoofing"
+	default y
+	help
+	  Spoof inode attributes (dev, ino, times, size) for cloaked files.
+
+config MYSU_MYSUFS_OPEN_REDIRECT
+	bool "Enable MYSUFS open redirection"
+	default y
+	help
+	  Redirect file opens for specific sensitive paths to safe spoof targets.
+
+config MYSU_MYSUFS_SUS_MAP
+	bool "Enable MYSUFS memory map hiding"
+	default y
+	help
+	  Hide memory-mapped regions in /proc/[pid]/maps and smaps.
+
+config MYSU_MYSUFS_SPOOF_UNAME
+	bool "Enable MYSUFS uname spoofing"
+	default y
+	help
+	  Allow spoofing kernel release and version strings returned by uname().
+
+config MYSU_MYSUFS_SPOOF_CMDLINE_OR_BOOTCONFIG
+	bool "Enable MYSUFS cmdline spoofing"
+	default y
+	help
+	  Allow spoofing /proc/cmdline to redact verified boot and root flags.
+
+config MYSU_MYSUFS_ENABLE_LOG
+	bool "Enable MYSUFS kernel logging"
+	default n
+	help
+	  Enable verbose logging for MYSUFS operations.
+
+config MYSU_MYSUFS_HIDE_ROOT_SYMBOLS
+	bool "Hide MySU and MYSUFS symbols in /proc/kallsyms"
+	default y
+	help
+	  Filter MySU and MYSUFS symbols from /proc/kallsyms.
+
+endif # MYSU_MYSUFS
+
 endmenu
+

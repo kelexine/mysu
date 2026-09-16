@@ -72,13 +72,20 @@ Only explicitly authorized applications can see `su` or invoke superuser privile
 - **VFS Path Cloaking (`vfs_hide`)**: Dynamic directory filtering (`sys_getdents64`) and LSM inode lookup interception that hides `/data/adb`, `/data/adb/modules`, `/data/adb/mysu`, and `/system/bin/su` from denied UIDs.
 - **`TracerPid` Cloaking**: Transparently masks `/proc/[pid]/status` `TracerPid` to prevent anti-root scanners from identifying daemon monitoring.
 
-### 5. Hardware Biometric Security Gate
+### 5. MYSUFS Kernel Stealth Subsystem
+For total evasion against advanced banking and integrity scanners, MySU incorporates **MYSUFS** (an in-kernel SU File System):
+- **Mount ID Partitioning**: Mount IDs $\ge 2,000,000,000$ are automatically stripped from `/proc/[pid]/mounts`, `mountinfo`, and `mountstats` for non-root callers.
+- **VFS Interception**: Inode lookup redaction in `dcache`, transparent path loop tracking, and statx/statfs spoofing.
+- **SELinux AVC & Maps Spoofing**: In-memory VMA cloaking in `/proc/[pid]/maps` and AVC audit log target SID cloaking.
+- Managed directly through supercall IOCTLs and `mysud mysufs` CLI subcommands.
+
+### 6. Hardware Biometric Security Gate
 The Android Manager app integrates hardware-backed biometric verification (`BIOMETRIC_STRONG | DEVICE_CREDENTIAL`) with configurable timeouts, securing root grants, profile edits, kernel setting modifications, and manager launch against unauthorized on-device access.
 
-### 6. Pure Rust Userspace (`mysud` & `mysuinit`)
+### 7. Pure Rust Userspace (`mysud` & `mysuinit`)
 The userspace runtime is written entirely in modern Rust (Edition 2024). It operates at `/data/adb/mysu/` without symlink clutter, providing built-in boot image patching, magic mounting, module management, and CLI tooling.
 
-### 7. Automated Module Migration Tooling
+### 8. Automated Module Migration Tooling
 Dedicated Python migration tooling (`scripts/mysu-module-port.sh` / `scripts/mysu_port/`) with rule-based transformations to adapt Magisk and KernelSU module packages into native MySU modules seamlessly.
 
 ---
