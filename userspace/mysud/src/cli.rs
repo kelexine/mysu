@@ -539,14 +539,9 @@ enum MysufsCommand {
         flags: i32,
     },
     /// Spoof kernel uname release and version
-    SetUname {
-        release: String,
-        version: String,
-    },
+    SetUname { release: String, version: String },
     /// Spoof /proc/cmdline
-    SetCmdline {
-        cmdline: String,
-    },
+    SetCmdline { cmdline: String },
     /// Add open redirect rule
     AddOpenRedirect {
         target: String,
@@ -555,9 +550,7 @@ enum MysufsCommand {
         uid_scheme: i32,
     },
     /// Add sus map rule to cloak VMA mappings
-    AddSusMap {
-        path: String,
-    },
+    AddSusMap { path: String },
     /// Enable or disable AVC audit log spoofing
     EnableAvcLogSpoofing {
         #[arg(action = clap::ArgAction::Set)]
@@ -900,12 +893,18 @@ pub fn run() -> Result<()> {
             }
             MysufsCommand::Log { enable } => {
                 mysucalls::mysufs_enable_log(enable)?;
-                println!("MYSUFS logging {}", if enable { "enabled" } else { "disabled" });
+                println!(
+                    "MYSUFS logging {}",
+                    if enable { "enabled" } else { "disabled" }
+                );
                 Ok(())
             }
             MysufsCommand::HideMnts { enable } => {
                 mysucalls::mysufs_set_hide_sus_mnts(enable)?;
-                println!("MYSUFS mount hiding {}", if enable { "enabled" } else { "disabled" });
+                println!(
+                    "MYSUFS mount hiding {}",
+                    if enable { "enabled" } else { "disabled" }
+                );
                 Ok(())
             }
             MysufsCommand::AddSusPath { path, loop_mode } => {
@@ -925,7 +924,14 @@ pub fn run() -> Result<()> {
                 spoofed_size,
                 flags,
             } => {
-                mysucalls::mysufs_add_sus_kstat(&path, target_ino, spoofed_ino, spoofed_dev, spoofed_size, flags)?;
+                mysucalls::mysufs_add_sus_kstat(
+                    &path,
+                    target_ino,
+                    spoofed_ino,
+                    spoofed_dev,
+                    spoofed_size,
+                    flags,
+                )?;
                 println!("MYSUFS added kstat spoof for {path}");
                 Ok(())
             }
@@ -936,7 +942,13 @@ pub fn run() -> Result<()> {
                 spoofed_size,
                 flags,
             } => {
-                mysucalls::mysufs_update_sus_kstat(target_ino, spoofed_ino, spoofed_dev, spoofed_size, flags)?;
+                mysucalls::mysufs_update_sus_kstat(
+                    target_ino,
+                    spoofed_ino,
+                    spoofed_dev,
+                    spoofed_size,
+                    flags,
+                )?;
                 println!("MYSUFS updated kstat spoof for ino {target_ino}");
                 Ok(())
             }
@@ -956,7 +968,9 @@ pub fn run() -> Result<()> {
                 uid_scheme,
             } => {
                 mysucalls::mysufs_add_open_redirect(&target, &redirected, uid_scheme)?;
-                println!("MYSUFS open redirect added: {target} -> {redirected} (scheme {uid_scheme})");
+                println!(
+                    "MYSUFS open redirect added: {target} -> {redirected} (scheme {uid_scheme})"
+                );
                 Ok(())
             }
             MysufsCommand::AddSusMap { path } => {
@@ -966,7 +980,10 @@ pub fn run() -> Result<()> {
             }
             MysufsCommand::EnableAvcLogSpoofing { enable } => {
                 mysucalls::mysufs_enable_avc_log_spoofing(enable)?;
-                println!("MYSUFS AVC log spoofing {}", if enable { "enabled" } else { "disabled" });
+                println!(
+                    "MYSUFS AVC log spoofing {}",
+                    if enable { "enabled" } else { "disabled" }
+                );
                 Ok(())
             }
         },

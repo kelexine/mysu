@@ -101,11 +101,11 @@ config MYSU_MYSUFS_ENABLE_LOG
 	help
 	  Enable verbose logging for MYSUFS operations.
 
-config MYSU_MYSUFS_HIDE_KSU_MYSUFS_SYMBOLS
+config MYSU_MYSUFS_HIDE_ROOT_SYMBOLS
 	bool "Hide MySU and MYSUFS symbols in /proc/kallsyms"
 	default y
 	help
-	  Filter MySU, KSU, and MYSUFS symbols from /proc/kallsyms.
+	  Filter MySU and MYSUFS symbols from /proc/kallsyms.
 
 endif # MYSU_MYSUFS
 

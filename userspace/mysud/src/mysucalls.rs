@@ -306,7 +306,10 @@ fn copy_str_to_buf(src: &str, dst: &mut [std::os::raw::c_char]) {
 
 fn buf_to_string(buf: &[std::os::raw::c_char]) -> String {
     let u8_slice = unsafe { std::slice::from_raw_parts(buf.as_ptr() as *const u8, buf.len()) };
-    let len = u8_slice.iter().position(|&c| c == 0).unwrap_or(u8_slice.len());
+    let len = u8_slice
+        .iter()
+        .position(|&c| c == 0)
+        .unwrap_or(u8_slice.len());
     String::from_utf8_lossy(&u8_slice[..len]).into_owned()
 }
 
@@ -456,7 +459,11 @@ pub fn mysufs_set_cmdline(cmdline: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn mysufs_add_open_redirect(target: &str, redirected: &str, uid_scheme: i32) -> anyhow::Result<()> {
+pub fn mysufs_add_open_redirect(
+    target: &str,
+    redirected: &str,
+    uid_scheme: i32,
+) -> anyhow::Result<()> {
     let mut cmd = mysu_uapi::st_mysufs_open_redirect {
         target_pathname: [0; mysu_uapi::MYSUFS_MAX_LEN_PATHNAME as usize],
         redirected_pathname: [0; mysu_uapi::MYSUFS_MAX_LEN_PATHNAME as usize],
@@ -490,9 +497,15 @@ pub fn mysufs_enable_avc_log_spoofing(enabled: bool) -> anyhow::Result<()> {
         enabled: if enabled { 1 } else { 0 },
         err: 0,
     };
-    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_ENABLE_AVC_LOG_SPOOFING, &raw mut cmd)?;
+    mysuctl(
+        mysu_uapi::MYSU_IOCTL_MYSUFS_ENABLE_AVC_LOG_SPOOFING,
+        &raw mut cmd,
+    )?;
     if cmd.err != 0 {
-        bail!("mysufs_enable_avc_log_spoofing failed with error: {}", cmd.err);
+        bail!(
+            "mysufs_enable_avc_log_spoofing failed with error: {}",
+            cmd.err
+        );
     }
     Ok(())
 }
@@ -514,9 +527,15 @@ pub fn mysufs_show_enabled_features() -> anyhow::Result<String> {
         enabled_features: [0; mysu_uapi::MYSUFS_ENABLED_FEATURES_SIZE as usize],
         err: 0,
     };
-    mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_SHOW_ENABLED_FEATURES, &raw mut cmd)?;
+    mysuctl(
+        mysu_uapi::MYSU_IOCTL_MYSUFS_SHOW_ENABLED_FEATURES,
+        &raw mut cmd,
+    )?;
     if cmd.err != 0 {
-        bail!("mysufs_show_enabled_features failed with error: {}", cmd.err);
+        bail!(
+            "mysufs_show_enabled_features failed with error: {}",
+            cmd.err
+        );
     }
     Ok(buf_to_string(&cmd.enabled_features))
 }

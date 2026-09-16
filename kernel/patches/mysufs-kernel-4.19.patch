@@ -1307,8 +1307,8 @@ index 000000000000..dcdb5b544979
 +	if (info->err) goto out_copy_to_user;
 +	buf_ptr = info->enabled_features + copied_size;
 +#endif
-+#ifdef CONFIG_MYSU_MYSUFS_HIDE_KSU_MYSUFS_SYMBOLS
-+	info->err = copy_config_to_buf("CONFIG_MYSU_MYSUFS_HIDE_KSU_MYSUFS_SYMBOLS\n", buf_ptr, &copied_size, MYSUFS_ENABLED_FEATURES_SIZE);
++#ifdef CONFIG_MYSU_MYSUFS_HIDE_ROOT_SYMBOLS
++	info->err = copy_config_to_buf("CONFIG_MYSU_MYSUFS_HIDE_ROOT_SYMBOLS\n", buf_ptr, &copied_size, MYSUFS_ENABLED_FEATURES_SIZE);
 +	if (info->err) goto out_copy_to_user;
 +	buf_ptr = info->enabled_features + copied_size;
 +#endif
@@ -4128,9 +4128,9 @@ index 9fa5626ce533..d2013f40d47d 100644
  #include <linux/filter.h>
  #include <linux/ftrace.h>
  #include <linux/compiler.h>
-+#ifdef CONFIG_MYSU_MYSUFS_HIDE_KSU_MYSUFS_SYMBOLS
++#ifdef CONFIG_MYSU_MYSUFS_HIDE_ROOT_SYMBOLS
 +#include <linux/mysufs_def.h>
-+#endif // #ifdef CONFIG_MYSU_MYSUFS_HIDE_KSU_MYSUFS_SYMBOLS
++#endif // #ifdef CONFIG_MYSU_MYSUFS_HIDE_ROOT_SYMBOLS
  
  /*
   * These will be re-linked against their real values
@@ -4138,7 +4138,7 @@ index 9fa5626ce533..d2013f40d47d 100644
  		seq_printf(m, "%px %c %s\t[%s]\n", value,
  			   type, iter->name, iter->module_name);
  	} else
-+#ifndef CONFIG_MYSU_MYSUFS_HIDE_KSU_MYSUFS_SYMBOLS
++#ifndef CONFIG_MYSU_MYSUFS_HIDE_ROOT_SYMBOLS
  		seq_printf(m, "%px %c %s\n", value,
  			   iter->type, iter->name);
 +#else

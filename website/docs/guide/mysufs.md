@@ -158,7 +158,7 @@ When compiling a kernel with MYSUFS support, the following `Kconfig` options are
 | `CONFIG_MYSU_MYSUFS_SUS_MAP` | Cloaks memory maps in `/proc/[pid]/maps` | `y` |
 | `CONFIG_MYSU_MYSUFS_SPOOF_UNAME` | Uname release and version spoofing | `y` |
 | `CONFIG_MYSU_MYSUFS_SPOOF_CMDLINE_OR_BOOTCONFIG` | `/proc/cmdline` spoofing | `y` |
-| `CONFIG_MYSU_MYSUFS_HIDE_KSU_MYSUFS_SYMBOLS` | Redacts symbols from `/proc/kallsyms` | `y` |
+| `CONFIG_MYSU_MYSUFS_HIDE_ROOT_SYMBOLS` | Redacts symbols from `/proc/kallsyms` | `y` |
 | `CONFIG_MYSU_MYSUFS_ENABLE_LOG` | Verbose dmesg kernel logging (debug builds only) | `n` |
 
 ---
