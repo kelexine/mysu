@@ -4,8 +4,9 @@ set -eu
 GKI_ROOT=$(pwd)
 
 display_usage() {
-    echo "Usage: $0 [--cleanup | <commit-or-tag>]"
+    echo "Usage: $0 [--cleanup | --mysufs | <commit-or-tag>]"
     echo "  --cleanup:              Cleans up previous modifications made by the script."
+    echo "  --mysufs:               Sets up MySU and applies MYSUFS stealth patches."
     echo "  <commit-or-tag>:        Sets up or updates the MySU to specified tag or commit."
     echo "  -h, --help:             Displays this usage information."
     echo "  (no args):              Sets up or updates the MySU environment to the latest tagged version."
@@ -36,6 +37,25 @@ perform_cleanup() {
     fi
 }
 
+apply_mysufs_patch() {
+    echo "[+] Applying MYSUFS stealth patches..."
+    PATCH_FILE="$GKI_ROOT/MySU/kernel/patches/mysufs-kernel-4.19.patch"
+    if [ -f "$PATCH_FILE" ]; then
+        if git apply --check "$PATCH_FILE" 2>/dev/null; then
+            git apply "$PATCH_FILE"
+            echo "[+] MYSUFS patch applied cleanly via git apply."
+        elif patch -p1 -N --dry-run < "$PATCH_FILE" 2>/dev/null; then
+            patch -p1 -N < "$PATCH_FILE"
+            echo "[+] MYSUFS patch applied cleanly via patch."
+        else
+            echo "[!] Automatic patch could not apply cleanly (vendor conflicts). Manual review required."
+            echo "[!] Patch location: $PATCH_FILE"
+        fi
+    else
+        echo "[-] MYSUFS patch not found at $PATCH_FILE"
+    fi
+}
+
 # Sets up or update MySU environment
 setup_mysu() {
     echo "[+] Setting up MySU..."
@@ -47,7 +67,7 @@ setup_mysu() {
     fi
     git pull && echo "[+] Repository updated."
     if [ -z "${1-}" ]; then
-        git checkout "$(git describe --abbrev=0 --tags)" && echo "[-] Checked out latest tag."
+        git checkout "$(git describe --abbrev=0 --tags)" 2>/dev/null || true
     else
         git checkout "$1" && echo "[-] Checked out $1." || echo "[-] Checkout default branch"
     fi
@@ -69,6 +89,10 @@ elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 elif [ "$1" = "--cleanup" ]; then
     initialize_variables
     perform_cleanup
+elif [ "$1" = "--mysufs" ]; then
+    initialize_variables
+    setup_mysu
+    apply_mysufs_patch
 else
     initialize_variables
     setup_mysu "$@"

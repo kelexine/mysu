@@ -11,6 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.14] - 2026-09-16
+
+### Added
+- **MYSUFS Kernel Stealth Engine**:
+  - Integrated SUSFS-derived anti-detection subsystem directly into the MySU kernel driver (`CONFIG_MYSU_MYSUFS`).
+  - Implemented low-level VFS path cloaking (`AS_FLAGS_SUS_PATH`), hiding root binaries and directories (`/data/adb`, `su`) from unprivileged userland callers.
+  - Mount namespace isolation filtering out mounts with `mnt_id >= 2,000,000,000` from `/proc/mounts`, `/proc/self/mountinfo`, and `/proc/self/mountstats`.
+  - Inode stat spoofing (`mysufs_sus_kstat_spoof`), open redirection (`do_sys_openat` hook), VMA memory map cloaking (`/proc/[pid]/maps`), and inotify watch masking.
+  - SELinux AVC audit log spoofing to sanitize denial reports containing `u:r:mysu:s0` to `u:r:priv_app:s0`.
+  - Kernel symbol cloaking redacting `mysu_*`, `mysufs_*`, and `ksu_*` in `/proc/kallsyms`.
+- **Supercall Control Plane & Userspace Daemon Integration**:
+  - Wired 15 new IOCTLs (`MYSU_IOCTL_MYSUFS_*`) through `[mysu_driver]` character device with root and manager permission verification.
+  - Added full `mysud mysufs` CLI management suite supporting path cloaking, mount hiding, stat spoofing, uname override, cmdline spoofing, and feature query commands.
+  - Automated post-fs-data initialization rules in `mysud` to enforce root stealth upon boot.
+- **Kernel Setup Utility & Integration Documentation**:
+  - Added `--mysufs` flag to `kernel/setup.sh` for one-command integration and patch application on fresh kernel trees.
+  - Published standalone `kernel/patches/mysufs-kernel-4.19.patch` for Linux 4.19 trees.
+  - Added comprehensive VitePress documentation guides for MYSUFS architecture, manual diff integration, and fresh kernel tree setup.
+
+---
+
 ## [1.0.13] - 2026-09-15
 
 ### Added

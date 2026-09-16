@@ -163,3 +163,37 @@ Track and monitor superuser privilege escalation in real time:
 # Stream live su execution audit events from the kernel:
 mysud sulog
 ```
+
+---
+
+## 7. MYSUFS Stealth Management (`mysud mysufs`)
+
+Manage kernel-level stealth hooks, mount cloaking, inode stat spoofing, and open redirection:
+
+```bash
+# Query MYSUFS status & variant:
+mysud mysufs version
+mysud mysufs variant
+mysud mysufs features
+
+# Enable mount isolation for unprivileged processes:
+mysud mysufs hide-mnts true
+
+# Add cloaked path to VFS interception list:
+mysud mysufs add-sus-path /data/adb
+mysud mysufs add-sus-path /data/adb/modules --loop-mode
+
+# Transparent open redirection:
+mysud mysufs add-open-redirect /system/bin/su /system/bin/sh 2
+
+# Inode kstat spoofing:
+mysud mysufs add-sus-kstat /system/bin/su 1000 2000 64770 12560 0
+
+# Mask VMA memory maps in /proc/[pid]/maps:
+mysud mysufs add-sus-map /data/adb/modules/test/libspoof.so
+
+# Spoof uname and /proc/cmdline:
+mysud mysufs set-uname "4.19.127-stock" "#1 SMP PREEMPT"
+mysud mysufs set-cmdline "bootopt=64S3,32N2,64N2 androidboot.selinux=enforcing"
+mysud mysufs enable-avc-log-spoofing true
+```

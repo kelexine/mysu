@@ -27,6 +27,9 @@
 #include "feature/selinux_hide.h"
 #include "feature/vfs_hide.h"
 #include "infra/symbol_resolver.h"
+#ifdef CONFIG_MYSU_MYSUFS
+extern void mysufs_init(void);
+#endif
 
 #if defined(__x86_64__) && !defined(CONFIG_MYSU_X86_PATCH_SYSCALL_DISPATCHER)
 #include <asm/cpufeature.h>
@@ -136,6 +139,9 @@ int __init mysu_init(void)
     mysu_lsm_hook_init();
     mysu_selinux_hide_init();
     mysu_vfs_hide_init();
+#ifdef CONFIG_MYSU_MYSUFS
+    mysufs_init();
+#endif
 
     mysu_supercalls_init();
 

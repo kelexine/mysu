@@ -22,8 +22,16 @@ If your kernel supports Kprobes and Syscall Tracepoints, MySU automatically hook
 In your kernel source root directory:
 
 ```sh
+# Standard MySU
 curl -LSs "https://raw.githubusercontent.com/kelexine/mysu/main/kernel/setup.sh" | bash -
+
+# With MYSUFS Stealth Engine (recommended)
+curl -LSs "https://raw.githubusercontent.com/kelexine/mysu/main/kernel/setup.sh" | bash -s -- --mysufs
 ```
+
+::: tip FRESH KERNEL TREES
+For an end-to-end breakdown of automated tree setup, see the [Fresh Kernel Tree Integration Guide](fresh-kernel-setup.md).
+:::
 
 ### 2. Enable Kernel Configuration Flags
 Ensure the following options are enabled in your device's `defconfig`:
@@ -373,3 +381,11 @@ You can make the "Umount modules" feature work on pre-GKI kernels by manually ba
 ```
 
 Finally, build your kernel again, and MySU should work correctly.
+
+---
+
+## Integrating the MYSUFS Stealth Layer
+
+If you want hardware-level anti-detection, mount table scrubbing (`mnt_id >= 2,000,000,000`), deep VFS path cloaking, inode stat spoofing, and open redirection on your non-GKI device, you can integrate the **MYSUFS** kernel subsystem alongside MySU.
+
+For complete patch diffs across `fs/`, `security/`, `kernel/`, and `mm/`, refer to the comprehensive [MYSUFS Kernel Integration Guide](mysufs-integration.md).
