@@ -1,0 +1,17 @@
+{
+  "name": "mysu-webui-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@mysu-org/mysu": "^3.0.2"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}

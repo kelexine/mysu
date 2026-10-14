@@ -1,0 +1,335 @@
+/* Safe Area Insets & Obsidian Theme for MySU WebUI */
+
+:root {
+  --bg-color: #0b0b0e;
+  --surface-color: #141419;
+  --surface-border: #23232b;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --accent-color: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --accent-light: rgba(139, 92, 246, 0.15);
+  --danger-color: #ef4444;
+  --warning-color: #f59e0b;
+  --terminal-bg: #050507;
+
+  /* Safe Area Insets fallback defaults */
+  --safe-top: var(--inset-top, 0px);
+  --safe-bottom: var(--inset-bottom, 0px);
+  --safe-left: var(--inset-left, 0px);
+  --safe-right: var(--inset-right, 0px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+  line-height: 1.5;
+  user-select: none;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  max-width: 680px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* App Bar */
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background-color: var(--bg-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.app-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app-bar h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.app-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.icon-btn {
+  background: var(--surface-color);
+  border: 1px solid var(--surface-border);
+  color: var(--text-primary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: var(--surface-border);
+}
+
+.icon-btn.danger:hover {
+  background: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+/* Main Content */
+.content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Cards */
+.card {
+  background-color: var(--surface-color);
+  border: 1px solid var(--surface-border);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.card h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+/* Badges & Code */
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  background-color: var(--accent-light);
+  color: var(--accent-color);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.badge.online {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.badge.offline {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}
+
+/* Info Grid */
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.info-row .label {
+  color: var(--text-secondary);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.1rem;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.btn.primary {
+  background-color: var(--accent-color);
+  color: #ffffff;
+}
+
+.btn.primary:hover {
+  background-color: var(--accent-hover);
+}
+
+.btn.secondary {
+  background-color: var(--surface-color);
+  border-color: var(--surface-border);
+  color: var(--text-primary);
+}
+
+.btn.secondary:hover {
+  background-color: var(--surface-border);
+}
+
+.btn.warning {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: var(--warning-color);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.btn.warning:hover {
+  background-color: rgba(245, 158, 11, 0.25);
+}
+
+.button-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Input & Terminal */
+.input-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.input-group input {
+  flex: 1;
+  background-color: var(--terminal-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.input-group input:focus {
+  border-color: var(--accent-color);
+}
+
+.terminal {
+  background-color: var(--terminal-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8rem;
+  color: #a7f3d0;
+  max-height: 180px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* App Packages Grid */
+.apps-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.app-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--surface-border);
+  border-radius: 0.75rem;
+}
+
+.app-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  background: var(--surface-border);
+  object-fit: cover;
+}
+
+.app-details {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-pkg {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: ui-monospace, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.placeholder-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 1.5rem 0;
+}

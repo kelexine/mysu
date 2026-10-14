@@ -1,188 +1,257 @@
-# Library for MySU's module WebUI
+# @mysu-org/mysu
 
-## Install
+Official JavaScript & TypeScript client library for MySU Module WebUI.
+
+Provides asynchronous bindings to the native `window.mysu` bridge injected into module WebViews by the MySU Android Manager.
+
+## Installation
 
 ```sh
-yarn add mysu
+# Using bun (recommended)
+bun add @mysu-org/mysu
+
+# Using pnpm
+pnpm add @mysu-org/mysu
+
+# Using npm
+npm install @mysu-org/mysu
+
+# Using yarn
+yarn add @mysu-org/mysu
 ```
 
-## API
+## Architecture Note
 
-### exec
+The Manager renders module WebUIs via an internal AndroidX `WebViewAssetLoader` mapped to `https://mui.mysu.org/` pointing directly to `/data/adb/modules/<id>/webroot/` (or `/data/adb/mysu/modules/<id>/webroot/`).
 
-Spawns a **root** shell and runs a command within that shell, returning a Promise that resolves with the `stdout` and `stderr` outputs upon completion.
+> [!NOTE]
+> `mui.mysu.org` is strictly an internal on-device virtual origin intercepted locally by `WebViewAssetLoader`. It does **not** resolve over the internet, and no public server exists. All assets are loaded offline from the module's `webroot/` directory.
 
-- `command` `<string>` The command to run, with space-separated arguments.
-- `options` `<Object>`
-  - `cwd` - Current working directory of the child process.
-  - `env` - Environment key-value pairs.
+---
+
+## API Reference
+
+### `exec(command, options?)`
+
+Executes a command inside an isolated root shell, returning a Promise that resolves with exit code, `stdout`, and `stderr`.
+
+- **`command`** `<string>`: Shell command line to run.
+- **`options`** `<ExecOptions>` *(optional)*:
+  - `cwd` `<string>`: Working directory for the process.
+  - `env` `<Record<string, string>>`: Custom environment variables.
+- **Returns**: `Promise<{ errno: number, stdout: string, stderr: string }>`
 
 ```javascript
-import { exec } from 'mysu';
+import { exec } from '@mysu-org/mysu';
 
-const { errno, stdout, stderr } = await exec('ls -l', { cwd: '/tmp' });
+const { errno, stdout, stderr } = await exec('getprop ro.product.model', {
+  cwd: '/data/local/tmp'
+});
+
 if (errno === 0) {
-    // success
-    console.log(stdout);
+  console.log('Model:', stdout.trim());
+} else {
+  console.error('Command failed:', stderr);
 }
 ```
 
-### spawn
+---
 
-Spawns a new process using the given `command` in **root** shell, with command-line arguments in `args`. If omitted, `args` defaults to an empty array.
+### `spawn(command, args?, options?)`
 
-Returns a `ChildProcess` instance. Instances of `ChildProcess` represent spawned child processes.
+Spawns a continuous streaming process in a root shell. Returns a `ChildProcess` instance emitting real-time `stdout`, `stderr`, `exit`, and `error` events.
 
-- `command` `<string>` The command to run.
-- `args` `<string[]>` List of string arguments.
-- `options` `<Object>`:
-  - `cwd` `<string>` - Current working directory of the child process.
-  - `env` `<Object>` - Environment key-value pairs.
-
-Example of running `ls -lh /data`, capturing `stdout`, `stderr`, and the exit code:
+- **`command`** `<string>`: Binary or command name.
+- **`args`** `<string[]>` *(optional)*: Command-line arguments.
+- **`options`** `<SpawnOptions>` *(optional)*:
+  - `cwd` `<string>`: Working directory.
+  - `env` `<Record<string, string>>`: Custom environment variables.
+- **Returns**: `ChildProcess`
 
 ```javascript
-import { spawn } from 'mysu';
+import { spawn } from '@mysu-org/mysu';
 
-const ls = spawn('ls', ['-lh', '/data']);
+const monitor = spawn('logcat', ['-v', 'time', '-s', 'MySU:V']);
 
-ls.stdout.on('data', (data) => {
-  console.log(`stdout: ${data}`);
+monitor.stdout.on('data', (chunk) => {
+  console.log('stdout:', chunk);
 });
 
-ls.stderr.on('data', (data) => {
-  console.log(`stderr: ${data}`);
+monitor.stderr.on('data', (chunk) => {
+  console.error('stderr:', chunk);
 });
 
-ls.on('exit', (code) => {
-  console.log(`child process exited with code ${code}`);
+monitor.on('exit', (code) => {
+  console.log(`Process exited with code ${code}`);
+});
+
+monitor.on('error', (err) => {
+  console.error('Spawn error:', err);
 });
 ```
 
-#### ChildProcess
+---
 
-##### Event 'exit'
+### `toast(message)`
 
-- `code` `<number>` The exit code if the child process exited on its own.
+Displays a native Android toast notification.
 
-The `'exit'` event is emitted when the child process ends. If the process exits, `code` contains the final exit code; otherwise, it is null.
-
-##### Event 'error'
-
-- `err` `<Error>` The error.
-
-The `'error'` event is emitted whenever:
-
-- The process could not be spawned.
-- The process could not be killed.
-
-##### `stdout`
-
-A `Readable Stream` that represents the child process's `stdout`.
+- **`message`** `<string>`: Text to display.
 
 ```javascript
-const subprocess = spawn('ls');
+import { toast } from '@mysu-org/mysu';
 
-subprocess.stdout.on('data', (data) => {
-  console.log(`Received chunk ${data}`);
+toast('Settings applied successfully');
+```
+
+---
+
+### `moduleInfo()`
+
+Returns metadata about the currently active module parsed from `module.prop`.
+
+- **Returns**: `string` (JSON-encoded module properties, e.g. `id`, `name`, `version`, `versionCode`, `author`, `description`, `moduleDir`).
+
+```javascript
+import { moduleInfo } from '@mysu-org/mysu';
+
+const info = JSON.parse(moduleInfo());
+console.log(`Loaded ${info.name} v${info.version} (${info.id})`);
+```
+
+---
+
+### `listPackages(type)`
+
+Queries installed packages on the device filtered by application type.
+
+- **`type`** `<string>`: `'user'`, `'system'`, or `'all'`.
+- **Returns**: `Promise<string[]>`
+
+```javascript
+import { listPackages } from '@mysu-org/mysu';
+
+const userApps = await listPackages('user');
+console.log(`Found ${userApps.length} installed user apps`);
+```
+
+---
+
+### `getPackagesInfo(packages)`
+
+Fetches detailed package metadata (labels, version name/code, UID, system flag) for the specified package names in batch.
+
+- **`packages`** `<string[] | string>`: Array of package names or JSON array string.
+- **Returns**: `Promise<PackagesInfo[]>`
+
+```javascript
+import { getPackagesInfo } from '@mysu-org/mysu';
+
+const infoList = await getPackagesInfo(['com.android.settings', 'com.google.android.gms']);
+
+infoList.forEach((pkg) => {
+  console.log(`${pkg.appLabel} (${pkg.packageName}) - UID ${pkg.uid}, v${pkg.versionName}`);
 });
 ```
 
-#### `stderr`
+#### `PackagesInfo` Structure
 
-A `Readable Stream` that represents the child process's `stderr`.
+```typescript
+interface PackagesInfo {
+  packageName: string;
+  versionName: string;
+  versionCode: number;
+  appLabel: string;
+  isSystem: boolean;
+  uid: number;
+  error?: string;
+}
+```
 
-### fullScreen
+---
 
-Request the WebView enter/exit full screen.
+### App Icon Protocol: `mysu://icon/{packageName}`
+
+When querying packages via `listPackages` or `getPackagesInfo`, you can display high-resolution application icons directly in standard HTML image tags:
+
+```html
+<img src="mysu://icon/com.android.settings" alt="Settings Icon" width="48" height="48" />
+```
+
+The Manager intercepts the `mysu://icon/` scheme and serves cached 512×512 PNG icons with proper CORS headers (`Access-Control-Allow-Origin: *`).
+
+---
+
+### `fullScreen(isFullScreen)`
+
+Toggles full-screen immersive mode for the module WebView.
+
+- **`isFullScreen`** `<boolean>`: `true` to hide system bars, `false` to restore them.
 
 ```javascript
-import { fullScreen } from 'mysu';
+import { fullScreen } from '@mysu-org/mysu';
+
 fullScreen(true);
 ```
 
-### enableEdgeToEdge
+---
 
-Request the WebView to set padding to 0 or safeDrawing insets
+### `enableEdgeToEdge(enable)`
 
-- tips: this is disabled by default but if you request resource from `internal/insets.css`, this will be enabled automatically.
-- To get insets value and enable this automatically, you can
-  - add `@import "https://mui.mysu.org/internal/insets.css";` in css OR
-  - add `<link rel="stylesheet" type="text/css" href="/internal/insets.css" />` in html.
+Configures window insets and safe-area padding for edge-to-edge layouts.
 
-```javascript
-import { enableEdgeToEdge } from 'mysu';
-enableEdgeToEdge(true);
+- **`enable`** `<boolean>`: `true` to enable edge-to-edge drawing.
+
+To automatically synchronize dynamic safe-area insets (status bar, navigation bar, cutouts), import `/internal/insets.css` in your HTML or CSS:
+
+```html
+<!-- In index.html -->
+<link rel="stylesheet" type="text/css" href="/internal/insets.css" />
 ```
 
-### toast
+Or in your CSS:
 
-Show a toast message.
+```css
+@import "https://mui.mysu.org/internal/insets.css";
 
-```javascript
-import { toast } from 'mysu';
-toast('Hello, world!');
+body {
+  padding-top: var(--inset-top, 0px);
+  padding-bottom: var(--inset-bottom, 0px);
+  padding-left: var(--inset-left, 0px);
+  padding-right: var(--inset-right, 0px);
+}
 ```
 
-### moduleInfo
+---
 
-Get module info.
+### `isMySuWebui()`
 
-```javascript
-import { moduleInfo } from 'mysu';
-// print moduleId in console
-console.log(moduleInfo());
-```
+Detects whether the JavaScript context is executing inside the MySU Manager WebView with the `window.mysu` bridge present.
 
-### listPackages
-
-List installed packages.
-
-Returns an array of package names.
-
-- `type` `<string>` The type of packages to list: "user", "system", or "all".
+- **Returns**: `boolean`
 
 ```javascript
-import { listPackages } from 'mysu';
-// list user packages
-const packages = listPackages("user");
+import { isMySuWebui } from '@mysu-org/mysu';
+
+if (!isMySuWebui()) {
+  console.warn('Running outside MySU WebView — mock environment activated');
+}
 ```
 
-- tips: when `listPackages` api is available, you can use mysu://icon/{packageName} to get app icon.
+---
 
-``` javascript
-img.src = "mysu://icon/" + packageName;
-```
+### `exit()`
 
-### getPackagesInfo
-
-Get information for a list of packages.
-
-Returns an array of `PackagesInfo` objects.
-
-- `packages` `<string[]>` The list of package names.
+Closes the module WebUI activity and returns the user to the MySU Manager module list.
 
 ```javascript
-import { getPackagesInfo } from 'mysu';
-const packages = getPackagesInfo(['com.android.settings', 'com.android.shell']);
-```
+import { exit } from '@mysu-org/mysu';
 
-#### PackagesInfo
-
-An object contains:
-
-- `packageName` `<string>` Package name of the application.
-- `versionName` `<string>` Version of the application.
-- `versionCode` `<number>` Version code of the application.
-- `appLabel` `<string>` Display name of the application.
-- `isSystem` `<boolean>` Whether the application is a system app.
-- `uid` `<number>` UID of the application.
-
-### exit
-
-Exit the current WebUI activity.
-
-```javascript
-import { exit } from 'mysu';
 exit();
 ```
+
+---
+
+## License
+
+Apache-2.0 © kelexine

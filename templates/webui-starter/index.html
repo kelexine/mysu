@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>MySU WebUI Starter</title>
+    <!-- Dynamic Safe Area Insets supplied on-device by MySU Manager WebView -->
+    <link rel="stylesheet" type="text/css" href="/internal/insets.css" />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- App Bar -->
+      <header class="app-bar">
+        <div class="app-title-group">
+          <h1 id="mod-name">MySU Module</h1>
+          <span id="mod-version" class="badge">v1.0.0</span>
+        </div>
+        <div class="app-actions">
+          <button id="btn-fullscreen" class="icon-btn" title="Toggle Fullscreen">⛶</button>
+          <button id="btn-exit" class="icon-btn danger" title="Exit WebUI">✕</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- Module Information Card -->
+        <section class="card">
+          <h2>Module Information</h2>
+          <div class="info-grid">
+            <div class="info-row">
+              <span class="label">ID:</span>
+              <span id="info-id" class="value code">-</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Author:</span>
+              <span id="info-author" class="value">-</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Directory:</span>
+              <span id="info-dir" class="value code truncate">-</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Environment:</span>
+              <span id="info-env" class="value badge">Checking...</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Command Execution Card -->
+        <section class="card">
+          <h2>Root Command Runner</h2>
+          <p class="subtitle">Execute root commands asynchronously using <code>exec()</code></p>
+          <div class="input-group">
+            <input type="text" id="input-cmd" value="getprop ro.product.model; uname -r" placeholder="Enter shell command" />
+            <button id="btn-run" class="btn primary">Run</button>
+          </div>
+          <pre id="output-terminal" class="terminal">Output will appear here...</pre>
+        </section>
+
+        <!-- Installed Packages Card with Custom Icon Protocol -->
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>Application Packages</h2>
+              <p class="subtitle">Loaded using <code>listPackages()</code> &amp; <code>mysu://icon/</code></p>
+            </div>
+            <button id="btn-load-apps" class="btn secondary">Load Apps</button>
+          </div>
+          <div id="apps-container" class="apps-grid">
+            <p class="placeholder-text">Click "Load Apps" to list user applications and stream icons.</p>
+          </div>
+        </section>
+
+        <!-- Actions Card -->
+        <section class="card">
+          <h2>Quick Actions</h2>
+          <div class="button-row">
+            <button id="btn-toast" class="btn secondary">Show Toast</button>
+            <button id="btn-reboot" class="btn warning">Soft Reboot</button>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
