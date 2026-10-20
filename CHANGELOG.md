@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.16] - 2026-10-20
+
+### Removed
+- **Complete Deprecation & Purge of MIUI/MIUIX Themes**:
+  - Removed all proprietary MIUI/MIUIX screens, components, liquid blur shaders, and third-party dependencies (`top.yukonga.miuix.*`).
+  - Eradicated 13,500+ lines of duplicate and dead UI code across the Android Manager codebase.
+
+### Changed
+- **Pure Material 3 Expressive (M3E) Navigation & Architecture**:
+  - Migrated navigation stack to official `androidx.navigation3:navigation3-ui` with pure `NavDisplay<NavKey>`.
+  - Unified all manager screens (`HomeScreen`, `SuperUserScreen`, `ModuleScreen`, `ModuleRepoScreen`, `SettingsScreen`, `AboutScreen`, `AppProfileScreen`, `SulogScreen`, `InstallScreen`, `FlashScreen`, `TemplateScreen`, `TemplateEditorScreen`, `ExecuteModuleActionScreen`, `ColorPaletteScreen`, `WebUIScreen`) to run native Material 3 Expressive UI layouts directly.
+  - Streamlined theme provider to native Compose `MaterialTheme` with dynamic monet accent support.
+
+---
+
 ## [1.0.15] - 2026-10-20
 
 ### Added
