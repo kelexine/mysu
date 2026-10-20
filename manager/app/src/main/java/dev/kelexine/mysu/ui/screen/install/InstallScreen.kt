@@ -24,8 +24,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import dev.kelexine.mysu.R
 import dev.kelexine.mysu.getKernelVersion
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.component.choosekmidialog.ChooseKmiDialog
 import dev.kelexine.mysu.ui.component.dialog.DownloadDialog
 import dev.kelexine.mysu.ui.component.dialog.rememberLoadingDialog
@@ -40,15 +38,11 @@ import dev.kelexine.mysu.ui.util.getSlotSuffix
 import dev.kelexine.mysu.ui.util.isAbDevice
 import dev.kelexine.mysu.ui.util.probeRemoteBootPartitions
 import dev.kelexine.mysu.ui.util.rootAvailable
-import top.yukonga.miuix.kmp.basic.SnackbarHostState as MiuixSnackbarHostState
-
 @Composable
 fun InstallScreen() {
     val navigator = LocalNavigator.current
     val context = LocalContext.current
     val snackbarHost = remember { SnackbarHostState() }
-    val miuixSnackbarHost = remember { MiuixSnackbarHostState() }
-    val uiMode = LocalUiMode.current
     val scope = rememberCoroutineScope()
     val resources = LocalResources.current
     var probeJob by remember { mutableStateOf<Job?>(null) }
@@ -112,11 +106,7 @@ fun InstallScreen() {
 
     fun showMessage(message: String) {
         scope.launch {
-            if (uiMode == UiMode.Material) {
-                snackbarHost.showSnackbar(message)
-            } else {
-                miuixSnackbarHost.showSnackbar(message)
-            }
+            snackbarHost.showSnackbar(message)
         }
     }
 
@@ -288,8 +278,5 @@ fun InstallScreen() {
         }
     )
 
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> InstallScreenMiuix(state, actions, miuixSnackbarHost)
-        UiMode.Material -> InstallScreenMaterial(state, actions, snackbarHost)
-    }
+    InstallScreenMaterial(state, actions, snackbarHost)
 }

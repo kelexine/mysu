@@ -30,7 +30,6 @@ import dev.kelexine.mysu.ui.LocalUiMode
 import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.theme.MySUTheme
 import dev.kelexine.mysu.ui.theme.ThemeController
-import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
 
 @SuppressLint("SetJavaScriptEnabled")
 class WebUIActivity : ComponentActivity() {
@@ -65,7 +64,7 @@ class WebUIActivity : ComponentActivity() {
             }
 
             CompositionLocalProvider(LocalUiMode provides uiMode) {
-                MySUTheme(appSettings = appSettings, uiMode = uiMode) {
+                MySUTheme(appSettings = appSettings) {
                     MainContent(activity = this, onFinish = { finish() })
                 }
             }
@@ -121,25 +120,12 @@ private fun MainContent(activity: ComponentActivity, onFinish: () -> Unit) {
 
 @Composable
 private fun LoadingContent() {
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                InfiniteProgressIndicator()
-            }
-        }
-
-        UiMode.Material -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background),
-                contentAlignment = Alignment.Center
-            ) {
-                androidx.compose.material3.LoadingIndicator()
-            }
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center
+    ) {
+        androidx.compose.material3.LoadingIndicator()
     }
 }

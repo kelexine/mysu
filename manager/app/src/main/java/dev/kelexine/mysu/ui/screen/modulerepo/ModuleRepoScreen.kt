@@ -13,8 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.navigation3.LocalNavigator
 import dev.kelexine.mysu.ui.navigation3.Navigator
 import dev.kelexine.mysu.ui.navigation3.Route
@@ -61,10 +59,7 @@ fun ModuleRepoScreen() {
         },
     )
 
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> ModuleRepoScreenMiuix(uiState, actions)
-        UiMode.Material -> ModuleRepoScreenMaterial(uiState, actions)
-    }
+    ModuleRepoScreenMaterial(uiState, actions)
 }
 
 @Composable
@@ -113,10 +108,7 @@ fun ModuleRepoPager(
         },
     )
 
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> ModuleRepoScreenMiuix(uiState, actions, isPager = true, bottomInnerPadding = bottomInnerPadding)
-        UiMode.Material -> ModuleRepoScreenMaterial(uiState, actions, isPager = true, bottomInnerPadding = bottomInnerPadding)
-    }
+    ModuleRepoScreenMaterial(uiState, actions, isPager = true, bottomInnerPadding = bottomInnerPadding)
 }
 
 @Composable
@@ -181,8 +173,5 @@ fun ModuleRepoDetailScreen(module: RepoModuleArg) {
         onInstallModule = { uri -> navigator.push(Route.Flash(FlashIt.FlashModules(listOf(uri)))) },
     )
 
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> ModuleRepoDetailScreenMiuix(state, actions)
-        UiMode.Material -> ModuleRepoDetailScreenMaterial(state, actions)
-    }
+    ModuleRepoDetailScreenMaterial(state, actions)
 }

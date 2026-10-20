@@ -10,8 +10,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.materialkolor.PaletteStyle
 import com.materialkolor.dynamiccolor.ColorSpec
 import dev.kelexine.mysu.MySuApplication
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.navigation3.LocalNavigator
 import dev.kelexine.mysu.ui.theme.ColorMode
 import dev.kelexine.mysu.ui.viewmodel.SettingsViewModel
@@ -42,7 +40,6 @@ fun ColorPaletteScreen() {
     val actions = ColorPaletteScreenActions(
         onBack = dropUnlessResumed { navigator.pop() },
         onSetThemeMode = viewModel::setThemeMode,
-        onSetMiuixMonet = viewModel::setMiuixMonet,
         onSetKeyColor = viewModel::setKeyColor,
         onSetColorMode = viewModel::setColorMode,
         onSetColorStyle = viewModel::setColorStyle,
@@ -59,8 +56,5 @@ fun ColorPaletteScreen() {
         onSetPageScale = viewModel::setPageScale,
     )
 
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> ColorPaletteScreenMiuix(state, actions)
-        UiMode.Material -> ColorPaletteScreenMaterial(state, actions)
-    }
+    ColorPaletteScreenMaterial(state, actions)
 }

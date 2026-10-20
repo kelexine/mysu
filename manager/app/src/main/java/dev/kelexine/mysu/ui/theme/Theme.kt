@@ -8,8 +8,6 @@ import com.materialkolor.PaletteStyle
 import com.materialkolor.dynamiccolor.ColorSpec
 import dev.kelexine.mysu.data.repository.SettingsRepository
 import dev.kelexine.mysu.data.repository.SettingsRepositoryImpl
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 
 enum class ColorMode(val value: Int) {
     SYSTEM(0),
@@ -66,21 +64,7 @@ fun ColorSpec.SpecVersion.effectiveFor(style: PaletteStyle): ColorSpec.SpecVersi
 
 object ThemeController {
     fun getAppSettings(repo: SettingsRepository = SettingsRepositoryImpl()): AppSettings {
-        val uiMode = repo.uiMode
-        var colorModeValue = repo.themeMode
-
-        if (uiMode == "miuix") {
-            val miuixMonet = repo.miuixMonet
-            val colorMode = ColorMode.fromValue(colorModeValue)
-            colorModeValue = if (!miuixMonet && colorMode.isMonet) {
-                colorMode.toNonMonetMode()
-            } else if (miuixMonet && !colorMode.isMonet) {
-                colorMode.toMonetMode()
-            } else {
-                colorModeValue
-            }
-        }
-
+        val colorModeValue = repo.themeMode
         val colorMode = ColorMode.fromValue(colorModeValue)
         val keyColor = repo.keyColor
         val paletteStyleStr = repo.colorStyle
@@ -103,21 +87,12 @@ object ThemeController {
 @Composable
 fun MySUTheme(
     appSettings: AppSettings = ThemeController.getAppSettings(),
-    uiMode: UiMode = LocalUiMode.current,
     content: @Composable () -> Unit
 ) {
-
-    when (uiMode) {
-        UiMode.Miuix -> MiuixMySUTheme(
-            appSettings = appSettings,
-            content = content
-        )
-
-        UiMode.Material -> MaterialMySUTheme(
-            appSettings = appSettings,
-            content = content
-        )
-    }
+    MaterialMySUTheme(
+        appSettings = appSettings,
+        content = content
+    )
 }
 
 @Composable

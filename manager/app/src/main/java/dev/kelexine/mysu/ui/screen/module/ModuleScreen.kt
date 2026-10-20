@@ -22,8 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import dev.kelexine.mysu.R
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.navigation3.LocalNavigator
 import dev.kelexine.mysu.ui.navigation3.Route
 import dev.kelexine.mysu.ui.screen.flash.FlashIt
@@ -37,7 +35,6 @@ fun ModulePager(
     bottomInnerPadding: Dp,
     isCurrentPage: Boolean = true
 ) {
-    val uiMode = LocalUiMode.current
     val navigator = LocalNavigator.current
     val context = LocalContext.current
     val resource = LocalResources.current
@@ -156,21 +153,11 @@ fun ModulePager(
         },
     )
 
-    when (uiMode) {
-        UiMode.Miuix -> ModulePagerMiuix(
-            uiState = rawUiState,
-            confirmDialogState = rawUiState.confirmDialogState,
-            moduleEvent = viewModel.moduleEvent,
-            actions = actions,
-            bottomInnerPadding = bottomInnerPadding,
-        )
-
-        UiMode.Material -> ModulePagerMaterial(
-            uiState = rawUiState,
-            confirmDialogState = rawUiState.confirmDialogState,
-            moduleEvent = viewModel.moduleEvent,
-            actions = actions,
-            bottomInnerPadding = bottomInnerPadding,
-        )
-    }
+    ModulePagerMaterial(
+        uiState = rawUiState,
+        confirmDialogState = rawUiState.confirmDialogState,
+        moduleEvent = viewModel.moduleEvent,
+        actions = actions,
+        bottomInnerPadding = bottomInnerPadding,
+    )
 }

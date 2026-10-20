@@ -12,8 +12,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.kelexine.mysu.R
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.navigation3.LocalNavigator
 import dev.kelexine.mysu.ui.util.SulogEntry
 import dev.kelexine.mysu.ui.util.SulogEventFilter
@@ -25,7 +23,6 @@ import dev.kelexine.mysu.ui.viewmodel.SulogViewModel
 @Composable
 fun SulogScreen() {
     val navigator = LocalNavigator.current
-    val uiMode = LocalUiMode.current
     val viewModel = viewModel<SulogViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -56,10 +53,7 @@ fun SulogScreen() {
         onSelectFile = viewModel::refresh,
     )
 
-    when (uiMode) {
-        UiMode.Material -> SulogScreenMaterial(state, actions)
-        UiMode.Miuix -> SulogScreenMiuix(state, actions)
-    }
+    SulogScreenMaterial(state, actions)
 }
 
 @Composable

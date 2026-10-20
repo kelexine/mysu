@@ -56,7 +56,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.kelexine.mysu.R
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.component.MySuIsValid
 import dev.kelexine.mysu.ui.component.material.ExpressiveScaffold
 import dev.kelexine.mysu.ui.component.material.SegmentedColumn
@@ -130,16 +129,6 @@ fun SettingPagerMaterial(
             SegmentedColumn(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 13.dp),
                 content = buildList {
-                    add {
-                        SegmentedDropdownItem(
-                            icon = Icons.Rounded.Dashboard,
-                            title = stringResource(id = R.string.settings_ui_mode),
-                            summary = stringResource(id = R.string.settings_ui_mode_summary),
-                            items = UiMode.entries.map { it.name },
-                            selectedIndex = if (uiState.uiMode == UiMode.Material.value) 1 else 0,
-                            onItemSelected = actions.onSetUiModeIndex
-                        )
-                    }
                     add {
                         SegmentedListItem(
                             onClick = actions.onOpenTheme,

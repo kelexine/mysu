@@ -9,8 +9,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import dev.kelexine.mysu.Natives
 import dev.kelexine.mysu.R
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.component.dialog.rememberConfirmDialog
 import dev.kelexine.mysu.ui.util.reboot
 
@@ -59,8 +57,5 @@ fun rememberRebootAction(): (String) -> Unit {
 
 @Composable
 fun RebootListPopup() {
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> RebootListPopupMiuix()
-        UiMode.Material -> RebootListPopupMaterial()
-    }
+    RebootListPopupMaterial()
 }

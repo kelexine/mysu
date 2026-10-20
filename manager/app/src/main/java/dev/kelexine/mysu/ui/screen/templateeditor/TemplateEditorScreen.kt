@@ -13,8 +13,6 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import dev.kelexine.mysu.R
 import dev.kelexine.mysu.toOrdinalList
 import dev.kelexine.mysu.toRootProfileFlags
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.navigation3.LocalNavigator
 import dev.kelexine.mysu.ui.util.deleteAppProfileTemplate
 import dev.kelexine.mysu.ui.viewmodel.TemplateViewModel
@@ -23,9 +21,8 @@ import dev.kelexine.mysu.ui.viewmodel.TemplateViewModel
 fun TemplateEditorScreen(template: TemplateViewModel.TemplateInfo, readOnly: Boolean) {
     val navigator = LocalNavigator.current
     val context = LocalContext.current
-    val uiMode = LocalUiMode.current
     val isCreation = template.id.isBlank()
-    val autoSave = uiMode == UiMode.Miuix && !isCreation
+    val autoSave = false
 
     var currentTemplate by rememberSaveable { mutableStateOf(template) }
     var idErrorHint by remember { mutableStateOf("") }
@@ -64,17 +61,15 @@ fun TemplateEditorScreen(template: TemplateViewModel.TemplateInfo, readOnly: Boo
     )
 
     fun saveCurrentTemplate() {
-        if (uiMode == UiMode.Miuix) {
-            when (idCheck(currentTemplate.id)) {
-                1 -> {
-                    showToast(idConflictError)
-                    return
-                }
+        when (idCheck(currentTemplate.id)) {
+            1 -> {
+                showToast(idConflictError)
+                return
+            }
 
-                2 -> {
-                    showToast(idInvalidError)
-                    return
-                }
+            2 -> {
+                showToast(idInvalidError)
+                return
             }
         }
 
@@ -128,15 +123,8 @@ fun TemplateEditorScreen(template: TemplateViewModel.TemplateInfo, readOnly: Boo
         },
     )
 
-    when (uiMode) {
-        UiMode.Miuix -> TemplateEditorScreenMiuix(
-            state = uiState,
-            actions = actions,
-        )
-
-        UiMode.Material -> TemplateEditorScreenMaterial(
-            state = uiState,
-            actions = actions,
-        )
-    }
+    TemplateEditorScreenMaterial(
+        state = uiState,
+        actions = actions,
+    )
 }

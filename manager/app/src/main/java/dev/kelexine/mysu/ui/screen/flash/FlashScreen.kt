@@ -17,8 +17,6 @@ import kotlinx.coroutines.withContext
 import dev.kelexine.mysu.Natives
 import dev.kelexine.mysu.R
 import dev.kelexine.mysu.data.repository.isSoftRebootPreferred
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.navigation3.LocalNavigator
 import dev.kelexine.mysu.ui.util.reboot
 
@@ -35,16 +33,11 @@ fun FlashScreen(flashIt: FlashIt) {
     // Soft reboot keeps the jailbreak and still applies modules
     val softReboot = flashIt is FlashIt.FlashModules && isSoftRebootPreferred()
     var flashingEnabled by rememberSaveable { mutableStateOf(!needJailbreakWarning) }
-    val uiMode = LocalUiMode.current
     val snackbarHost = remember { SnackbarHostState() }
 
     fun showMessage(message: String) {
         scope.launch {
-            if (uiMode == UiMode.Material) {
-                snackbarHost.showSnackbar(message)
-            } else {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            }
+            snackbarHost.showSnackbar(message)
         }
     }
 
@@ -79,8 +72,5 @@ fun FlashScreen(flashIt: FlashIt) {
         onDismissJailbreakWarning = dropUnlessResumed { navigator.pop() },
     )
 
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> FlashScreenMiuix(state, actions)
-        UiMode.Material -> FlashScreenMaterial(state, actions, snackbarHost)
-    }
+    FlashScreenMaterial(state, actions, snackbarHost)
 }

@@ -18,8 +18,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import dev.kelexine.mysu.Natives
 import dev.kelexine.mysu.R
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.navigation3.LocalNavigator
 import dev.kelexine.mysu.ui.navigation3.Route
 import dev.kelexine.mysu.ui.util.forceStopApp
@@ -32,7 +30,6 @@ import dev.kelexine.mysu.ui.viewmodel.getTemplateInfoById
 
 @Composable
 fun AppProfileScreen(uid: Int) {
-    val uiMode = LocalUiMode.current
     val navigator = LocalNavigator.current
     val context = LocalContext.current
     val snackbarHost = remember { SnackbarHostState() }
@@ -76,11 +73,7 @@ fun AppProfileScreen(uid: Int) {
 
     fun showMessage(message: String) {
         scope.launch {
-            if (uiMode == UiMode.Material) {
-                snackbarHost.showSnackbar(message)
-            } else {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            }
+            snackbarHost.showSnackbar(message)
         }
     }
 
@@ -138,24 +131,15 @@ fun AppProfileScreen(uid: Int) {
                     showMessage(failToUpdateAppProfile)
                 } else {
                     profile = updatedProfile
-                    if (uiMode == UiMode.Material) {
-                        viewModel.loadAppList()
-                    }
+                    viewModel.loadAppList()
                 }
             }
         },
     )
 
-    when (uiMode) {
-        UiMode.Miuix -> AppProfileScreenMiuix(
-            state = state,
-            actions = actions,
-        )
-
-        UiMode.Material -> AppProfileScreenMaterial(
-            state = state,
-            actions = actions,
-            snackBarHost = snackbarHost,
-        )
-    }
+    AppProfileScreenMaterial(
+        state = state,
+        actions = actions,
+        snackBarHost = snackbarHost,
+    )
 }

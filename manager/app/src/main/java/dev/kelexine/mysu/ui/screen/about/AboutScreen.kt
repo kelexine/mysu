@@ -6,8 +6,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.dropUnlessResumed
 import dev.kelexine.mysu.BuildConfig
 import dev.kelexine.mysu.R
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.navigation3.LocalNavigator
 
 @Composable
@@ -30,8 +28,5 @@ fun AboutScreen() {
         onOpenLink = uriHandler::openUri,
     )
 
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> AboutScreenMiuix(state, actions)
-        UiMode.Material -> AboutScreenMaterial(state, actions)
-    }
+    AboutScreenMaterial(state, actions)
 }

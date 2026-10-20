@@ -58,13 +58,9 @@ import dev.kelexine.mysu.ui.theme.LocalEnableFloatingBottomBar
 import dev.kelexine.mysu.ui.theme.LocalEnableFloatingBottomBarBlur
 import dev.kelexine.mysu.ui.LocalMainPagerState
 import dev.kelexine.mysu.ui.util.rootAvailable
-import top.yukonga.miuix.kmp.blur.Backdrop
-import top.yukonga.miuix.kmp.blur.LayerBackdrop
 
 @Composable
 fun BottomBarMaterial(
-    blurBackdrop: LayerBackdrop?,
-    backdrop: Backdrop,
     navigationBadge: NavigationBadgeState,
     modifier: Modifier = Modifier,
 ) {
@@ -127,7 +123,7 @@ fun BottomBarMaterial(
                 .clip(RoundedCornerShape(32.dp)),
             shape = RoundedCornerShape(32.dp),
             color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(
-                alpha = if (enableFloatingBottomBarBlur && blurBackdrop != null) 0.88f else 1f
+                alpha = if (enableFloatingBottomBarBlur) 0.88f else 1f
             ),
             tonalElevation = 6.dp,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))

@@ -16,12 +16,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.component.PagerNavigationSpringSpec
 import dev.kelexine.mysu.ui.util.shouldShowSplitPane
-import top.yukonga.miuix.kmp.blur.Backdrop
-import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import kotlin.math.abs
 
 class MainPagerState(
@@ -121,6 +117,14 @@ fun rememberMainPagerState(
     }
 }
 
+enum class BottomBarDestination {
+    Home,
+    SuperUser,
+    Module,
+    ModuleRepo,
+    Settings
+}
+
 @Immutable
 data class NavigationBadgeState(
     val superuserCount: Int = 0,
@@ -148,20 +152,15 @@ internal fun badgeFor(index: Int, state: NavigationBadgeState): NavBadge? = when
 
 @Composable
 fun useNavigationRail(enableFloatingBottomBar: Boolean): Boolean {
-    return shouldShowSplitPane() && !(LocalUiMode.current == UiMode.Miuix && enableFloatingBottomBar)
+    return shouldShowSplitPane()
 }
 
 @Composable
 fun BottomBar(
-    blurBackdrop: LayerBackdrop?,
-    backdrop: Backdrop,
     navigationBadge: NavigationBadgeState,
     modifier: Modifier = Modifier,
 ) {
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> BottomBarMiuix(blurBackdrop, backdrop, navigationBadge, modifier)
-        UiMode.Material -> BottomBarMaterial(blurBackdrop, backdrop, navigationBadge, modifier)
-    }
+    BottomBarMaterial(navigationBadge, modifier)
 }
 
 @Composable
@@ -169,8 +168,5 @@ fun SideRail(
     navigationBadge: NavigationBadgeState,
     modifier: Modifier = Modifier,
 ) {
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> NavigationRailMiuix(navigationBadge, modifier)
-        UiMode.Material -> NavigationRailMaterial(navigationBadge, modifier)
-    }
+    NavigationRailMaterial(navigationBadge, modifier)
 }

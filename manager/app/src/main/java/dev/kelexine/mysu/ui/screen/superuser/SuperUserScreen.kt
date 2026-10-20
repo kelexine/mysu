@@ -5,16 +5,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
-import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.launch
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.navigation3.Navigator
 import dev.kelexine.mysu.ui.navigation3.Route
 import dev.kelexine.mysu.ui.security.BiometricAction
@@ -73,6 +71,7 @@ fun SuperUserPager(
             viewModel.markNeedRefresh()
         }
     }
+
     val actions = SuperUserActions(
         onRefresh = { viewModel.loadAppList(force = true) },
         onOpenSulog = { navigator.push(Route.Sulog) },
@@ -85,17 +84,9 @@ fun SuperUserPager(
         onOpenProfile = onOpenProfile,
     )
 
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> SuperUserPagerMiuix(
-            uiState = uiState,
-            actions = actions,
-            bottomInnerPadding = bottomInnerPadding,
-        )
-
-        UiMode.Material -> SuperUserPagerMaterial(
-            uiState = uiState,
-            actions = actions,
-            bottomInnerPadding = bottomInnerPadding,
-        )
-    }
+    SuperUserPagerMaterial(
+        uiState = uiState,
+        actions = actions,
+        bottomInnerPadding = bottomInnerPadding,
+    )
 }

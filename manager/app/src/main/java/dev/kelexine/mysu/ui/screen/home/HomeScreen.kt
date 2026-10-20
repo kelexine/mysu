@@ -20,8 +20,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import dev.kelexine.mysu.R
 import dev.kelexine.mysu.magica.MagicaService
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.component.dialog.rememberLoadingDialog
 import dev.kelexine.mysu.ui.navigation3.Navigator
 import dev.kelexine.mysu.ui.navigation3.Route
@@ -68,17 +66,9 @@ fun HomePager(
         },
     )
 
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> HomePagerMiuix(
-            state = uiState,
-            actions = actions,
-            bottomInnerPadding = bottomInnerPadding,
-        )
-
-        UiMode.Material -> HomePagerMaterial(
-            state = uiState,
-            actions = actions,
-            bottomInnerPadding = bottomInnerPadding,
-        )
-    }
+    HomePagerMaterial(
+        state = uiState,
+        actions = actions,
+        bottomInnerPadding = bottomInnerPadding,
+    )
 }

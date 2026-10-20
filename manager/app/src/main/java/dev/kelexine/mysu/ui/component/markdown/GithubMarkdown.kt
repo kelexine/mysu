@@ -29,8 +29,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewAssetLoader
 import dev.kelexine.mysu.mysuApp
-import dev.kelexine.mysu.ui.LocalUiMode
-import dev.kelexine.mysu.ui.UiMode
 import dev.kelexine.mysu.ui.theme.isInDarkTheme
 import dev.kelexine.mysu.ui.util.adjustLightnessArgb
 import dev.kelexine.mysu.ui.util.cssColorFromArgb
@@ -46,7 +44,6 @@ import org.commonmark.ext.gfm.tables.TablesExtension
 import org.commonmark.ext.task.list.items.TaskListItemsExtension
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
-import top.yukonga.miuix.kmp.theme.MiuixTheme
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
 import kotlin.math.abs
@@ -361,37 +358,10 @@ private data class MarkdownColors(
 
 @Composable
 private fun getMarkdownColors(containerColor: androidx.compose.ui.graphics.Color?): MarkdownColors {
-    val uiMode = LocalUiMode.current
-
-    return when (uiMode) {
-        UiMode.Material -> {
-            MarkdownColors(
-                bgCode = cssColorFromArgb(MaterialTheme.colorScheme.surfaceContainerHigh.toArgb()),
-                bgRowAlt = cssColorFromArgb(MaterialTheme.colorScheme.surfaceContainerLow.toArgb()),
-                fgDefault = cssColorFromArgb(MaterialTheme.colorScheme.onSurface.toArgb()),
-                fgLink = cssColorFromArgb(MaterialTheme.colorScheme.primary.toArgb())
-            )
-        }
-
-        UiMode.Miuix -> {
-            val bgArgb = containerColor?.toArgb() ?: MiuixTheme.colorScheme.surfaceContainer.toArgb()
-            val bgLuminance = relativeLuminance(bgArgb)
-
-            fun makeVariant(delta: Float, ratio: Double): Int {
-                val candidate = adjustLightnessArgb(bgArgb, delta)
-                val madeLighter = delta > 0f
-                return ensureVisibleByMix(bgArgb, candidate, ratio, madeLighter)
-            }
-
-            val codeDelta = if (bgLuminance > 0.6) -0.05f else 0.05f
-            val rowAltDelta = if (bgLuminance > 0.6) -0.02f else 0.02f
-
-            MarkdownColors(
-                bgCode = cssColorFromArgb(makeVariant(codeDelta, 1.1)),
-                bgRowAlt = cssColorFromArgb(makeVariant(rowAltDelta, 1.05)),
-                fgDefault = cssColorFromArgb(MiuixTheme.colorScheme.onSurface.toArgb()),
-                fgLink = cssColorFromArgb(MiuixTheme.colorScheme.primary.toArgb())
-            )
-        }
-    }
+    return MarkdownColors(
+        bgCode = cssColorFromArgb(MaterialTheme.colorScheme.surfaceContainerHigh.toArgb()),
+        bgRowAlt = cssColorFromArgb(MaterialTheme.colorScheme.surfaceContainerLow.toArgb()),
+        fgDefault = cssColorFromArgb(MaterialTheme.colorScheme.onSurface.toArgb()),
+        fgLink = cssColorFromArgb(MaterialTheme.colorScheme.primary.toArgb())
+    )
 }

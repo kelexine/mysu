@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
+import androidx.compose.material3.MaterialTheme
 
 @Stable
 data class SearchStatus(
@@ -37,7 +37,7 @@ data class SearchStatus(
     fun TopAppBarAnim(
         modifier: Modifier = Modifier,
         visible: Boolean = shouldCollapsed(),
-        backgroundColor: Color = colorScheme.surface,
+        backgroundColor: Color = MaterialTheme.colorScheme.surface,
         content: @Composable () -> Unit
     ) {
         Box(modifier = modifier) {
