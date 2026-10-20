@@ -23,6 +23,10 @@ data class HomeUiState(
     val latestVersionInfo: LatestVersionInfo,
     val currentManagerVersionCode: Long,
     val systemInfo: SystemInfo,
+    val isMysufsSupported: Boolean = false,
+    val mysufsVersion: String = "",
+    val superuserCount: Int = 0,
+    val moduleCount: Int = 0,
 ) {
     val isSELinuxPermissive: Boolean
         get() = systemInfo.selinuxStatus == "Permissive"

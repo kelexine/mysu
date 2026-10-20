@@ -305,7 +305,7 @@ fn copy_str_to_buf(src: &str, dst: &mut [std::os::raw::c_char]) {
 }
 
 fn buf_to_string(buf: &[std::os::raw::c_char]) -> String {
-    let u8_slice = unsafe { std::slice::from_raw_parts(buf.as_ptr() as *const u8, buf.len()) };
+    let u8_slice = unsafe { std::slice::from_raw_parts(buf.as_ptr().cast::<u8>(), buf.len()) };
     let len = u8_slice
         .iter()
         .position(|&c| c == 0)
@@ -341,7 +341,7 @@ pub fn mysufs_add_sus_path_loop(path: &str) -> anyhow::Result<()> {
 
 pub fn mysufs_set_hide_sus_mnts(enabled: bool) -> anyhow::Result<()> {
     let mut cmd = mysu_uapi::st_mysufs_hide_sus_mnts_for_non_su_procs {
-        enabled: if enabled { 1 } else { 0 },
+        enabled: u8::from(enabled),
         err: 0,
     };
     mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_SET_HIDE_SUS_MNTS, &raw mut cmd)?;
@@ -436,7 +436,7 @@ pub fn mysufs_set_uname(release: &str, version: &str) -> anyhow::Result<()> {
 
 pub fn mysufs_enable_log(enabled: bool) -> anyhow::Result<()> {
     let mut cmd = mysu_uapi::st_mysufs_log {
-        enabled: if enabled { 1 } else { 0 },
+        enabled: u8::from(enabled),
         err: 0,
     };
     mysuctl(mysu_uapi::MYSU_IOCTL_MYSUFS_ENABLE_LOG, &raw mut cmd)?;
@@ -494,7 +494,7 @@ pub fn mysufs_add_sus_map(path: &str) -> anyhow::Result<()> {
 
 pub fn mysufs_enable_avc_log_spoofing(enabled: bool) -> anyhow::Result<()> {
     let mut cmd = mysu_uapi::st_mysufs_avc_log_spoofing {
-        enabled: if enabled { 1 } else { 0 },
+        enabled: u8::from(enabled),
         err: 0,
     };
     mysuctl(

@@ -181,6 +181,23 @@ static const __u32 MYSU_IOCTL_SET_INIT_PGRP = _IO('K', 19);
 static const __u32 MYSU_IOCTL_GET_SULOG_FD = _IOW('K', 20, struct mysu_get_sulog_fd_cmd);
 static const __u32 MYSU_IOCTL_DISABLE_ESCAPE_TO_ROOT = _IO('K', 21);
 
+/* MYSUFS (SU File System) ioctl definitions */
+static const __u32 MYSU_IOCTL_MYSUFS_ADD_SUS_PATH = _IOWR('K', 50, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_ADD_SUS_PATH_LOOP = _IOWR('K', 51, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_SET_HIDE_SUS_MNTS = _IOWR('K', 52, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_ADD_SUS_KSTAT = _IOWR('K', 53, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_UPDATE_SUS_KSTAT = _IOWR('K', 54, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_ADD_SUS_KSTAT_STATICALLY = _IOWR('K', 55, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_SET_UNAME = _IOWR('K', 56, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_ENABLE_LOG = _IOWR('K', 57, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_SET_CMDLINE = _IOWR('K', 58, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_ADD_OPEN_REDIRECT = _IOWR('K', 59, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_ADD_SUS_MAP = _IOWR('K', 60, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_ENABLE_AVC_LOG_SPOOFING = _IOWR('K', 61, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_SHOW_VERSION = _IOWR('K', 62, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_SHOW_ENABLED_FEATURES = _IOWR('K', 63, unsigned long);
+static const __u32 MYSU_IOCTL_MYSUFS_SHOW_VARIANT = _IOWR('K', 64, unsigned long);
+
 /* Compatibility aliases */
 
 #endif

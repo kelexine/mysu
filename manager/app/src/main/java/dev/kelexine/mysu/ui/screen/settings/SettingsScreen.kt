@@ -51,6 +51,8 @@ fun SettingPager(
         onSetBiometricOnAppLaunch = viewModel::setBiometricOnAppLaunch,
         onSetBiometricTimeoutMode = viewModel::setBiometricTimeoutMode,
         onOpenAbout = { navigator.push(Route.About) },
+        onSetMysufsHideMountsEnabled = viewModel::setMysufsHideMountsEnabled,
+        onSetMysufsAvcSpoofingEnabled = viewModel::setMysufsAvcSpoofingEnabled,
     )
 
     when (LocalUiMode.current) {

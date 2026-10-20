@@ -6,11 +6,13 @@
 #define MYSU_H
 
 #include <cstdint>
+#include <string>
 #include <sys/ioctl.h>
 #include <sys/prctl.h>
 #include <utility>
 
 #include "uapi/mysu.h"
+#include "uapi/mysufs.h"
 
 uint32_t get_kernel_uapi_version();
 
@@ -55,6 +57,13 @@ bool is_selinux_hide_enabled();
 bool set_vfs_hide_enabled(bool enabled);
 
 bool is_vfs_hide_enabled();
+
+// MYSUFS Stealth Engine
+bool is_mysufs_supported();
+std::string get_mysufs_version();
+std::string get_mysufs_enabled_features();
+bool set_mysufs_hide_mounts(bool enabled);
+bool set_mysufs_avc_spoofing(bool enabled);
 
 bool get_allow_list(struct mysu_new_get_allow_list_cmd *);
 

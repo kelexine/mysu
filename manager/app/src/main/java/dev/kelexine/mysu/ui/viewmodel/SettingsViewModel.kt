@@ -78,6 +78,8 @@ class SettingsViewModel(
             val biometricOnAppLaunch = repo.biometricOnAppLaunch
             val biometricTimeoutMode = repo.biometricTimeoutMode
             val isBiometricAvailable = dev.kelexine.mysu.ui.security.BiometricSecurityManager.getInstance(repo).canAuthenticate(mysuApp)
+            val isMysufsSupported = if (Natives.isManager && Natives.version > 0) runCatching { Natives.isMysufsSupported }.getOrDefault(false) else false
+            val mysufsVersion = if (isMysufsSupported) runCatching { Natives.mysufsVersion }.getOrDefault("") else ""
 
             _uiState.update {
                 it.copy(
@@ -122,8 +124,28 @@ class SettingsViewModel(
                     biometricOnAppLaunch = biometricOnAppLaunch,
                     biometricTimeoutMode = biometricTimeoutMode,
                     isBiometricAvailable = isBiometricAvailable,
+                    isMysufsSupported = isMysufsSupported,
+                    mysufsVersion = mysufsVersion,
                 )
             }
+        }
+    }
+
+    fun setMysufsHideMountsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                runCatching { Natives.setMysufsHideMounts(enabled) }
+            }
+            _uiState.update { it.copy(isMysufsHideMountsEnabled = enabled) }
+        }
+    }
+
+    fun setMysufsAvcSpoofingEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                runCatching { Natives.setMysufsAvcSpoofing(enabled) }
+            }
+            _uiState.update { it.copy(isMysufsAvcSpoofingEnabled = enabled) }
         }
     }
 

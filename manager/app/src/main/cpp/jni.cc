@@ -417,6 +417,38 @@ int fork_dont_care_and_exec_mysud(const char *path, const char *pkg) {
 }
 
 extern "C"
+JNIEXPORT jboolean JNICALL
+Java_dev_kelexine_mysu_Natives_isMysufsSupported(JNIEnv *, jclass) {
+    return is_mysufs_supported();
+}
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_dev_kelexine_mysu_Natives_getMysufsVersion(JNIEnv *env, jclass) {
+    auto version = get_mysufs_version();
+    return env->NewStringUTF(version.c_str());
+}
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_dev_kelexine_mysu_Natives_getMysufsEnabledFeatures(JNIEnv *env, jclass) {
+    auto features = get_mysufs_enabled_features();
+    return env->NewStringUTF(features.c_str());
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_dev_kelexine_mysu_Natives_setMysufsHideMounts(JNIEnv *, jclass, jboolean enabled) {
+    return set_mysufs_hide_mounts(enabled);
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_dev_kelexine_mysu_Natives_setMysufsAvcSpoofing(JNIEnv *, jclass, jboolean enabled) {
+    return set_mysufs_avc_spoofing(enabled);
+}
+
+extern "C"
 JNIEXPORT void JNICALL
 Java_dev_kelexine_mysu_magica_AppZygotePreload_forkDontCareAndExecMysud(JNIEnv *env, jclass clazz,
                                                                         jstring mysud_path, jstring pkg_name) {

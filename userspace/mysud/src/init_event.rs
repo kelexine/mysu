@@ -130,12 +130,9 @@ pub fn on_post_data_fs() -> Result<()> {
 }
 
 fn init_mysufs_default_rules() {
-    let version = match mysucalls::mysufs_show_version() {
-        Ok(v) => v,
-        Err(_) => {
-            // Kernel does not support MYSUFS or CONFIG_MYSU_MYSUFS is disabled
-            return;
-        }
+    let Ok(version) = mysucalls::mysufs_show_version() else {
+        // Kernel does not support MYSUFS or CONFIG_MYSU_MYSUFS is disabled
+        return;
     };
 
     info!("MYSUFS detected (version: {version}), configuring stealth cloaking rules...");
@@ -155,10 +152,11 @@ fn init_mysufs_default_rules() {
     ];
 
     for path in &cloaked_paths {
-        if Path::new(path).exists() {
-            if let Err(e) = mysucalls::mysufs_add_sus_path(path) {
-                warn!("MYSUFS failed to add cloaked path {path}: {e}");
-            }
+        if !Path::new(path).exists() {
+            continue;
+        }
+        if let Err(e) = mysucalls::mysufs_add_sus_path(path) {
+            warn!("MYSUFS failed to add cloaked path {path}: {e}");
         }
     }
 

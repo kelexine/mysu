@@ -53,6 +53,9 @@ class HomeViewModel(
         val lkmMode = mysuVersion?.let { if (kernelVersion.isGKI()) Natives.isLkmMode else null }
         val isRootAvailable = rootAvailable()
         val managerVersion = getManagerVersion(mysuApp)
+        val isMysufsSupported = if (isManager && mysuVersion != null) runCatching { Natives.isMysufsSupported }.getOrDefault(false) else false
+        val mysufsVersion = if (isMysufsSupported) runCatching { Natives.mysufsVersion }.getOrDefault("") else ""
+        val superuserCount = if (isManager && isRootAvailable) runCatching { Natives.getSuperuserCount() }.getOrDefault(0) else 0
 
         return HomeUiState(
             kernelVersion = kernelVersion,
@@ -71,6 +74,9 @@ class HomeViewModel(
             checkUpdateEnabled = settingsRepo.checkUpdate,
             latestVersionInfo = LatestVersionInfo(),
             currentManagerVersionCode = managerVersion.versionCode,
+            isMysufsSupported = isMysufsSupported,
+            mysufsVersion = mysufsVersion,
+            superuserCount = superuserCount,
             systemInfo = SystemInfo(
                 kernelVersion = Os.uname().release,
                 managerVersion = "${managerVersion.versionName} (${managerVersion.versionCode}-${managerUAPIVersion})",

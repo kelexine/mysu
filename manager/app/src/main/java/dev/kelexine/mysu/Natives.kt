@@ -97,6 +97,21 @@ object Natives {
     external fun setVfsHideEnabled(enabled: Boolean): Boolean
 
     /**
+     * Ring-0 MYSUFS Kernel Stealth Engine.
+     */
+    val isMysufsSupported: Boolean
+        external get
+
+    val mysufsVersion: String
+        external get
+
+    val mysufsEnabledFeatures: String
+        external get
+
+    external fun setMysufsHideMounts(enabled: Boolean): Boolean
+    external fun setMysufsAvcSpoofing(enabled: Boolean): Boolean
+
+    /**
      * Get the user name for the uid.
      */
     external fun getUserName(uid: Int): String?

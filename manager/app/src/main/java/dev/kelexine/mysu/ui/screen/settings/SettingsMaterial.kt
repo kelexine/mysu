@@ -407,6 +407,33 @@ fun SettingPagerMaterial(
                 )
             }
 
+            if (uiState.isMysufsSupported) {
+                SegmentedColumn(
+                    title = stringResource(id = R.string.mysufs_title),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 13.dp),
+                    content = listOf(
+                        {
+                            SegmentedSwitchItem(
+                                icon = Icons.Filled.Security,
+                                title = stringResource(id = R.string.mysufs_mount_cloaking),
+                                summary = stringResource(id = R.string.mysufs_mount_cloaking_summary),
+                                checked = uiState.isMysufsHideMountsEnabled,
+                                onCheckedChange = actions.onSetMysufsHideMountsEnabled
+                            )
+                        },
+                        {
+                            SegmentedSwitchItem(
+                                icon = Icons.Filled.Policy,
+                                title = stringResource(id = R.string.mysufs_avc_spoofing),
+                                summary = stringResource(id = R.string.mysufs_avc_spoofing_summary),
+                                checked = uiState.isMysufsAvcSpoofingEnabled,
+                                onCheckedChange = actions.onSetMysufsAvcSpoofingEnabled
+                            )
+                        }
+                    )
+                )
+            }
+
             if (uiState.isLkmMode) {
                 SegmentedColumn(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 13.dp),

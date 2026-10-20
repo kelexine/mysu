@@ -342,4 +342,28 @@
     <string name="biometric_prompt_subtitle_launch">Unlock MySU Manager</string>
     <string name="biometric_unlock">Unlock</string>
     <string name="biometric_not_enrolled">No biometric credentials or screen lock enrolled on device</string>
+
+    <!-- MYSUFS Stealth Engine -->
+    <string name="mysufs_title" translatable="false">MYSUFS Stealth Engine</string>
+    <string name="mysufs_ring0_active">Ring-0 Stealth Active</string>
+    <string name="mysufs_status_active">Kernel VFS &amp; Mount Cloaking Active</string>
+    <string name="mysufs_status_inactive">Stealth Engine Inactive</string>
+    <string name="mysufs_version_format">MYSUFS %s</string>
+    <string name="mysufs_mount_cloaking">Mount Table Cloaking</string>
+    <string name="mysufs_mount_cloaking_summary">Conceal overlay &amp; module mounts from /proc/mounts and /proc/self/mountinfo</string>
+    <string name="mysufs_kstat_spoofing">OEM Kstat Spoofing</string>
+    <string name="mysufs_kstat_spoofing_summary">Spoof file inodes, devices, and sizes to match OEM stock partition files</string>
+    <string name="mysufs_path_cloaking">VFS Path Cloaking</string>
+    <string name="mysufs_path_cloaking_summary">Return ENOENT for /data/adb and sensitive root paths on denied UIDs</string>
+    <string name="mysufs_avc_spoofing">SELinux AVC Spoofing</string>
+    <string name="mysufs_avc_spoofing_summary">Rewrite audit denial logs to hide MySU security domains</string>
+
+    <!-- M3 Home Dashboard Metrics -->
+    <string name="home_metric_superusers">Superusers</string>
+    <string name="home_metric_modules">Active Modules</string>
+    <string name="home_metric_stealth">Ring-0 Stealth</string>
+    <string name="home_system_specs">System &amp; Kernel Specifications</string>
+    <string name="home_quick_actions">Quick Actions</string>
+    <string name="home_reboot_menu">Reboot Options</string>
+    <string name="home_webui_starter">WebUI Starter</string>
 </resources>

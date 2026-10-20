@@ -250,3 +250,45 @@ bool is_vfs_hide_enabled() {
     }
     return value != 0;
 }
+
+bool is_mysufs_supported() {
+    struct st_mysufs_version cmd = {};
+    if (mysuctl(MYSU_IOCTL_MYSUFS_SHOW_VERSION, &cmd) < 0) {
+        return false;
+    }
+    return cmd.err == 0 && cmd.mysufs_version[0] != '\0';
+}
+
+std::string get_mysufs_version() {
+    struct st_mysufs_version cmd = {};
+    if (mysuctl(MYSU_IOCTL_MYSUFS_SHOW_VERSION, &cmd) < 0 || cmd.err != 0) {
+        return "";
+    }
+    return std::string(cmd.mysufs_version);
+}
+
+std::string get_mysufs_enabled_features() {
+    struct st_mysufs_enabled_features cmd = {};
+    if (mysuctl(MYSU_IOCTL_MYSUFS_SHOW_ENABLED_FEATURES, &cmd) < 0 || cmd.err != 0) {
+        return "";
+    }
+    return std::string(cmd.enabled_features);
+}
+
+bool set_mysufs_hide_mounts(bool enabled) {
+    struct st_mysufs_hide_sus_mnts_for_non_su_procs cmd = {};
+    cmd.enabled = enabled ? 1 : 0;
+    if (mysuctl(MYSU_IOCTL_MYSUFS_SET_HIDE_SUS_MNTS, &cmd) < 0) {
+        return false;
+    }
+    return cmd.err == 0;
+}
+
+bool set_mysufs_avc_spoofing(bool enabled) {
+    struct st_mysufs_avc_log_spoofing cmd = {};
+    cmd.enabled = enabled ? 1 : 0;
+    if (mysuctl(MYSU_IOCTL_MYSUFS_ENABLE_AVC_LOG_SPOOFING, &cmd) < 0) {
+        return false;
+    }
+    return cmd.err == 0;
+}

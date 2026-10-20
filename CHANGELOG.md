@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.15] - 2026-10-20
+
+### Added
+- **Material 3 Expressive (M3E) Manager UI/UX Overhaul**:
+  - **Hero Status Card**: Elevated container with squircle status icon badge, working mode tags (LKM / GKI), and 3-column metric counters (Superusers, Active Modules, Stealth Engine).
+  - **Ring-0 MYSUFS Stealth Card**: Live dashboard card displaying Mount Table Cloaking, OEM Kstat Spoofing, and Deep VFS Path Cloaking status.
+  - **Segmented System Specifications Card**: Icon-rich layout covering Manager version, Kernel release & architecture, Device model, Android build fingerprint, SELinux enforcement (with live status indicator dot), and Seccomp filters.
+  - **Settings Stealth Controls**: Dedicated "Ring-0 Stealth Engine (MYSUFS)" section with supercall-backed toggles for Mount Table Cloaking and SELinux AVC Audit Denial Spoofing.
+  - **Floating Pill Navigation Bar**: Modern floating pill navigation bar option in Material 3 mode with squircle active indicator and backdrop blur integration.
+- **JNI Native Bridge & Natives Façade**:
+  - Exported MYSUFS IOCTLs (50–64) in `mysu.cc`, `jni.cc`, and `uapi/supercall.h`.
+  - Added `isMysufsSupported`, `mysufsVersion`, `setMysufsHideMounts`, and `setMysufsAvcSpoofing` to `Natives.kt`.
+- **Userspace Daemon (`mysud`)**:
+  - Fixed clippy lints across newer Rust compilers and resolved Android API 26 target linking for `__system_property_read_callback`.
+  - Rebuilt optimized native daemon binary and bundled into manager `jniLibs/arm64-v8a/libmysud.so`.
+
+---
+
 ## [1.0.14] - 2026-09-16
 
 ### Added

@@ -51,6 +51,12 @@ data class SettingsUiState(
     val adbRootStatus: String = "",
     val isAdbRootEnabled: Boolean = false,
 
+    // Ring-0 MYSUFS Stealth
+    val isMysufsSupported: Boolean = false,
+    val mysufsVersion: String = "",
+    val isMysufsHideMountsEnabled: Boolean = true,
+    val isMysufsAvcSpoofingEnabled: Boolean = true,
+
     val isLkmMode: Boolean = false,
     val isLateLoadMode: Boolean = false,
 
@@ -96,4 +102,6 @@ data class SettingsScreenActions(
     val onSetBiometricOnAppLaunch: (Boolean) -> Unit,
     val onSetBiometricTimeoutMode: (Int) -> Unit,
     val onOpenAbout: () -> Unit,
+    val onSetMysufsHideMountsEnabled: (Boolean) -> Unit = {},
+    val onSetMysufsAvcSpoofingEnabled: (Boolean) -> Unit = {},
 )
