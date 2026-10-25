@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.17] - 2026-10-25
+
+### Changed
+- **Root Homepage Simplification**:
+  - Pruned artificial dashboard widgets and metric counters in favor of a clean, uncluttered Material 3 Expressive root homepage.
+  - Streamlined `StatusCard` to display essential installation status, versioning, mode indicators (`LKM`/`GKI`, `Safe Mode`, `Jailbreak`), and direct installation actions.
+  - Refined `InfoCard` to cleanly display live system specifications.
+
+### Fixed
+- **Live SELinux Detection**:
+  - Replaced brittle unprivileged shell execution (`getenforce`) with direct framework inspection of `android.os.SELinux` via `HiddenApiBypass` and `/sys/fs/selinux/enforce`.
+  - Restored accurate live detection of `Permissive` and `Disabled` SELinux states across all Android versions, enabling the Jailbreak action button on permissive devices.
+
+---
+
 ## [1.0.16] - 2026-10-20
 
 ### Removed
