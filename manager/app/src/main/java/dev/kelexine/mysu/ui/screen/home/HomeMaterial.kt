@@ -42,6 +42,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -161,7 +162,7 @@ private fun UpdateCard(
     actions: HomeActions,
 ) {
     val newVersion = state.latestVersionInfo
-    var showUpdateDialog by remember { mutableStateOf(false) }
+    var showUpdateDialog by rememberSaveable { mutableStateOf(false) }
 
     AnimatedVisibility(
         visible = state.hasUpdate,
@@ -170,11 +171,14 @@ private fun UpdateCard(
     ) {
         WarningCard(
             message = stringResource(id = R.string.new_version_available, newVersion.versionCode),
-            level = WarningLevel.Notice
-        ) {
-            showUpdateDialog = true
-        }
+            level = WarningLevel.Notice,
+            onClick = {
+                showUpdateDialog = true
+            }
+        )
+    }
 
+    if (showUpdateDialog) {
         AppUpdateDialog(
             show = showUpdateDialog,
             versionInfo = newVersion,

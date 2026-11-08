@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,7 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.kelexine.mysu.R
-import dev.kelexine.mysu.ui.component.markdown.MarkdownContent
 import dev.kelexine.mysu.ui.component.material.ExpressiveDialog
 import dev.kelexine.mysu.ui.util.ApkInstaller
 import dev.kelexine.mysu.ui.util.DownloadManager
@@ -127,11 +128,13 @@ private fun AppUpdateDialogMaterial(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 280.dp)
+                            .heightIn(max = 240.dp)
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        MarkdownContent(
-                            content = versionInfo.changelog,
-                            isMarkdown = true
+                        Text(
+                            text = versionInfo.changelog,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -169,8 +172,11 @@ private fun AppUpdateDialogMaterial(
                 TextButton(onClick = { ApkInstaller.installApk(context, downloadedFile!!) }) {
                     Text(stringResource(R.string.update_install))
                 }
-            } else if (!isDownloading) {
-                TextButton(onClick = startDownload) {
+            } else {
+                TextButton(
+                    onClick = startDownload,
+                    enabled = !isDownloading
+                ) {
                     Text(stringResource(R.string.update_now))
                 }
             }

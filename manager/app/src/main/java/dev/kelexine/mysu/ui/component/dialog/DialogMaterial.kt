@@ -1,7 +1,11 @@
 package dev.kelexine.mysu.ui.component.dialog
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import dev.kelexine.mysu.ui.component.markdown.MarkdownContent
 import dev.kelexine.mysu.ui.component.material.ExpressiveDialog
 
 @Composable
@@ -60,10 +63,17 @@ fun ConfirmDialogMaterial(
             title = { Text(visuals.title) },
             text = visuals.content?.let { content ->
                 {
-                    when {
-                        visuals.isMarkdown -> MarkdownContent(content = content, isMarkdown = true)
-                        visuals.isHtml -> MarkdownContent(content = content, isMarkdown = false)
-                        else -> Text(text = content)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 280.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Text(
+                            text = content,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             },

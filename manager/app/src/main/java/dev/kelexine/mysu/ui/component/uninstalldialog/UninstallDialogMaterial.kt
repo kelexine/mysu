@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import dev.kelexine.mysu.R
 import dev.kelexine.mysu.ui.component.dialog.rememberConfirmDialog
@@ -26,12 +27,12 @@ fun UninstallDialogMaterial(
     onDismissRequest: () -> Unit
 ) {
     val navigator = LocalNavigator.current
+    val context = LocalContext.current
     val options = listOf(
         // TEMPORARY,
         PERMANENT,
         RESTORE_STOCK_IMAGE
     )
-    val showConfirmDialog = remember { mutableStateOf(false) }
     val runType = remember { mutableStateOf<UninstallType?>(null) }
 
     val run = { type: UninstallType ->
@@ -41,6 +42,15 @@ fun UninstallDialogMaterial(
             else -> Unit
         }
     }
+
+    val confirmDialog = rememberConfirmDialog(
+        onConfirm = {
+            onDismissRequest()
+            runType.value?.let { type ->
+                run(type)
+            }
+        }
+    )
 
     if (show) {
         AlertDialog(
@@ -53,8 +63,11 @@ fun UninstallDialogMaterial(
                         {
                             SegmentedListItem(
                                 onClick = {
-                                    showConfirmDialog.value = true
                                     runType.value = type
+                                    confirmDialog.showConfirm(
+                                        title = context.getString(type.title),
+                                        content = context.getString(type.message)
+                                    )
                                 },
                                 headlineContent = { Text(stringResource(type.title)) },
                                 supportingContent = { Text(stringResource(type.message)) },
@@ -75,29 +88,5 @@ fun UninstallDialogMaterial(
                 }
             }
         )
-    }
-
-    val confirmDialog = rememberConfirmDialog(
-        onConfirm = {
-            showConfirmDialog.value = false
-            onDismissRequest()
-            runType.value?.let { type ->
-                run(type)
-            }
-        },
-        onDismiss = {
-            showConfirmDialog.value = false
-        }
-    )
-
-    val dialogTitle = runType.value?.let { type ->
-        options.find { it == type }?.let { stringResource(it.title) }
-    } ?: ""
-    val dialogContent = runType.value?.let { type ->
-        options.find { it == type }?.let { stringResource(it.message) }
-    }
-
-    if (showConfirmDialog.value) {
-        confirmDialog.showConfirm(title = dialogTitle, content = dialogContent)
     }
 }

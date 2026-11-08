@@ -1,8 +1,7 @@
 package dev.kelexine.mysu.ui.util
 
-import android.os.Build
+import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
-import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
 
 /**
@@ -10,21 +9,15 @@ import java.io.File
  * Safe to call from any thread (IO recommended).
  */
 fun getSELinuxStatusRaw(): String {
-    // 1. Framework android.os.SELinux via reflection (bypassing hidden API restrictions)
-    try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            HiddenApiBypass.addHiddenApiExemptions("Landroid/os/SELinux;")
+    // 1. If root is active, query directly for the authoritative kernel status
+    if (rootAvailable()) {
+        try {
+            val out = ShellUtils.fastCmd("getenforce").trim()
+            if (out in listOf("Enforcing", "Permissive", "Disabled")) {
+                return out
+            }
+        } catch (_: Throwable) {
         }
-        val selinuxClass = Class.forName("android.os.SELinux")
-        val isEnabled = selinuxClass.getMethod("isSELinuxEnabled").invoke(null) as? Boolean ?: true
-        if (!isEnabled) {
-            return "Disabled"
-        }
-        val isEnforced = selinuxClass.getMethod("isSELinuxEnforced").invoke(null) as? Boolean
-        if (isEnforced != null) {
-            return if (isEnforced) "Enforcing" else "Permissive"
-        }
-    } catch (_: Throwable) {
     }
 
     // 2. Direct read of /sys/fs/selinux/enforce if accessible
@@ -38,15 +31,30 @@ fun getSELinuxStatusRaw(): String {
     } catch (_: Throwable) {
     }
 
-    // 3. Check via root shell if already available
-    if (rootAvailable()) {
-        try {
-            val out = ShellUtils.fastCmd("getenforce").trim()
-            if (out in listOf("Enforcing", "Permissive", "Disabled")) {
-                return out
-            }
-        } catch (_: Throwable) {
+    // 3. Fallback to unprivileged shell
+    // When SELinux is Enforcing, unprivileged execution is denied ("Permission denied").
+    // When SELinux is Permissive, getenforce succeeds and prints "Permissive".
+    try {
+        val shell = Shell.Builder.create().build("sh")
+        val stdoutList = ArrayList<String>()
+        val stderrList = ArrayList<String>()
+        val result = shell.use {
+            it.newJob().add("getenforce").to(stdoutList, stderrList).exec()
         }
+        val stdout = stdoutList.joinToString("\n").trim()
+        val stderr = stderrList.joinToString("\n").trim()
+
+        if (result.isSuccess) {
+            return when (stdout) {
+                "Enforcing", "Permissive", "Disabled" -> stdout
+                else -> "Unknown"
+            }
+        }
+
+        if (stderr.contains("Permission denied", ignoreCase = true)) {
+            return "Enforcing"
+        }
+    } catch (_: Throwable) {
     }
 
     return "Unknown"

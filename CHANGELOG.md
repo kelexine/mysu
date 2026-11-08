@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.18] - 2026-11-08
+
+### Changed
+- **Tooling & Build System**:
+  - Upgraded Android NDK version to `r30` (`30.0.16248370`) across Gradle configuration and GitHub Actions CI pipelines.
+- **Material 3 Expressive Dialog Improvements**:
+  - Streamlined `AppUpdateDialog` and `ConfirmDialogMaterial` by replacing heavy markdown web components with lightweight native scrollable text.
+  - Retained `UpdateCard` dialog visibility with `rememberSaveable` to survive configuration changes.
+  - Simplified `UninstallDialogMaterial` state handling to eliminate redundant recompositions.
+
+### Fixed
+- **SELinux Detection Fallback**:
+  - Replaced hidden API reflection on `android.os.SELinux` with a robust 3-tier detection mechanism: root `getenforce`, `/sys/fs/selinux/enforce`, and unprivileged shell permission-denied inference.
+- **Module Porter CLI**:
+  - Registered missing `--skip-validation` CLI flag in `scripts/mysu_port/cli.py` to fix `AttributeError` on entry while preserving strict `module.prop` validation by default.
+
+---
+
+---
+
 ## [1.0.17] - 2026-10-25
 
 ### Changed
