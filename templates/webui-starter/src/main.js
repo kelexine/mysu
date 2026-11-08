@@ -4,6 +4,9 @@ import {
   fullScreen,
   enableEdgeToEdge,
   moduleInfo,
+  getModuleInfo,
+  getProp,
+  getAppIconUrl,
   listPackages,
   getPackagesInfo,
   exit,
@@ -33,25 +36,23 @@ const btnFullscreenEl = document.getElementById('btn-fullscreen');
 const btnExitEl = document.getElementById('btn-exit');
 
 // 1. Initialize Module Information & Environment Check
-function initModuleMetadata() {
+async function initModuleMetadata() {
   const isOnline = isMySuWebui();
 
   if (isOnline) {
     infoEnvEl.textContent = 'MySU WebView';
     infoEnvEl.classList.add('online');
 
-    try {
-      const rawInfo = moduleInfo();
-      if (rawInfo) {
-        const info = JSON.parse(rawInfo);
-        modNameEl.textContent = info.name || 'MySU Module';
-        modVersionEl.textContent = `v${info.version || '1.0.0'}`;
-        infoIdEl.textContent = info.id || '-';
-        infoAuthorEl.textContent = info.author || '-';
-        infoDirEl.textContent = info.moduleDir || '-';
-      }
-    } catch (err) {
-      console.error('Failed to parse moduleInfo:', err);
+    const info = getModuleInfo();
+    modNameEl.textContent = info.name || 'MySU Module';
+    modVersionEl.textContent = `v${info.version || '1.0.0'}`;
+    infoIdEl.textContent = info.id || '-';
+    infoAuthorEl.textContent = info.author || '-';
+    infoDirEl.textContent = info.moduleDir || '-';
+
+    const model = await getProp('ro.product.model', '');
+    if (model) {
+      infoEnvEl.textContent = `MySU (${model})`;
     }
   } else {
     infoEnvEl.textContent = 'Browser (Standalone)';
@@ -126,7 +127,7 @@ async function loadApps() {
 
       // Custom icon URI scheme: mysu://icon/{packageName}
       const iconUrl = isMySuWebui()
-        ? `mysu://icon/${app.packageName}`
+        ? getAppIconUrl(app.packageName)
         : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%238b5cf6"><circle cx="12" cy="12" r="10"/></svg>';
 
       item.innerHTML = `

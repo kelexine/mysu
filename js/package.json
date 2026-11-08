@@ -1,6 +1,6 @@
 {
   "name": "@mysu-org/mysu",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "Library for MySU's module WebUI",
   "main": "index.js",
   "types": "index.d.ts",

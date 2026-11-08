@@ -27,7 +27,7 @@ from .validation import validate_module
 logger = logging.getLogger("mysu_port")
 
 MYSU_JS_PKG = "@mysu-org/mysu"
-MYSU_JS_VERSION = "^3.0.2"
+MYSU_JS_VERSION = "^3.1.0"
 
 
 @dataclass(frozen=True, slots=True)

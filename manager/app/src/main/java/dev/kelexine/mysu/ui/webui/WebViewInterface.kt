@@ -183,11 +183,27 @@ class WebViewInterface(private val state: WebUIState) {
     }
 
     @JavascriptInterface
+    fun getProp(name: String, defaultValue: String = ""): String {
+        return try {
+            val value = ShellUtils.fastCmd("getprop $name").trim()
+            if (value.isNotEmpty()) value else defaultValue
+        } catch (_: Throwable) {
+            defaultValue
+        }
+    }
+
+    @JavascriptInterface
+    fun getAppIconUrl(packageName: String): String {
+        return "mysu://icon/$packageName"
+    }
+
+    @JavascriptInterface
     fun moduleInfo(): String {
         val moduleInfos = JSONArray(listModules())
         val currentModuleInfo = JSONObject()
         currentModuleInfo.put("moduleDir", modDir)
         val moduleId = File(modDir).name
+        var found = false
         for (i in 0 until moduleInfos.length()) {
             val currentInfo = moduleInfos.getJSONObject(i)
 
@@ -199,7 +215,25 @@ class WebViewInterface(private val state: WebUIState) {
             for (key in keys) {
                 currentModuleInfo.put(key, currentInfo.get(key))
             }
+            found = true
             break
+        }
+        if (!found) {
+            val propFile = File(modDir, "module.prop")
+            if (propFile.exists()) {
+                currentModuleInfo.put("id", moduleId)
+                try {
+                    propFile.readLines().forEach { line ->
+                        val trimmed = line.trim()
+                        if (trimmed.isNotEmpty() && !trimmed.startsWith("#") && trimmed.contains("=")) {
+                            val key = trimmed.substringBefore("=").trim()
+                            val value = trimmed.substringAfter("=").trim()
+                            currentModuleInfo.put(key, value)
+                        }
+                    }
+                } catch (_: Throwable) {
+                }
+            }
         }
         return currentModuleInfo.toString()
     }

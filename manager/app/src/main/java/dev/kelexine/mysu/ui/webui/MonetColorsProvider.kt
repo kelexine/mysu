@@ -94,6 +94,7 @@ object MonetColorsProvider {
             append(":root {\n")
             this@toCssVars.forEach { (k, v) ->
                 append("  --md-sys-color-$k: $v;\n")
+                append("  --$k: $v;\n")
             }
             append("}\n")
         }

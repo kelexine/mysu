@@ -131,16 +131,29 @@ import { toast } from '@mysu-org/mysu';
 toast('Configuration saved successfully');
 ```
 
-### Module Metadata (`moduleInfo`)
+### Module Metadata (`getModuleInfo` / `moduleInfo`)
 
-Retrieve metadata about the currently executing module from `module.prop`:
+Retrieve metadata about the currently executing module from `module.prop`. Use `getModuleInfo()` for a parsed object or `moduleInfo()` for the raw JSON string:
 
 ```javascript
-import { moduleInfo } from '@mysu-org/mysu';
+import { getModuleInfo } from '@mysu-org/mysu';
 
-const info = JSON.parse(moduleInfo());
+const info = getModuleInfo();
 console.log(`Module: ${info.name} (${info.id}) v${info.version}`);
 console.log(`Module directory: ${info.moduleDir}`);
+console.log(`Author: ${info.author}`);
+```
+
+### Fast Property Querying (`getProp`)
+
+Query Android system properties (`getprop`) directly through the bridge without spawning a subshell:
+
+```javascript
+import { getProp } from '@mysu-org/mysu';
+
+const deviceModel = await getProp('ro.product.model', 'Unknown Device');
+const androidVersion = await getProp('ro.build.version.release', '15');
+console.log(`Running on ${deviceModel} (Android ${androidVersion})`);
 ```
 
 ### Exiting WebUI
@@ -191,19 +204,42 @@ The Manager provides a custom URI protocol to stream cached PNG application icon
 <img src="mysu://icon/com.android.settings" alt="Settings Icon" width="48" height="48" />
 ```
 
-In Vue, React, or standard JS:
+In Vue, React, or standard JS, you can use the helper from `@mysu-org/mysu`:
 
 ```javascript
-function getAppIconUri(packageName) {
-  return `mysu://icon/${packageName}`;
-}
+import { getAppIconUrl } from '@mysu-org/mysu';
+
+const iconSrc = getAppIconUrl('com.android.settings');
 ```
 
 ---
 
-## 5. UI Layout, Safe Areas & Fullscreen
+## 5. UI Layout, Safe Areas & Dynamic Monet Theming
 
-### Dynamic Safe Area Insets (`internal/insets.css`)
+### Dynamic Monet Theming (`/internal/colors.css`)
+
+MySU seamlessly shares the Android system's Material You (Monet) dynamic color scheme with your module WebUI. The Manager intercepts `/internal/colors.css` and serves live CSS custom properties matching the user's active wallpaper palette:
+
+1. Link the stylesheet in `index.html`:
+   ```html
+   <link rel="stylesheet" type="text/css" href="/internal/colors.css" />
+   ```
+2. Use the CSS custom properties in your stylesheets:
+   ```css
+   :root {
+     --bg: var(--background, #121212);
+     --surface: var(--surfaceContainer, var(--surface, #1e1e1e));
+     --primary: var(--primary, #80d8ff);
+     --on-primary: var(--onPrimary, #00344d);
+     --text: var(--onSurface, #e0e0e0);
+     --text-muted: var(--onSurfaceVariant, #9e9e9e);
+     --border: var(--outlineVariant, var(--outline, #333));
+   }
+   ```
+
+Both shorthand tokens (`--primary`, `--surface`) and formal Material Web tokens (`--md-sys-color-primary`, `--md-sys-color-surface`) are exported.
+
+### Dynamic Safe Area Insets (`/internal/insets.css`)
 
 To properly handle status bars, display cutouts, and gesture navigation bars on modern edge-to-edge Android displays, MySU exposes dynamic safe insets:
 

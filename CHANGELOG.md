@@ -110,7 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MySU JavaScript Bridge (`@mysu-org/mysu` v3.0.3)**:
   - Transitioned package namespace to `@mysu-org/mysu` published to npm registry.
   - Converted `listPackages()` and `getPackagesInfo()` to asynchronous Promise returns matching modern WebUI specifications.
-  - Added `isMySuWebui()` and `isKsuWebui()` environment detection helpers.
+  - Added `isMySuWebui()` environment detection helper.
 
 ### Fixed
 - **WebUI Activity Intent Dispatching**:
