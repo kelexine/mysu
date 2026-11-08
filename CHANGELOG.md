@@ -28,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation**:
   - Refreshed WebUI guide in VitePress documentation with Monet theming examples and SDK v3.1.0 API reference.
 
+### Fixed
+- **Markdown Rendering in Dialogs**:
+  - Restored `MarkdownContent` in `AppUpdateDialog` and `ConfirmDialogMaterial` to properly render GitHub Markdown and HTML changelogs instead of raw unparsed syntax.
+
 ---
 
 ## [1.0.18] - 2026-11-08

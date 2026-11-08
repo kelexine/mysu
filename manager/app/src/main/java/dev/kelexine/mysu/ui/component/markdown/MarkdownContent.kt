@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 fun MarkdownContent(
     content: String,
     isMarkdown: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     var loaded by remember(content, isMarkdown) { mutableStateOf(false) }
     val alpha by animateFloatAsState(
@@ -37,9 +38,10 @@ fun MarkdownContent(
     )
     val containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .graphicsLayer { this.alpha = alpha }
         ) {

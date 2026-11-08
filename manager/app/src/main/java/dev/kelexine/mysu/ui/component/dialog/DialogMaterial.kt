@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import dev.kelexine.mysu.ui.component.markdown.MarkdownContent
 import dev.kelexine.mysu.ui.component.material.ExpressiveDialog
 
 @Composable
@@ -63,17 +64,33 @@ fun ConfirmDialogMaterial(
             title = { Text(visuals.title) },
             text = visuals.content?.let { content ->
                 {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 280.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        Text(
-                            text = content,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                    when {
+                        visuals.isMarkdown -> MarkdownContent(
+                            content = content,
+                            isMarkdown = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 280.dp)
                         )
+                        visuals.isHtml -> MarkdownContent(
+                            content = content,
+                            isMarkdown = false,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 280.dp)
+                        )
+                        else -> Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 280.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Text(
+                                text = content,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             },

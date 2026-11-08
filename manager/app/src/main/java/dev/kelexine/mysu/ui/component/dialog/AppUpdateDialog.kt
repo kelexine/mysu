@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.kelexine.mysu.R
+import dev.kelexine.mysu.ui.component.markdown.MarkdownContent
 import dev.kelexine.mysu.ui.component.material.ExpressiveDialog
 import dev.kelexine.mysu.ui.util.ApkInstaller
 import dev.kelexine.mysu.ui.util.DownloadManager
@@ -125,18 +126,11 @@ private fun AppUpdateDialogMaterial(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (versionInfo.changelog.isNotBlank()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 240.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        Text(
-                            text = versionInfo.changelog,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    MarkdownContent(
+                        content = versionInfo.changelog,
+                        isMarkdown = true,
+                        modifier = Modifier.heightIn(max = 280.dp)
+                    )
                 }
 
                 if (isDownloading) {
