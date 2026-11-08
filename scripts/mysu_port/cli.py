@@ -40,6 +40,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Skip WebUI/native compilation in source mode (adapt code and package only)",
     )
     parser.add_argument(
+        "--skip-validation",
+        action="store_true",
+        help="Skip module.prop validation during porting",
+    )
+    parser.add_argument(
         "--upload-org",
         metavar="ORG",
         help="Push ported source repo to GitHub organization (e.g. MySU-org)",
