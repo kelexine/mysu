@@ -11,6 +11,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.19] - 2026-11-08
+
+### Added
+- **WebUI & JS SDK Modernization**:
+  - Upgraded `@mysu-org/mysu` SDK to `v3.1.0` with strict, pure binding to `window.mysu`.
+  - Added new typed helper functions: `getModuleInfo()`, `getProp(key)`, and `getAppIconUrl(pkg)`.
+  - Exported complete TypeScript type declarations (`ModuleInfo`, `ExecResults`, `SpawnOptions`, `PackagesInfo`).
+  - Implemented `@JavascriptInterface` bridge endpoints in Manager `WebViewInterface` (`getProp`, `getAppIconUrl`) with fallback `module.prop` line parsing.
+  - Exported standard Material You shorthand CSS variables (`--primary`, `--surface`, `--onSurface`, `--outline`) alongside detailed palette tokens in `MonetColorsProvider`.
+  - Modernized `templates/webui-starter` with Monet color integration and dynamic system theme responsiveness.
+
+### Changed
+- **Module Porting System**:
+  - Pinned `@mysu-org/mysu` dependency requirement to `^3.1.0` in `scripts/mysu_port/source.py` for automated source-level module ports.
+- **Documentation**:
+  - Refreshed WebUI guide in VitePress documentation with Monet theming examples and SDK v3.1.0 API reference.
+
+---
+
 ## [1.0.18] - 2026-11-08
 
 ### Changed
