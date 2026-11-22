@@ -623,28 +623,22 @@ fn install_module_to_system(zip: &str) -> Result<()> {
     ensure_dir_exists(defs::MODULE_UPDATE_DIR)?;
     setsyscon(defs::MODULE_UPDATE_DIR)?;
 
-    // Prepare target directory
+    // Prepare target directory before installer script extracts/configures files
     println!("- Installing to {}", updated_dir.display());
     ensure_clean_dir(&updated_dir)?;
     info!("target dir: {}", updated_dir.display());
 
-    // Extract zip to target directory
-    println!("- Extracting module files");
-    let file = File::open(zip)?;
-    let mut archive = zip::ZipArchive::new(file)?;
-    archive.extract(&updated_dir)?;
+    // Execute install script (handles extraction unless SKIPUNZIP=1)
+    println!("- Running module installer");
+    exec_install_script(zip, is_metamodule, module_id)?;
 
-    // Set permission and selinux context for $MOD/system
+    // Ensure permissions and SELinux context for $MOD/system if created
     let module_system_dir = updated_dir.join("system");
     if module_system_dir.exists() {
         #[cfg(unix)]
         set_permissions(&module_system_dir, Permissions::from_mode(0o755))?;
         restore_syscon(&module_system_dir)?;
     }
-
-    // Execute install script
-    println!("- Running module installer");
-    exec_install_script(zip, is_metamodule, module_id)?;
 
     let module_dir = Path::new(MODULE_DIR).join(module_id);
     ensure_dir_exists(&module_dir)?;

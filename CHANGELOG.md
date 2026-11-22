@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.20] - 2026-11-22
+
+### Changed
+- **Module Installer (`mysud`)**:
+  - Removed redundant pre-script ZIP extraction in `install_module_to_system()`, delegating extraction to `installer.sh` / metamodule `metainstall.sh` (preserving `SKIPUNZIP=1` behavior) before applying `system/` permissions and SELinux contexts.
+  - Extended `adapt_script` in `installer.sh` to rewrite legacy `/data/adb/ksu`, `/data/adb/modules`, and `ksud` references in metamodule scripts (`metamount.sh`, `metainstall.sh`, `metauninstall.sh`, `post-mount.sh`, `utils.sh`).
+
+---
+
 ## [1.0.19] - 2026-11-08
 
 ### Added

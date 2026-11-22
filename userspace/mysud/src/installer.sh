@@ -433,11 +433,10 @@ install_module() {
     sed -i 's|/data/adb/ksud|/data/adb/mysud|g' "$1" 2>/dev/null || true
     sed -i 's|\bksud\b|mysud|g' "$1" 2>/dev/null || true
   }
-  adapt_script "$MODPATH/post-fs-data.sh"
-  adapt_script "$MODPATH/service.sh"
-  adapt_script "$MODPATH/action.sh"
-  adapt_script "$MODPATH/boot-completed.sh"
-  adapt_script "$MODPATH/uninstall.sh"
+  for SCRIPT in post-fs-data.sh service.sh action.sh boot-completed.sh uninstall.sh \
+                metamount.sh metainstall.sh metauninstall.sh post-mount.sh utils.sh; do
+    adapt_script "$MODPATH/$SCRIPT"
+  done
 
   # Handle replace folders
   for TARGET in $REPLACE; do
